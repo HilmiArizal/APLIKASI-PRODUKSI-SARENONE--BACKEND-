@@ -1,0 +1,37 @@
+[
+  {
+    "id": "BATCH-2026-001",
+    "timestamp": "2026-07-24 08:15",
+    "produkId": "p1",
+    "produkNama": "Roti Keju Spesial",
+    "jumlahPcs": 25,
+    "operator": "Tim Produk",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "Tepung Terigu Cakra",
+        "jumlah": 2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Gula Pasir Premium",
+        "jumlah": 0.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Keju Cheddar Olahan",
+        "jumlah": 0.75,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mentega Butter Anchor",
+        "jumlah": 0.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Dus Box Roti Saren One",
+        "jumlah": 25,
+        "satuan": "pcs"
+      }
+    ]
+  }
+]

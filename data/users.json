@@ -1,0 +1,39 @@
+[
+  {
+    "id": "u1",
+    "username": "admin",
+    "email": "admin@sarenone.com",
+    "pass": "admin",
+    "name": "Super Admin Saren One",
+    "role": "ADMIN",
+    "status": "VERIFIED",
+    "provider": "local",
+    "createdAt": "2026-07-20 08:00"
+  },
+  {
+    "id": "u_1785124059742",
+    "username": "hilmi",
+    "email": "hilmi@sarenone.com",
+    "pass": "Hilmi@123",
+    "name": "hilmi arizal",
+    "role": "BAHAN_BAKU",
+    "requestedRole": "PRODUK",
+    "status": "VERIFIED",
+    "provider": "local",
+    "catatan": "Pendaftaran Pengguna Baru",
+    "createdAt": "2026-07-27 10:47"
+  },
+  {
+    "id": "u_1785134719267",
+    "username": "imam",
+    "email": "imam@sarenone.com",
+    "pass": "Imam@123",
+    "name": "imam",
+    "role": "PRODUK",
+    "requestedRole": "PRODUK",
+    "status": "VERIFIED",
+    "provider": "local",
+    "catatan": "Pendaftaran Pengguna Baru",
+    "createdAt": "2026-07-27 13:45"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "kat_bhn_1",
+    "nama": "Bahan Utama",
+    "deskripsi": "Tepung, gandum, beras, dan bahan dasar adonan utama",
+    "createdAt": "2026-07-20 08:00"
+  },
+  {
+    "id": "kat_bhn_2",
+    "nama": "Pemanis & Perasa",
+    "deskripsi": "Gula, garaman, vanila, pengempuk, dan perasa makanan",
+    "createdAt": "2026-07-20 08:00"
+  },
+  {
+    "id": "kat_bhn_3",
+    "nama": "Bahan Kemasan",
+    "deskripsi": "",
+    "createdAt": "2026-07-20 08:00"
+  },
+  {
+    "id": "kat_bhn_4",
+    "nama": "Olahan Susu & Lemak",
+    "deskripsi": "Mentega, margarin, butter, susu cair, dan whipped cream",
+    "createdAt": "2026-07-20 08:00"
+  }
+]
