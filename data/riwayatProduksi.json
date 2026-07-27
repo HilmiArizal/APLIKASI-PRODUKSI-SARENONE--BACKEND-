@@ -1,5 +1,60 @@
 [
   {
+    "id": "BATCH-2026-815",
+    "timestamp": "2026-07-27 22:35",
+    "produkId": "p_1785165548449",
+    "produkNama": "BS",
+    "jumlahPcs": 10,
+    "operator": "Tim Produk",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "Daging Ayam",
+        "jumlah": 75,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Daging Sapi",
+        "jumlah": 10,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-2026-986",
+    "timestamp": "2026-07-27 22:07",
+    "produkId": "p_1785164089060",
+    "produkNama": "RCS",
+    "jumlahPcs": 2,
+    "operator": "Tim Produk",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "Daging Ayam",
+        "jumlah": 15,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Daging Sapi",
+        "jumlah": 2,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-2026-110",
+    "timestamp": "2026-07-27 22:05",
+    "produkId": "p_1785164089060",
+    "produkNama": "RCS",
+    "jumlahPcs": 10,
+    "operator": "Tim Produk",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "Daging Ayam",
+        "jumlah": 75,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
     "id": "BATCH-2026-001",
     "timestamp": "2026-07-24 08:15",
     "produkId": "p1",

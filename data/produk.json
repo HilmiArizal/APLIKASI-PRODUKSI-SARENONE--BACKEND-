@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "p_1785164089060",
+    "sku": "PR1",
+    "nama": "RCS",
+    "kategori": "SAREN ONE",
+    "harga": 15000,
+    "stok": 0
+  },
+  {
+    "id": "p_1785165548449",
+    "sku": "PR2",
+    "nama": "BS",
+    "kategori": "SAREN ONE",
+    "harga": 18000,
+    "stok": 0
+  }
+]

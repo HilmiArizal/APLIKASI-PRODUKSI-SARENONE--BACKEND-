@@ -31,15 +31,22 @@ exports.login = async (req, res) => {
 
     const input = usernameOrEmail.toLowerCase().trim();
 
-    // 1. Direct MongoDB Query
-    let user = await User.findOne({
-      $or: [
-        { username: new RegExp(`^${input}$`, 'i') },
-        { email: new RegExp(`^${input}$`, 'i') }
-      ]
-    });
+    let user = null;
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        user = await User.findOne({
+          $or: [
+            { username: new RegExp(`^${input}$`, 'i') },
+            { email: new RegExp(`^${input}$`, 'i') }
+          ]
+        });
+      } catch (e) {
+        console.warn('MongoDB query warning:', e.message);
+      }
+    }
 
-    // 2. JSON file fallback check if Mongo not yet initialized
+    // 2. JSON file fallback check
     if (!user) {
       const users = readCollection('users');
       user = users.find(u => u.username?.toLowerCase() === input || u.email?.toLowerCase() === input);
@@ -55,7 +62,7 @@ exports.login = async (req, res) => {
     }
 
     addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
-    return res.json({ success: true, message: 'Login berhasil!', data: user });
+    return res.json({ success: true, message: 'Login berhasil!', user: user, data: user });
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server login.' });
@@ -79,13 +86,27 @@ exports.register = async (req, res) => {
     const cleanUsername = username.trim();
     const cleanEmail = email ? email.trim() : `${cleanUsername}@sarenone.com`;
 
-    // Check duplicate in MongoDB
-    const existingMongo = await User.findOne({
-      $or: [
-        { username: new RegExp(`^${cleanUsername}$`, 'i') },
-        { email: new RegExp(`^${cleanEmail}$`, 'i') }
-      ]
-    });
+    // Check duplicate in JSON fallback file
+    const users = readCollection('users');
+    const existingLocal = users.find(u => u.username?.toLowerCase() === cleanUsername.toLowerCase() || u.email?.toLowerCase() === cleanEmail.toLowerCase());
+    if (existingLocal) {
+      return res.status(400).json({ success: false, message: `Username "${cleanUsername}" atau email sudah pernah terdaftar!` });
+    }
+
+    const mongoose = require('mongoose');
+    let existingMongo = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        existingMongo = await User.findOne({
+          $or: [
+            { username: new RegExp(`^${cleanUsername}$`, 'i') },
+            { email: new RegExp(`^${cleanEmail}$`, 'i') }
+          ]
+        });
+      } catch (e) {
+        console.warn('MongoDB duplicate check warning:', e.message);
+      }
+    }
 
     if (existingMongo) {
       return res.status(400).json({ success: false, message: `Username "${cleanUsername}" atau email sudah pernah terdaftar!` });
@@ -108,33 +129,41 @@ exports.register = async (req, res) => {
       createdAt: timestamp
     };
 
-    // SAVE DIRECTLY TO MONGO DB ATLAS
-    const createdMongoUser = await User.create(newUserObj);
+    let createdUser = newUserObj;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        createdUser = await User.create(newUserObj);
+      } catch (e) {
+        console.warn('Mongo user creation error, using JSON file:', e.message);
+      }
+    }
 
     // Sync JSON fallback file
-    const users = readCollection('users');
     users.push(newUserObj);
     writeCollection('users', users);
 
-    addAuditLog(name, 'PENDING', 'Registrasi Akun', `Pengguna baru mendaftar (Password Aman): ${name} (${cleanUsername}). Saved to MongoDB Atlas.`);
+    addAuditLog(name, 'PENDING', 'Registrasi Akun', `Pengguna baru mendaftar (Password Aman): ${name} (${cleanUsername}).`);
 
     return res.status(201).json({
       success: true,
-      message: 'Pendaftaran Berhasil! Akun Anda tersimpan di MongoDB Atlas dengan status PENDING. Mohon tunggu persetujuan (ACC) dari Super Admin.',
-      data: createdMongoUser
+      message: 'Pendaftaran Berhasil! Akun Anda telah tersimpan dengan status PENDING. Mohon tunggu persetujuan (ACC) dari Super Admin.',
+      data: createdUser
     });
   } catch (err) {
     console.error('Register error:', err);
-    return res.status(500).json({ success: false, message: 'Gagal meregistrasi pengguna ke MongoDB: ' + err.message });
+    return res.status(500).json({ success: false, message: 'Gagal meregistrasi pengguna: ' + err.message });
   }
 };
 
 // GET /api/auth/users (Admin View)
 exports.getAllUsers = async (req, res) => {
   try {
-    const mongoUsers = await User.find().sort({ createdAt: -1 });
-    if (mongoUsers && mongoUsers.length > 0) {
-      return res.json({ success: true, data: mongoUsers });
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const mongoUsers = await User.find().sort({ createdAt: -1 });
+      if (mongoUsers && mongoUsers.length > 0) {
+        return res.json({ success: true, data: mongoUsers });
+      }
     }
     const users = readCollection('users');
     return res.json({ success: true, data: users });
@@ -272,6 +301,74 @@ exports.changePassword = async (req, res) => {
       message: 'Kata sandi Anda berhasil diperbarui di MongoDB Atlas! Silakan gunakan password baru ini untuk login berikutnya.',
       updatedUser: user || users[index]
     });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// PUT /api/auth/users/:id (Update Profile & Role by Admin)
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, username, email, role, status } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (username) updateData.username = username.trim().toLowerCase();
+    if (email) updateData.email = email.trim().toLowerCase();
+    if (role) updateData.role = role;
+    if (status) updateData.status = status;
+
+    const mongoUser = await User.findOneAndUpdate(
+      { id },
+      { $set: updateData },
+      { returnDocument: 'after' }
+    );
+
+    const users = readCollection('users');
+    const index = users.findIndex(u => u.id === id);
+    if (index !== -1) {
+      users[index] = { ...users[index], ...updateData };
+      writeCollection('users', users);
+    }
+
+    const userName = mongoUser ? mongoUser.name : (users[index] ? users[index].name : id);
+    addAuditLog('Super Admin', 'ADMIN', 'Update Data User', `Super Admin memperbarui profil/role pengguna ${userName}.`);
+
+    return res.json({ success: true, message: `Data pengguna ${userName} berhasil diperbarui!`, data: mongoUser || users[index] });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// PUT /api/auth/users/:id/reset-password (Reset Password User by Admin)
+exports.resetUserPassword = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    const passwordError = validatePasswordSecurity(newPassword);
+    if (passwordError) {
+      return res.status(400).json({ success: false, message: passwordError });
+    }
+
+    const mongoUser = await User.findOneAndUpdate(
+      { id },
+      { $set: { pass: newPassword } },
+      { returnDocument: 'after' }
+    );
+
+    const users = readCollection('users');
+    const index = users.findIndex(u => u.id === id);
+    if (index !== -1) {
+      users[index].pass = newPassword;
+      writeCollection('users', users);
+    }
+
+    const userName = mongoUser ? mongoUser.name : (users[index] ? users[index].name : id);
+    addAuditLog('Super Admin', 'ADMIN', 'Reset Password User', `Super Admin melakukan reset password untuk pengguna ${userName}.`);
+
+    return res.json({ success: true, message: `Kata sandi pengguna ${userName} berhasil direset!`, data: mongoUser || users[index] });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }

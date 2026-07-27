@@ -7,8 +7,8 @@ const connectDB = async () => {
   try {
     const isAtlas = uri.includes('mongodb+srv');
     const options = {
-      dbName: 'saren_one_db', // Explicitly specify saren_one_db database
-      serverSelectionTimeoutMS: 5000
+      dbName: 'saren_one_db',
+      serverSelectionTimeoutMS: 3000
     };
 
     if (isAtlas) {

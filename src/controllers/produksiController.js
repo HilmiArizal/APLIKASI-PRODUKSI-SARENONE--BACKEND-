@@ -7,17 +7,31 @@ const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHel
 // GET /api/produksi/history
 exports.getHistory = async (req, res) => {
   try {
-    const list = await RiwayatProduksi.find().sort({ createdAt: -1 });
-    if (list && list.length > 0) return res.json({ success: true, data: list });
-    const fallback = readCollection('riwayatProduksi');
-    return res.json({ success: true, data: fallback });
+    const mongoose = require('mongoose');
+    let mongoList = [];
+    if (mongoose.connection.readyState === 1) {
+      try {
+        mongoList = await RiwayatProduksi.find().sort({ createdAt: -1 });
+      } catch (e) {
+        console.warn('Mongo history note:', e.message);
+      }
+    }
+    const jsonList = readCollection('riwayatProduksi');
+    
+    const mergedMap = new Map();
+    [...jsonList, ...mongoList].forEach(item => {
+      if (item && item.id) mergedMap.set(item.id, item);
+    });
+    const finalHistory = Array.from(mergedMap.values()).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
+
+    return res.json({ success: true, data: finalHistory });
   } catch (err) {
     const fallback = readCollection('riwayatProduksi');
     return res.json({ success: true, data: fallback });
   }
 };
 
-// POST /api/produksi/execute (Process Batch Production & Auto Deduct Raw Materials in MongoDB Atlas)
+// POST /api/produksi/execute (Process Batch Production & Auto Deduct Raw Materials)
 exports.executeBatch = async (req, res) => {
   try {
     const { produkId, targetQty, user } = req.body;
@@ -25,52 +39,94 @@ exports.executeBatch = async (req, res) => {
       return res.status(400).json({ success: false, message: 'produkId dan targetQty (>0) wajib diisi.' });
     }
 
-    const produk = await Produk.findOne({ id: produkId });
-    const resepDoc = await Resep.findOne({ produkId });
-    const formula = resepDoc ? resepDoc.items : [];
+    // 1. Find Product (MongoDB Atlas or JSON Fallback)
+    let mongoProduk = await Produk.findOne({ id: produkId });
+    const jsonProdukList = readCollection('produk');
+    let jsonProduk = jsonProdukList.find(p => p.id === produkId);
 
-    if (!produk) {
+    const produkNama = mongoProduk ? mongoProduk.nama : (jsonProduk ? jsonProduk.nama : 'Produk');
+
+    if (!mongoProduk && !jsonProduk) {
       return res.status(404).json({ success: false, message: 'Produk tidak ditemukan.' });
     }
 
-    if (!formula || formula.length === 0) {
-      return res.status(400).json({ success: false, message: 'Produk ini belum memiliki resep BOM.' });
+    // 2. Find Recipe Formula (MongoDB Atlas or JSON Fallback)
+    let formula = [];
+    const resepDoc = await Resep.findOne({ produkId });
+    if (resepDoc && resepDoc.items && resepDoc.items.length > 0) {
+      formula = resepDoc.items;
+    } else {
+      const jsonResep = readCollection('resep');
+      formula = jsonResep[produkId] || [];
     }
 
-    // 1. Verify Raw Material Inventory Sufficiency in MongoDB
+    if (!formula || formula.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Produk "${produkNama}" belum memiliki takaran resep BOM. Silakan atur takaran bahan baku di tab Katalog Resep terlebih dahulu!`
+      });
+    }
+
+    // 3. Check Raw Material Stock Sufficiency (Mongo + JSON)
+    const jsonBahanList = readCollection('bahanBaku');
+
     for (let item of formula) {
-      const b = await BahanBaku.findOne({ id: item.bahanId });
-      const needed = item.takaran * targetQty;
-      if (!b || b.stok < needed) {
+      let bMongo = await BahanBaku.findOne({ id: item.bahanId });
+      let bJson = jsonBahanList.find(b => b.id === item.bahanId);
+      
+      const bahanNama = bMongo ? bMongo.nama : (bJson ? bJson.nama : 'Bahan Mentah');
+      const currentStok = bMongo ? bMongo.stok : (bJson ? bJson.stok : 0);
+      const needed = Math.round(item.takaran * targetQty * 1000) / 1000;
+
+      if (currentStok < needed) {
         return res.status(400).json({
           success: false,
-          message: `Stok bahan baku ${b ? b.nama : 'terkait'} tidak mencukupi di MongoDB! Butuh: ${needed.toFixed(2)}, Ada: ${b ? b.stok : 0}`
+          message: `Stok bahan baku "${bahanNama}" tidak mencukupi untuk produksi ${targetQty} Pcs! Dibutuhkan: ${needed} ${bMongo?.satuan || bJson?.satuan || ''}, Stok Tersedia: ${currentStok}`
         });
       }
     }
 
-    // 2. Perform Stock Deductions & Record Consumed List in MongoDB
+    // 4. Perform Raw Material Deductions in Mongo & JSON
     const pemotonganBahan = [];
-    for (let item of formula) {
-      const b = await BahanBaku.findOne({ id: item.bahanId });
-      if (b) {
-        const usedQty = Math.round(item.takaran * targetQty * 1000) / 1000;
-        pemotonganBahan.push({
-          bahanNama: b.nama,
-          jumlah: usedQty,
-          satuan: b.satuan
-        });
 
-        b.stok = Math.max(0, Math.round((b.stok - usedQty) * 1000) / 1000);
-        await b.save();
+    for (let item of formula) {
+      let bMongo = await BahanBaku.findOne({ id: item.bahanId });
+      let bJsonIndex = jsonBahanList.findIndex(b => b.id === item.bahanId);
+      
+      const usedQty = Math.round(item.takaran * targetQty * 1000) / 1000;
+      const bahanNama = bMongo ? bMongo.nama : (jsonBahanList[bJsonIndex] ? jsonBahanList[bJsonIndex].nama : 'Bahan Mentah');
+      const satuan = bMongo ? bMongo.satuan : (jsonBahanList[bJsonIndex] ? jsonBahanList[bJsonIndex].satuan : 'kg');
+
+      pemotonganBahan.push({
+        bahanNama,
+        jumlah: usedQty,
+        satuan
+      });
+
+      // Deduct Mongo
+      if (bMongo) {
+        bMongo.stok = Math.max(0, Math.round((bMongo.stok - usedQty) * 1000) / 1000);
+        await bMongo.save();
+      }
+
+      // Deduct JSON
+      if (bJsonIndex !== -1) {
+        jsonBahanList[bJsonIndex].stok = Math.max(0, Math.round((jsonBahanList[bJsonIndex].stok - usedQty) * 1000) / 1000);
       }
     }
+    writeCollection('bahanBaku', jsonBahanList);
 
-    // 3. Increase Product Stock in MongoDB
-    produk.stok += targetQty;
-    await produk.save();
+    // 5. Increase Product Stock (Mongo + JSON)
+    if (mongoProduk) {
+      mongoProduk.stok = (mongoProduk.stok || 0) + Number(targetQty);
+      await mongoProduk.save();
+    }
+    if (jsonProduk) {
+      jsonProduk.stok = (jsonProduk.stok || 0) + Number(targetQty);
+      writeCollection('produk', jsonProdukList);
+    }
 
-    // 4. Record Batch Entry in MongoDB
+    // 6. Record Batch Entry
     const now = new Date();
     const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     const batchId = `BATCH-${now.getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
@@ -79,15 +135,18 @@ exports.executeBatch = async (req, res) => {
       id: batchId,
       timestamp,
       produkId,
-      produkNama: produk.nama,
-      jumlahPcs: targetQty,
+      produkNama,
+      jumlahPcs: Number(targetQty),
       operator: user?.name || 'Tim Produk',
       pemotonganBahan
     };
 
-    const mongoBatch = await RiwayatProduksi.create(newBatch);
+    try {
+      await RiwayatProduksi.create(newBatch);
+    } catch (e) {
+      console.warn('Mongo batch log write note:', e.message);
+    }
 
-    // Fallback JSON Sync
     const history = readCollection('riwayatProduksi');
     history.unshift(newBatch);
     writeCollection('riwayatProduksi', history);
@@ -96,15 +155,16 @@ exports.executeBatch = async (req, res) => {
       user?.name || 'Tim Produk',
       user?.role || 'PRODUK',
       'Produksi Batch',
-      `Eksekusi produksi ${targetQty} Pcs ${produk.nama} (${batchId}). Saved to MongoDB Atlas.`
+      `Eksekusi produksi ${targetQty} Pcs ${produkNama} (${batchId}). Stok bahan baku terpotong & stok produk bertambah.`
     );
 
     return res.json({
       success: true,
-      message: `Berhasil! Batch ${batchId} (+${targetQty} Pcs ${produk.nama}) tersimpan di MongoDB & stok bahan baku terpotong.`,
-      data: mongoBatch
+      message: `Eksekusi Produksi Berhasil! Batch ${batchId} (+${targetQty} Pcs ${produkNama}) telah dicatat & stok bahan baku terpotong otomatis.`,
+      data: newBatch
     });
   } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
+    console.error('Execute batch error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal mengeksekusi produksi: ' + err.message });
   }
 };

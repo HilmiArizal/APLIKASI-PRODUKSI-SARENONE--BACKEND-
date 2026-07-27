@@ -35,5 +35,31 @@
     "provider": "local",
     "catatan": "Pendaftaran Pengguna Baru",
     "createdAt": "2026-07-27 13:45"
+  },
+  {
+    "id": "u_1785160865332",
+    "username": "lisna",
+    "email": "lisna@gmail.com",
+    "pass": "Admin@123",
+    "name": "lisna astriani",
+    "role": "PRODUK",
+    "requestedRole": "PRODUK",
+    "status": "VERIFIED",
+    "provider": "local",
+    "catatan": "Pendaftaran Pengguna Baru",
+    "createdAt": "2026-07-27 21:01"
+  },
+  {
+    "id": "u_1785161986328",
+    "username": "lisnakeren",
+    "email": "lisnaaa@gmail.com",
+    "pass": "Lisna@123",
+    "name": "lisna",
+    "role": "PENDING",
+    "requestedRole": "PRODUK",
+    "status": "PENDING",
+    "provider": "local",
+    "catatan": "Pendaftaran Pengguna Baru",
+    "createdAt": "2026-07-27 21:19"
   }
 ]
