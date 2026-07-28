@@ -30,6 +30,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure MongoDB Atlas Connection on Serverless Executions
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+  } catch (e) {
+    console.warn('DB middleware note:', e.message);
+  }
+  next();
+});
+
 // Root Route
 app.get('/', (req, res) => {
   res.json({

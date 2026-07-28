@@ -12,7 +12,11 @@ try {
 }
 
 const connectDB = async () => {
-  const uri = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/saren_one_db';
+  if (mongoose.connection.readyState === 1) {
+    return true;
+  }
+
+  const uri = process.env.MONGO_URI || 'mongodb+srv://hilmiarizal36_db_user:bqdn5dbDRSias57Z@cluster0.dwunpou.mongodb.net/?appName=Cluster0';
 
   try {
     const isAtlas = uri.includes('mongodb+srv');
