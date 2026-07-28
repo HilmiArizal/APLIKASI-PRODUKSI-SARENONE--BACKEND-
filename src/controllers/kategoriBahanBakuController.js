@@ -47,7 +47,7 @@ exports.create = async (req, res) => {
     list.push(newItem);
     writeCollection('kategoriBahanBaku', list);
 
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Tambah Kategori Bahan', `Pendaftaran kategori bahan baku baru: ${cleanNama}. Saved to MongoDB.`);
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Tambah Kategori Bahan', `Pendaftaran kategori bahan baku baru: ${cleanNama}. Saved to MongoDB.`);
 
     return res.status(201).json({ success: true, message: `Kategori "${cleanNama}" berhasil ditambahkan ke MongoDB Atlas!`, data: mongoItem });
   } catch (err) {
@@ -90,7 +90,7 @@ exports.update = async (req, res) => {
       writeCollection('kategoriBahanBaku', list);
     }
 
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Update Kategori Bahan', `Pembaruan kategori bahan baku: "${oldName}" -> "${cleanNama}". Cascaded to MongoDB Atlas materials.`);
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Update Kategori Bahan', `Pembaruan kategori bahan baku: "${oldName}" -> "${cleanNama}". Cascaded to MongoDB Atlas materials.`);
 
     return res.json({ success: true, message: `Kategori "${cleanNama}" berhasil diperbarui & disinkronkan ke seluruh bahan baku di MongoDB Atlas!`, data: mongoItem || list[index] });
   } catch (err) {
@@ -104,15 +104,19 @@ exports.remove = async (req, res) => {
     const { id } = req.params;
     const { user } = req.body;
 
-    const mongoItem = await KategoriBahanBaku.findOneAndDelete({ id });
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await KategoriBahanBaku.deleteMany(query);
+    }
 
     let list = readCollection('kategoriBahanBaku');
     const target = list.find(x => x.id === id);
     list = list.filter(x => x.id !== id);
     writeCollection('kategoriBahanBaku', list);
 
-    const katName = mongoItem ? mongoItem.nama : (target ? target.nama : id);
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Hapus Kategori Bahan', `Menghapus kategori bahan baku: ${katName} dari MongoDB Atlas.`);
+    const katName = target ? target.nama : id;
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Hapus Kategori Bahan', `Menghapus kategori bahan baku: ${katName} dari MongoDB Atlas.`);
 
     return res.json({ success: true, message: `Kategori "${katName}" berhasil dihapus dari MongoDB Atlas!` });
   } catch (err) {

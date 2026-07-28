@@ -90,21 +90,31 @@ function writeCollection(collectionName, data) {
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-function addAuditLog(user, role, aksi, detail) {
-  const logs = readCollection('auditLog');
+async function addAuditLog(user, role, aksi, detail) {
+  const mongoose = require('mongoose');
   const now = new Date();
   const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   
   const newLog = {
-    id: 'LOG-' + Math.floor(100 + Math.random() * 900),
+    id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),
     timestamp,
-    user: user || 'System',
-    role: role || 'ADMIN',
+    user: typeof user === 'string' ? user : (user?.name || 'System'),
+    role: typeof role === 'string' ? role : (user?.role || 'ADMIN'),
     aksi,
     detail
   };
 
-  const updated = [newLog, ...logs].slice(0, 100);
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const AuditLog = require('../models/AuditLog');
+      await AuditLog.create(newLog);
+    } catch (e) {
+      console.warn('Mongo audit log write note:', e.message);
+    }
+  }
+
+  const logs = readCollection('auditLog');
+  const updated = [newLog, ...logs].slice(0, 1000);
   writeCollection('auditLog', updated);
   return newLog;
 }

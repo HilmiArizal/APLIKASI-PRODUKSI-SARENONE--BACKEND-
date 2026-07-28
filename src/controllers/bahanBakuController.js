@@ -37,7 +37,7 @@ exports.create = async (req, res) => {
     list.push(newItem);
     writeCollection('bahanBaku', list);
 
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Tambah Bahan', `Pendaftaran bahan baku baru: ${nama} (${sku}). Saved to MongoDB Atlas.`);
+    await addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Tambah Bahan', `Pendaftaran bahan baku baru: ${nama} (${sku}). Saved to MongoDB Atlas.`);
 
     return res.status(201).json({ success: true, message: 'Bahan baku tersimpan di MongoDB Atlas.', data: mongoItem });
   } catch (err) {
@@ -64,7 +64,7 @@ exports.update = async (req, res) => {
       writeCollection('bahanBaku', list);
     }
 
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Update Bahan', `Pembaruan bahan baku ${nama} di MongoDB.`);
+    await addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Update Bahan', `Pembaruan bahan baku ${nama} di MongoDB.`);
 
     return res.json({ success: true, message: 'Data bahan baku diperbarui di MongoDB Atlas.', data: mongoItem || list[index] });
   } catch (err) {
@@ -78,14 +78,18 @@ exports.remove = async (req, res) => {
     const { id } = req.params;
     const { user } = req.body;
 
-    await BahanBaku.findOneAndDelete({ id });
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await BahanBaku.deleteMany(query);
+    }
 
     let list = readCollection('bahanBaku');
     const target = list.find(x => x.id === id);
     list = list.filter(x => x.id !== id);
     writeCollection('bahanBaku', list);
 
-    addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Hapus Bahan', `Menghapus bahan baku ${target ? target.nama : id} dari MongoDB.`);
+    await addAuditLog(user?.name || 'Tim Bahan Baku', user?.role || 'BAHAN_BAKU', 'Hapus Bahan', `Menghapus bahan baku ${target ? target.nama : id} dari MongoDB Atlas.`);
 
     return res.json({ success: true, message: 'Bahan baku berhasil dihapus dari MongoDB Atlas.' });
   } catch (err) {
@@ -119,7 +123,7 @@ exports.restock = async (req, res) => {
     const itemNama = item ? item.nama : (list[index] ? list[index].nama : 'Bahan Baku');
     const itemSatuan = item ? item.satuan : (list[index] ? list[index].satuan : 'unit');
 
-    addAuditLog(
+    await addAuditLog(
       user?.name || 'Tim Bahan Baku',
       user?.role || 'BAHAN_BAKU',
       'Restock Bahan',

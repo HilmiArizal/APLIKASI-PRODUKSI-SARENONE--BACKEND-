@@ -45,7 +45,7 @@ exports.create = async (req, res) => {
     resep[newId] = [];
     writeCollection('resep', resep);
 
-    addAuditLog(user?.name || 'Tim Produk', user?.role || 'PRODUK', 'Tambah Produk', `Pendaftaran produk baru: ${nama} (${sku}). Saved to MongoDB Atlas.`);
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Tambah Produk', `Pendaftaran produk baru: ${nama} (${sku}). Saved to MongoDB Atlas.`);
 
     return res.status(201).json({ success: true, message: 'Produk berhasil ditambahkan ke MongoDB Atlas.', data: mongoItem });
   } catch (err) {
@@ -72,7 +72,7 @@ exports.update = async (req, res) => {
       writeCollection('produk', list);
     }
 
-    addAuditLog(user?.name || 'Tim Produk', user?.role || 'PRODUK', 'Update Produk', `Pembaruan katalog produk: ${nama} di MongoDB Atlas.`);
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Update Produk', `Pembaruan katalog produk: ${nama} di MongoDB Atlas.`);
 
     return res.json({ success: true, message: 'Data produk diperbarui di MongoDB Atlas.', data: mongoItem || list[index] });
   } catch (err) {
@@ -86,14 +86,19 @@ exports.remove = async (req, res) => {
     const { id } = req.params;
     const { user } = req.body;
 
-    const target = await Produk.findOneAndDelete({ id });
-    await Resep.findOneAndDelete({ produkId: id });
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await Produk.deleteMany(query);
+      await Resep.deleteMany({ produkId: id });
+    }
 
     let list = readCollection('produk');
+    const target = list.find(x => x.id === id);
     list = list.filter(x => x.id !== id);
     writeCollection('produk', list);
 
-    addAuditLog(user?.name || 'Tim Produk', user?.role || 'PRODUK', 'Hapus Produk', `Menghapus produk ${target ? target.nama : id} dari MongoDB Atlas.`);
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Hapus Produk', `Menghapus produk ${target ? target.nama : id} dari MongoDB Atlas.`);
 
     return res.json({ success: true, message: 'Produk & resep berhasil dihapus dari MongoDB Atlas.' });
   } catch (err) {

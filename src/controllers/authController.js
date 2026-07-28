@@ -61,11 +61,26 @@ exports.login = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Pendaftaran akun Anda telah ditolak oleh Super Admin.' });
     }
 
-    addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
+    await addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
     return res.json({ success: true, message: 'Login berhasil!', user: user, data: user });
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server login.' });
+  }
+};
+
+// POST /api/auth/logout
+exports.logout = async (req, res) => {
+  try {
+    const { user } = req.body;
+    const userName = typeof user === 'string' ? user : (user?.name || 'Pengguna');
+    const userRole = user?.role || 'ADMIN';
+
+    await addAuditLog(userName, userRole, 'Logout System', `Pengguna ${userName} keluar dari sistem.`);
+    return res.json({ success: true, message: 'Logout berhasil!' });
+  } catch (err) {
+    console.error('Logout error:', err);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -122,7 +137,7 @@ exports.register = async (req, res) => {
       pass,
       name,
       role: 'PENDING',
-      requestedRole: requestedRole || 'PRODUK',
+      requestedRole: requestedRole || 'BAHAN_BAKU',
       status: 'PENDING',
       provider: 'local',
       catatan: catatan || 'Pendaftaran Pengguna Baru',
@@ -161,9 +176,7 @@ exports.getAllUsers = async (req, res) => {
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState === 1) {
       const mongoUsers = await User.find().sort({ createdAt: -1 });
-      if (mongoUsers && mongoUsers.length > 0) {
-        return res.json({ success: true, data: mongoUsers });
-      }
+      return res.json({ success: true, data: mongoUsers });
     }
     const users = readCollection('users');
     return res.json({ success: true, data: users });
@@ -178,23 +191,30 @@ exports.approveUser = async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
+    const mongoose = require('mongoose');
 
-    const mongoUser = await User.findOneAndUpdate(
-      { id },
-      { role: role || 'PRODUK', status: 'VERIFIED' },
-      { returnDocument: 'after' }
-    );
+    const assignedRole = role || 'BAHAN_BAKU';
+    let mongoUser = null;
+
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      mongoUser = await User.findOneAndUpdate(
+        query,
+        { role: assignedRole, status: 'VERIFIED' },
+        { returnDocument: 'after' }
+      );
+    }
 
     const users = readCollection('users');
     const userIndex = users.findIndex(u => u.id === id);
     if (userIndex !== -1) {
-      users[userIndex].role = role || 'PRODUK';
+      users[userIndex].role = assignedRole;
       users[userIndex].status = 'VERIFIED';
       writeCollection('users', users);
     }
 
-    const userName = mongoUser ? mongoUser.name : (users[userIndex] ? users[userIndex].name : '');
-    addAuditLog('Super Admin', 'ADMIN', 'ACC User', `Super Admin meng-ACC pendaftaran ${userName} dengan role ${role || 'PRODUK'}.`);
+    const userName = mongoUser ? mongoUser.name : (users[userIndex] ? users[userIndex].name : id);
+    addAuditLog('Super Admin', 'ADMIN', 'ACC User', `Super Admin meng-ACC pendaftaran ${userName} dengan role ${assignedRole}.`);
 
     return res.json({ success: true, message: `Akun ${userName} berhasil di-ACC!`, data: mongoUser || users[userIndex] });
   } catch (err) {
@@ -206,16 +226,19 @@ exports.approveUser = async (req, res) => {
 exports.rejectUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const mongoose = require('mongoose');
 
-    // Delete user directly from MongoDB Atlas when rejected
-    const mongoUser = await User.findOneAndDelete({ id });
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await User.deleteMany(query);
+    }
 
     let users = readCollection('users');
     const target = users.find(u => u.id === id);
     users = users.filter(u => u.id !== id);
     writeCollection('users', users);
 
-    const userName = mongoUser ? mongoUser.name : (target ? target.name : id);
+    const userName = target ? target.name : id;
     addAuditLog('Super Admin', 'ADMIN', 'Tolak & Hapus User', `Super Admin menolak & menghapus akun ${userName} dari MongoDB Atlas.`);
 
     return res.json({ success: true, message: `Pendaftaran akun ${userName} telah ditolak dan akun berhasil dihapus dari MongoDB Atlas.` });
@@ -228,15 +251,19 @@ exports.rejectUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
+    const mongoose = require('mongoose');
 
-    const mongoUser = await User.findOneAndDelete({ id });
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await User.deleteMany(query);
+    }
 
     let users = readCollection('users');
     const target = users.find(u => u.id === id);
     users = users.filter(u => u.id !== id);
     writeCollection('users', users);
 
-    const userName = mongoUser ? mongoUser.name : (target ? target.name : id);
+    const userName = target ? target.name : id;
     addAuditLog('Super Admin', 'ADMIN', 'Hapus User', `Super Admin menghapus pengguna ${userName} dari MongoDB Atlas.`);
 
     return res.json({ success: true, message: `Akun ${userName} berhasil dihapus dari MongoDB Atlas.` });

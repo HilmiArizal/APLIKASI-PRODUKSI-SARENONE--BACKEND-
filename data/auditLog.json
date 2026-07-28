@@ -1,802 +1,194 @@
 [
   {
-    "id": "LOG-318",
-    "timestamp": "2026-07-27 22:37",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Update Produk",
-    "detail": "Pembaruan katalog produk: BS di MongoDB Atlas."
+    "id": "LOG-7396",
+    "timestamp": "2026-07-28 09:53",
+    "user": "fauzi imam",
+    "role": "BAHAN_BAKU",
+    "aksi": "Logout System",
+    "detail": "Pengguna fauzi imam keluar dari sistem."
   },
   {
-    "id": "LOG-514",
-    "timestamp": "2026-07-27 22:35",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Produksi Batch",
-    "detail": "Eksekusi produksi 10 Pcs BS (BATCH-2026-815). Stok bahan baku terpotong & stok produk bertambah."
-  },
-  {
-    "id": "LOG-272",
-    "timestamp": "2026-07-27 22:34",
-    "user": "Hilmi Arizal",
-    "role": "PRODUK",
-    "aksi": "Update Resep BOM",
-    "detail": "Menambahkan takaran bahan Daging Sapi (1) untuk produk BS."
-  },
-  {
-    "id": "LOG-875",
-    "timestamp": "2026-07-27 22:34",
-    "user": "Hilmi Arizal",
-    "role": "PRODUK",
-    "aksi": "Update Resep BOM",
-    "detail": "Menambahkan takaran bahan Daging Ayam (7.5) untuk produk BS."
-  },
-  {
-    "id": "LOG-930",
-    "timestamp": "2026-07-27 22:19",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Tambah Produk",
-    "detail": "Pendaftaran produk baru: BS (PR2). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-295",
-    "timestamp": "2026-07-27 22:13",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Update Produk",
-    "detail": "Pembaruan katalog produk: RCS di MongoDB Atlas."
-  },
-  {
-    "id": "LOG-772",
-    "timestamp": "2026-07-27 22:08",
+    "id": "LOG-6818",
+    "timestamp": "2026-07-28 09:52",
     "user": "Tim Bahan Baku",
     "role": "BAHAN_BAKU",
     "aksi": "Restock Bahan",
     "detail": "Stok masuk Daging Ayam +100 kg dari Supplier. "
   },
   {
-    "id": "LOG-361",
-    "timestamp": "2026-07-27 22:07",
-    "user": "Tim Bahan Baku",
+    "id": "LOG-8155",
+    "timestamp": "2026-07-28 09:52",
+    "user": "fauzi imam",
     "role": "BAHAN_BAKU",
-    "aksi": "Restock Bahan",
-    "detail": "Stok masuk Daging Sapi +50 kg dari Supplier. "
-  },
-  {
-    "id": "LOG-122",
-    "timestamp": "2026-07-27 22:07",
-    "user": "Tim Produk",
-    "role": "PRODUK",
     "aksi": "Produksi Batch",
-    "detail": "Eksekusi produksi 2 Pcs RCS (BATCH-2026-986). Stok bahan baku terpotong & stok produk bertambah."
+    "detail": "Eksekusi produksi 1 Batch BS (BATCH-2026-822). Stok bahan baku terpotong otomatis."
   },
   {
-    "id": "LOG-817",
-    "timestamp": "2026-07-27 22:06",
-    "user": "Hilmi Arizal",
-    "role": "PRODUK",
-    "aksi": "Update Resep BOM",
-    "detail": "Menambahkan takaran bahan Daging Sapi (1) untuk produk RCS."
-  },
-  {
-    "id": "LOG-239",
-    "timestamp": "2026-07-27 22:05",
-    "user": "Tim Produk",
-    "role": "PRODUK",
+    "id": "LOG-5166",
+    "timestamp": "2026-07-28 09:51",
+    "user": "fauzi imam",
+    "role": "BAHAN_BAKU",
     "aksi": "Produksi Batch",
-    "detail": "Eksekusi produksi 10 Pcs RCS (BATCH-2026-110). Stok bahan baku terpotong & stok produk bertambah."
+    "detail": "Eksekusi produksi 3 Batch RCS (BATCH-2026-202). Stok bahan baku terpotong otomatis."
   },
   {
-    "id": "LOG-309",
-    "timestamp": "2026-07-27 22:04",
+    "id": "LOG-2862",
+    "timestamp": "2026-07-28 09:50",
+    "user": "fauzi imam",
+    "role": "BAHAN_BAKU",
+    "aksi": "Login System",
+    "detail": "Pengguna fauzi imam (imam) berhasil masuk."
+  },
+  {
+    "id": "LOG-1335",
+    "timestamp": "2026-07-28 09:50",
     "user": "Hilmi Arizal",
-    "role": "PRODUK",
-    "aksi": "Update Resep BOM",
-    "detail": "Menambahkan takaran bahan Daging Ayam (7.5) untuk produk RCS."
-  },
-  {
-    "id": "LOG-850",
-    "timestamp": "2026-07-27 21:54",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Tambah Produk",
-    "detail": "Pendaftaran produk baru: RCS (PR1). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-153",
-    "timestamp": "2026-07-27 21:47",
-    "user": "Tim Bahan Baku",
-    "role": "BAHAN_BAKU",
-    "aksi": "Update Bahan",
-    "detail": "Pembaruan bahan baku Daging Sapi di MongoDB."
-  },
-  {
-    "id": "LOG-253",
-    "timestamp": "2026-07-27 21:47",
-    "user": "Tim Bahan Baku",
-    "role": "BAHAN_BAKU",
-    "aksi": "Update Bahan",
-    "detail": "Pembaruan bahan baku Daging Sapi di MongoDB."
-  },
-  {
-    "id": "LOG-382",
-    "timestamp": "2026-07-27 21:40",
-    "user": "Tim Bahan Baku",
-    "role": "BAHAN_BAKU",
-    "aksi": "Tambah Bahan",
-    "detail": "Pendaftaran bahan baku baru: Daging Sapi (BB2). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-481",
-    "timestamp": "2026-07-27 21:36",
-    "user": "Tim Bahan Baku",
-    "role": "BAHAN_BAKU",
-    "aksi": "Tambah Bahan",
-    "detail": "Pendaftaran bahan baku baru: Daging Ayam (BB1). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-655",
-    "timestamp": "2026-07-27 21:34",
-    "user": "Super Admin",
     "role": "ADMIN",
-    "aksi": "Hapus User",
-    "detail": "Super Admin menghapus pengguna aaaa dari MongoDB Atlas."
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
   },
   {
-    "id": "LOG-979",
-    "timestamp": "2026-07-27 21:34",
-    "user": "Super Admin",
-    "role": "ADMIN",
-    "aksi": "Hapus User",
-    "detail": "Super Admin menghapus pengguna lisna dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-781",
-    "timestamp": "2026-07-27 21:31",
-    "user": "Super Admin",
-    "role": "ADMIN",
-    "aksi": "Hapus User",
-    "detail": "Super Admin menghapus pengguna Siti Rahma dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-526",
-    "timestamp": "2026-07-27 21:26",
+    "id": "LOG-3047",
+    "timestamp": "2026-07-28 09:50",
     "user": "Super Admin",
     "role": "ADMIN",
     "aksi": "ACC User",
-    "detail": "Super Admin meng-ACC pendaftaran lisna astriani dengan role PRODUK."
+    "detail": "Super Admin meng-ACC pendaftaran fauzi imam dengan role BAHAN_BAKU."
   },
   {
-    "id": "LOG-553",
-    "timestamp": "2026-07-27 21:24",
+    "id": "LOG-6205",
+    "timestamp": "2026-07-28 09:50",
     "user": "Hilmi Arizal",
     "role": "ADMIN",
     "aksi": "Login System",
     "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   },
   {
-    "id": "LOG-341",
-    "timestamp": "2026-07-27 21:24",
-    "user": "lisna",
+    "id": "LOG-8323",
+    "timestamp": "2026-07-28 09:50",
+    "user": "fauzi imam",
     "role": "PENDING",
-    "aksi": "Registrasi Akun",
-    "detail": "Pengguna baru mendaftar (Password Aman): lisna (lisnacantik)."
+    "aksi": "Logout System",
+    "detail": "Pengguna fauzi imam keluar dari sistem."
   },
   {
-    "id": "LOG-282",
-    "timestamp": "2026-07-27 21:19",
-    "user": "lisna",
+    "id": "LOG-3076",
+    "timestamp": "2026-07-28 09:50",
+    "user": "fauzi imam",
     "role": "PENDING",
-    "aksi": "Registrasi Akun",
-    "detail": "Pengguna baru mendaftar (Password Aman): lisna (lisnakeren)."
-  },
-  {
-    "id": "LOG-412",
-    "timestamp": "2026-07-27 21:16",
-    "user": "aaaa",
-    "role": "PENDING",
-    "aksi": "Registrasi Akun",
-    "detail": "Pengguna baru mendaftar (Password Aman): aaaa (lisnaaaaaa)."
-  },
-  {
-    "id": "LOG-696",
-    "timestamp": "2026-07-27 21:09",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
     "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+    "detail": "Pengguna fauzi imam (imam) berhasil masuk."
   },
   {
-    "id": "LOG-836",
-    "timestamp": "2026-07-27 21:01",
-    "user": "lisna astriani",
-    "role": "PENDING",
-    "aksi": "Registrasi Akun",
-    "detail": "Pengguna baru mendaftar (Password Aman): lisna astriani (lisna). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-921",
-    "timestamp": "2026-07-27 20:52",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-483",
-    "timestamp": "2026-07-27 20:50",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-744",
-    "timestamp": "2026-07-27 20:50",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-837",
-    "timestamp": "2026-07-27 20:47",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-103",
-    "timestamp": "2026-07-27 20:47",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-669",
-    "timestamp": "2026-07-27 20:47",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-700",
-    "timestamp": "2026-07-27 20:46",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-495",
-    "timestamp": "2026-07-27 20:46",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-182",
-    "timestamp": "2026-07-27 20:46",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-965",
-    "timestamp": "2026-07-27 20:41",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-205",
-    "timestamp": "2026-07-27 20:41",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-677",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-117",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-655",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-420",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-757",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-731",
-    "timestamp": "2026-07-27 20:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-613",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-767",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-463",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-317",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-924",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-657",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-311",
-    "timestamp": "2026-07-27 20:33",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-668",
-    "timestamp": "2026-07-27 19:46",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-488",
-    "timestamp": "2026-07-27 19:45",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-320",
-    "timestamp": "2026-07-27 16:37",
-    "user": "hilmi arizal",
+    "id": "LOG-3232",
+    "timestamp": "2026-07-28 09:50",
+    "user": "fauzi imam",
     "role": "BAHAN_BAKU",
-    "aksi": "Login System",
-    "detail": "Pengguna hilmi arizal (hilmi) berhasil masuk."
+    "aksi": "Logout System",
+    "detail": "Pengguna fauzi imam keluar dari sistem."
   },
   {
-    "id": "LOG-258",
-    "timestamp": "2026-07-27 16:36",
+    "id": "LOG-9024",
+    "timestamp": "2026-07-28 09:45",
     "user": "Hilmi Arizal",
     "role": "ADMIN",
     "aksi": "Login System",
     "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   },
   {
-    "id": "LOG-549",
-    "timestamp": "2026-07-27 16:34",
+    "id": "LOG-4412",
+    "timestamp": "2026-07-28 09:45",
+    "user": "fauzi imam",
+    "role": "PENDING",
+    "aksi": "Registrasi Akun",
+    "detail": "Pengguna baru mendaftar (Password Aman): fauzi imam (imam)."
+  },
+  {
+    "id": "LOG-6418",
+    "timestamp": "2026-07-28 09:44",
     "user": "Hilmi Arizal",
     "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Croissant Butter Original dari MongoDB Atlas."
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
   },
   {
-    "id": "LOG-547",
-    "timestamp": "2026-07-27 16:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Brownies Cokelat Lumer dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-498",
-    "timestamp": "2026-07-27 16:34",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Roti Keju Spesial dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-455",
-    "timestamp": "2026-07-27 16:32",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b1 dari MongoDB."
-  },
-  {
-    "id": "LOG-153",
-    "timestamp": "2026-07-27 16:32",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b2 dari MongoDB."
-  },
-  {
-    "id": "LOG-243",
-    "timestamp": "2026-07-27 16:32",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b6 dari MongoDB."
-  },
-  {
-    "id": "LOG-152",
-    "timestamp": "2026-07-27 16:32",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b5 dari MongoDB."
-  },
-  {
-    "id": "LOG-165",
-    "timestamp": "2026-07-27 16:31",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b4 dari MongoDB."
-  },
-  {
-    "id": "LOG-288",
-    "timestamp": "2026-07-27 16:31",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b3 dari MongoDB."
-  },
-  {
-    "id": "LOG-151",
-    "timestamp": "2026-07-27 16:25",
-    "user": "Hilmi Arizal",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-596",
-    "timestamp": "2026-07-27 16:24",
-    "user": "Super Admin",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-673",
-    "timestamp": "2026-07-27 16:22",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Croissant Butter Original dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-488",
-    "timestamp": "2026-07-27 16:22",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Brownies Cokelat Lumer dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-300",
-    "timestamp": "2026-07-27 16:22",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Produk",
-    "detail": "Menghapus produk Red Cocktail Sausage dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-717",
-    "timestamp": "2026-07-27 16:20",
+    "id": "LOG-4251",
+    "timestamp": "2026-07-28 09:44",
     "user": "Super Admin",
     "role": "ADMIN",
     "aksi": "Hapus User",
-    "detail": "Super Admin menghapus pengguna Budi Kurniawan dari MongoDB Atlas."
+    "detail": "Super Admin menghapus pengguna u_1785161986328 dari MongoDB Atlas."
   },
   {
-    "id": "LOG-578",
-    "timestamp": "2026-07-27 16:18",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Update Produk",
-    "detail": "Pembaruan katalog produk: Red Cocktail Sausage di MongoDB Atlas."
-  },
-  {
-    "id": "LOG-132",
-    "timestamp": "2026-07-27 16:17",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Update Produk",
-    "detail": "Pembaruan katalog produk: Red Cocktail Sausage di MongoDB Atlas."
-  },
-  {
-    "id": "LOG-394",
-    "timestamp": "2026-07-27 16:17",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Update Produk",
-    "detail": "Pembaruan katalog produk: Red Cocktail di MongoDB Atlas."
-  },
-  {
-    "id": "LOG-761",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b1 dari MongoDB."
-  },
-  {
-    "id": "LOG-209",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b6 dari MongoDB."
-  },
-  {
-    "id": "LOG-684",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b5 dari MongoDB."
-  },
-  {
-    "id": "LOG-543",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b4 dari MongoDB."
-  },
-  {
-    "id": "LOG-501",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b3 dari MongoDB."
-  },
-  {
-    "id": "LOG-723",
-    "timestamp": "2026-07-27 16:14",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b2 dari MongoDB."
-  },
-  {
-    "id": "LOG-606",
-    "timestamp": "2026-07-27 16:13",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Kategori Bahan",
-    "detail": "Menghapus kategori bahan baku: Bumbu & Rempah dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-189",
-    "timestamp": "2026-07-27 16:13",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Kategori Bahan",
-    "detail": "Menghapus kategori bahan baku: Kemasan & Lainnya dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-641",
-    "timestamp": "2026-07-27 16:13",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Update Kategori Bahan",
-    "detail": "Pembaruan kategori bahan baku: \"Bahan Kemasan\" -> \"Bahan Kemasan\". Cascaded to MongoDB Atlas materials."
-  },
-  {
-    "id": "LOG-419",
-    "timestamp": "2026-07-27 16:11",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Kategori",
-    "detail": "Menghapus kategori produk: Sosis & Bakso Olahan dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-535",
-    "timestamp": "2026-07-27 16:11",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Kategori",
-    "detail": "Menghapus kategori produk: Minuman & Kopi dari MongoDB Atlas."
-  },
-  {
-    "id": "LOG-970",
-    "timestamp": "2026-07-27 16:07",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-384",
-    "timestamp": "2026-07-27 16:07",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Ubah Password",
-    "detail": "Pengguna Super Admin Saren One memperbarui kata sandi dengan Password Aman di MongoDB Atlas."
-  },
-  {
-    "id": "LOG-213",
-    "timestamp": "2026-07-27 16:06",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-575",
-    "timestamp": "2026-07-27 14:18",
-    "user": "Tim Bahan Baku",
-    "role": "BAHAN_BAKU",
-    "aksi": "Tambah Kategori Bahan",
-    "detail": "Pendaftaran kategori bahan baku baru: Bumbu & Rempah. Saved to MongoDB."
-  },
-  {
-    "id": "LOG-376",
-    "timestamp": "2026-07-27 14:18",
-    "user": "Tim Produk",
-    "role": "PRODUK",
-    "aksi": "Tambah Kategori",
-    "detail": "Pendaftaran kategori produk baru: Sosis & Bakso Olahan. Saved to MongoDB."
-  },
-  {
-    "id": "LOG-532",
-    "timestamp": "2026-07-27 13:55",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-335",
-    "timestamp": "2026-07-27 13:46",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
-  },
-  {
-    "id": "LOG-128",
-    "timestamp": "2026-07-27 13:46",
-    "user": "imam",
-    "role": "PRODUK",
-    "aksi": "Login System",
-    "detail": "Pengguna imam (imam) berhasil masuk."
-  },
-  {
-    "id": "LOG-761",
-    "timestamp": "2026-07-27 13:46",
+    "id": "LOG-5680",
+    "timestamp": "2026-07-28 09:44",
     "user": "Super Admin",
     "role": "ADMIN",
-    "aksi": "ACC User",
-    "detail": "Super Admin meng-ACC pendaftaran imam dengan role PRODUK."
+    "aksi": "Hapus User",
+    "detail": "Super Admin menghapus pengguna u_1785134719267 dari MongoDB Atlas."
   },
   {
-    "id": "LOG-844",
-    "timestamp": "2026-07-27 13:45",
-    "user": "Super Admin Saren One",
+    "id": "LOG-6852",
+    "timestamp": "2026-07-28 09:44",
+    "user": "Super Admin",
+    "role": "ADMIN",
+    "aksi": "Hapus User",
+    "detail": "Super Admin menghapus pengguna u_1785124059742 dari MongoDB Atlas."
+  },
+  {
+    "id": "LOG-5796",
+    "timestamp": "2026-07-28 09:44",
+    "user": "Hilmi Arizal",
     "role": "ADMIN",
     "aksi": "Login System",
-    "detail": "Pengguna Super Admin Saren One (admin) berhasil masuk."
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   },
   {
-    "id": "LOG-503",
-    "timestamp": "2026-07-27 13:45",
-    "user": "imam",
-    "role": "PENDING",
+    "id": "LOG-1961",
+    "timestamp": "2026-07-28 09:44",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-9341",
+    "timestamp": "2026-07-28 09:34",
+    "user": "Super Admin",
+    "role": "ADMIN",
+    "aksi": "Hapus User",
+    "detail": "Super Admin menghapus pengguna u_1785160865332 dari MongoDB Atlas."
+  },
+  {
+    "id": "LOG-6332",
+    "timestamp": "2026-07-28 09:34",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
     "aksi": "Login System",
-    "detail": "Pengguna imam (imam) berhasil masuk."
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   },
   {
-    "id": "LOG-450",
-    "timestamp": "2026-07-27 13:45",
-    "user": "imam",
-    "role": "PENDING",
-    "aksi": "Registrasi Akun",
-    "detail": "Pengguna baru mendaftar (Password Aman): imam (imam). Saved to MongoDB Atlas."
-  },
-  {
-    "id": "LOG-787",
-    "timestamp": "2026-07-27 11:32",
-    "user": "Super Admin Saren One",
+    "id": "LOG-7874",
+    "timestamp": "2026-07-28 09:33",
+    "user": "Hilmi Arizal",
     "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b1 dari MongoDB."
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
   },
   {
-    "id": "LOG-708",
-    "timestamp": "2026-07-27 11:32",
-    "user": "Super Admin Saren One",
+    "id": "LOG-2605",
+    "timestamp": "2026-07-28 09:24",
+    "user": "Hilmi Arizal",
     "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b6 dari MongoDB."
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   },
   {
-    "id": "LOG-860",
-    "timestamp": "2026-07-27 11:32",
-    "user": "Super Admin Saren One",
+    "id": "LOG-1766",
+    "timestamp": "2026-07-28 09:24",
+    "user": "Hilmi Arizal",
     "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b5 dari MongoDB."
-  },
-  {
-    "id": "LOG-947",
-    "timestamp": "2026-07-27 11:32",
-    "user": "Super Admin Saren One",
-    "role": "ADMIN",
-    "aksi": "Hapus Bahan",
-    "detail": "Menghapus bahan baku b4 dari MongoDB."
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
   }
 ]

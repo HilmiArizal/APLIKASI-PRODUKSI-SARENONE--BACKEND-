@@ -76,9 +76,9 @@ exports.saveItem = async (req, res) => {
     const pNama = jsonProduk ? jsonProduk.nama : produkId;
     const bNama = jsonBahan ? jsonBahan.nama : bahanId;
 
-    addAuditLog(
-      typeof user === 'string' ? user : (user?.name || 'Tim Produk'),
-      'PRODUK',
+    await addAuditLog(
+      typeof user === 'string' ? user : (user?.name || 'Tim Bahan Baku'),
+      'BAHAN_BAKU',
       'Update Resep BOM',
       `Menambahkan takaran bahan ${bNama} (${qty}) untuk produk ${pNama}.`
     );
@@ -100,6 +100,7 @@ exports.removeItem = async (req, res) => {
     const produkId = req.params.produkId || req.body.produkId;
     const bahanId = req.params.bahanId || req.body.bahanId;
     const itemIndex = req.body.itemIndex;
+    const user = req.body.user;
 
     if (!produkId) {
       return res.status(400).json({ success: false, message: 'produkId wajib diisi.' });
@@ -132,6 +133,13 @@ exports.removeItem = async (req, res) => {
         console.warn('Mongo resep delete note:', mongoErr.message);
       }
     }
+
+    await addAuditLog(
+      typeof user === 'string' ? user : (user?.name || 'Tim Bahan Baku'),
+      'BAHAN_BAKU',
+      'Hapus Resep BOM',
+      `Menghapus takaran bahan dari resep produk ${produkId}.`
+    );
 
     return res.json({
       success: true,

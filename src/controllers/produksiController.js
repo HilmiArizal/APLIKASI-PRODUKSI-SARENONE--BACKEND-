@@ -1,33 +1,52 @@
+const mongoose = require('mongoose');
 const RiwayatProduksi = require('../models/RiwayatProduksi');
 const Produk = require('../models/Produk');
 const BahanBaku = require('../models/BahanBaku');
 const Resep = require('../models/Resep');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
-// GET /api/produksi/history
+// GET /api/produksi/history (Strict MongoDB Atlas priority)
 exports.getHistory = async (req, res) => {
   try {
-    const mongoose = require('mongoose');
-    let mongoList = [];
     if (mongoose.connection.readyState === 1) {
-      try {
-        mongoList = await RiwayatProduksi.find().sort({ createdAt: -1 });
-      } catch (e) {
-        console.warn('Mongo history note:', e.message);
-      }
+      const mongoList = await RiwayatProduksi.find().sort({ createdAt: -1 });
+      return res.json({ success: true, data: mongoList });
     }
     const jsonList = readCollection('riwayatProduksi');
-    
-    const mergedMap = new Map();
-    [...jsonList, ...mongoList].forEach(item => {
-      if (item && item.id) mergedMap.set(item.id, item);
-    });
-    const finalHistory = Array.from(mergedMap.values()).sort((a, b) => (b.timestamp || '').localeCompare(a.timestamp || ''));
-
-    return res.json({ success: true, data: finalHistory });
+    return res.json({ success: true, data: jsonList });
   } catch (err) {
+    console.error('Get production history error:', err);
     const fallback = readCollection('riwayatProduksi');
     return res.json({ success: true, data: fallback });
+  }
+};
+
+// DELETE /api/produksi/history/:id
+exports.deleteHistory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { user } = req.body;
+
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      await RiwayatProduksi.deleteMany(query);
+    }
+
+    const jsonList = readCollection('riwayatProduksi');
+    const filtered = jsonList.filter(item => item.id !== id);
+    writeCollection('riwayatProduksi', filtered);
+
+    addAuditLog(
+      typeof user === 'string' ? user : (user?.name || 'Super Admin'),
+      'ADMIN',
+      'Hapus Riwayat Produksi',
+      `Menghapus catatan batch produksi (${id}) dari riwayat.`
+    );
+
+    return res.json({ success: true, message: `Batch ${id} berhasil dihapus dari riwayat.` });
+  } catch (err) {
+    console.error('Delete production history error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal menghapus riwayat: ' + err.message });
   }
 };
 
@@ -40,57 +59,86 @@ exports.executeBatch = async (req, res) => {
     }
 
     // 1. Find Product (MongoDB Atlas or JSON Fallback)
-    let mongoProduk = await Produk.findOne({ id: produkId });
+    let mongoProduk = null;
+    if (mongoose.connection.readyState === 1) {
+      try {
+        mongoProduk = await Produk.findOne({ id: produkId });
+      } catch (e) {
+        console.warn('Mongo find produk note:', e.message);
+      }
+    }
     const jsonProdukList = readCollection('produk');
     let jsonProduk = jsonProdukList.find(p => p.id === produkId);
 
-    const produkNama = mongoProduk ? mongoProduk.nama : (jsonProduk ? jsonProduk.nama : 'Produk');
+    const produkNama = mongoProduk ? mongoProduk.nama : (jsonProduk ? jsonProduk.nama : produkId);
 
-    if (!mongoProduk && !jsonProduk) {
-      return res.status(404).json({ success: false, message: 'Produk tidak ditemukan.' });
-    }
-
-    // 2. Find Recipe Formula (MongoDB Atlas or JSON Fallback)
+    // 2. Find Recipe Formula
     let formula = [];
-    const resepDoc = await Resep.findOne({ produkId });
-    if (resepDoc && resepDoc.items && resepDoc.items.length > 0) {
-      formula = resepDoc.items;
-    } else {
-      const jsonResep = readCollection('resep');
-      formula = jsonResep[produkId] || [];
-    }
-
-    if (!formula || formula.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Produk "${produkNama}" belum memiliki takaran resep BOM. Silakan atur takaran bahan baku di tab Katalog Resep terlebih dahulu!`
-      });
-    }
-
-    // 3. Check Raw Material Stock Sufficiency (Mongo + JSON)
-    const jsonBahanList = readCollection('bahanBaku');
-
-    for (let item of formula) {
-      let bMongo = await BahanBaku.findOne({ id: item.bahanId });
-      let bJson = jsonBahanList.find(b => b.id === item.bahanId);
-      
-      const bahanNama = bMongo ? bMongo.nama : (bJson ? bJson.nama : 'Bahan Mentah');
-      const currentStok = bMongo ? bMongo.stok : (bJson ? bJson.stok : 0);
-      const needed = Math.round(item.takaran * targetQty * 1000) / 1000;
-
-      if (currentStok < needed) {
-        return res.status(400).json({
-          success: false,
-          message: `Stok bahan baku "${bahanNama}" tidak mencukupi untuk produksi ${targetQty} Pcs! Dibutuhkan: ${needed} ${bMongo?.satuan || bJson?.satuan || ''}, Stok Tersedia: ${currentStok}`
-        });
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const mongoResep = await Resep.findOne({ produkId });
+        if (mongoResep && mongoResep.items && mongoResep.items.length > 0) {
+          formula = mongoResep.items;
+        }
+      } catch (e) {
+        console.warn('Mongo find resep note:', e.message);
       }
     }
 
-    // 4. Perform Raw Material Deductions in Mongo & JSON
+    if (formula.length === 0) {
+      const jsonResepObj = readCollection('resep');
+      formula = jsonResepObj[produkId] || [];
+    }
+
+    if (formula.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Produk ${produkNama} belum memiliki formula resep (BOM) terdaftar!`
+      });
+    }
+
+    // 3. Check Raw Materials Stock Sufficiency
+    const jsonBahanList = readCollection('bahanBaku');
+    const insufficientItems = [];
+
+    for (let item of formula) {
+      let bMongo = null;
+      if (mongoose.connection.readyState === 1) {
+        try {
+          bMongo = await BahanBaku.findOne({ id: item.bahanId });
+        } catch (e) {
+          console.warn('Mongo find bahan note:', e.message);
+        }
+      }
+      const bJson = jsonBahanList.find(b => b.id === item.bahanId);
+      const bNama = bMongo ? bMongo.nama : (bJson ? bJson.nama : item.bahanId);
+      const currentStok = bMongo ? bMongo.stok : (bJson ? bJson.stok : 0);
+      const needQty = Math.round(item.takaran * targetQty * 1000) / 1000;
+
+      if (currentStok < needQty) {
+        insufficientItems.push(`${bNama} (Butuh: ${needQty}, Stok: ${currentStok})`);
+      }
+    }
+
+    if (insufficientItems.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Stok bahan baku tidak mencukupi untuk produksi ${targetQty} Batch: ${insufficientItems.join(', ')}.`
+      });
+    }
+
+    // 4. Deduct Raw Materials Stock & Record Pemotongan
     const pemotonganBahan = [];
 
     for (let item of formula) {
-      let bMongo = await BahanBaku.findOne({ id: item.bahanId });
+      let bMongo = null;
+      if (mongoose.connection.readyState === 1) {
+        try {
+          bMongo = await BahanBaku.findOne({ id: item.bahanId });
+        } catch (e) {
+          console.warn('Mongo find bahan note:', e.message);
+        }
+      }
       let bJsonIndex = jsonBahanList.findIndex(b => b.id === item.bahanId);
       
       const usedQty = Math.round(item.takaran * targetQty * 1000) / 1000;
@@ -137,30 +185,32 @@ exports.executeBatch = async (req, res) => {
       produkId,
       produkNama,
       jumlahPcs: Number(targetQty),
-      operator: user?.name || 'Tim Produk',
+      operator: typeof user === 'string' ? user : (user?.name || 'Tim Produk'),
       pemotonganBahan
     };
 
-    try {
-      await RiwayatProduksi.create(newBatch);
-    } catch (e) {
-      console.warn('Mongo batch log write note:', e.message);
+    if (mongoose.connection.readyState === 1) {
+      try {
+        await RiwayatProduksi.create(newBatch);
+      } catch (e) {
+        console.warn('Mongo batch log write note:', e.message);
+      }
     }
 
     const history = readCollection('riwayatProduksi');
     history.unshift(newBatch);
     writeCollection('riwayatProduksi', history);
 
-    addAuditLog(
-      user?.name || 'Tim Produk',
-      user?.role || 'PRODUK',
+    await addAuditLog(
+      typeof user === 'string' ? user : (user?.name || 'Tim Bahan Baku'),
+      'BAHAN_BAKU',
       'Produksi Batch',
-      `Eksekusi produksi ${targetQty} Pcs ${produkNama} (${batchId}). Stok bahan baku terpotong & stok produk bertambah.`
+      `Eksekusi produksi ${targetQty} Batch ${produkNama} (${batchId}). Stok bahan baku terpotong otomatis.`
     );
 
     return res.json({
       success: true,
-      message: `Eksekusi Produksi Berhasil! Batch ${batchId} (+${targetQty} Pcs ${produkNama}) telah dicatat & stok bahan baku terpotong otomatis.`,
+      message: `Eksekusi Produksi Berhasil! Batch ${batchId} (+${targetQty} Batch ${produkNama}) telah dicatat & stok bahan baku terpotong otomatis.`,
       data: newBatch
     });
   } catch (err) {

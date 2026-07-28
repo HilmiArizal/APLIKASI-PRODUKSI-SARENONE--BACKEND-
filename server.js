@@ -16,7 +16,7 @@ const kategoriProdukRoutes = require('./src/routes/kategoriProdukRoutes');
 const kategoriBahanBakuRoutes = require('./src/routes/kategoriBahanBakuRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5002;
 
 // Connect MongoDB & Seed Initial Database Tables
 connectDB().then(async (isConnected) => {
