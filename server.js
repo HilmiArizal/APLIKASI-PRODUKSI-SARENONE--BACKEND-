@@ -16,7 +16,7 @@ const kategoriProdukRoutes = require('./src/routes/kategoriProdukRoutes');
 const kategoriBahanBakuRoutes = require('./src/routes/kategoriBahanBakuRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5000;
 
 // Connect MongoDB & Seed Initial Database Tables
 connectDB().then(async (isConnected) => {
@@ -59,9 +59,13 @@ app.use('/api/kategori-produk', kategoriProdukRoutes);
 app.use('/api/kategori-bahan-baku', kategoriBahanBakuRoutes);
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 SAREN ONE Backend REST API Server Is Running!`);
-  console.log(`📡 URL: http://localhost:${PORT}`);
-  console.log(`=======================================================`);
-});
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 SAREN ONE Backend REST API Server Is Running!`);
+    console.log(`📡 URL: http://localhost:${PORT}`);
+    console.log(`=======================================================`);
+  });
+}
+
+module.exports = app;
