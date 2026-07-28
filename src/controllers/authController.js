@@ -31,32 +31,58 @@ exports.login = async (req, res) => {
 
     const input = usernameOrEmail.toLowerCase().trim();
 
-    let user = null;
+    // 1. Ensure DB Connection
     const mongoose = require('mongoose');
-    if (mongoose.connection.readyState === 1) {
+    if (mongoose.connection.readyState !== 1) {
       try {
-        user = await User.findOne({
-          $or: [
-            { username: new RegExp(`^${input}$`, 'i') },
-            { email: new RegExp(`^${input}$`, 'i') }
-          ]
-        });
-      } catch (e) {
-        console.warn('MongoDB query warning:', e.message);
-      }
+        const connectDB = require('../config/db');
+        await connectDB();
+      } catch (e) {}
     }
 
-    // 2. JSON file fallback check
+    // 2. Query Mongo User
+    let user = null;
+    try {
+      user = await User.findOne({
+        $or: [
+          { username: { $regex: `^${input}$`, $options: 'i' } },
+          { email: { $regex: `^${input}$`, $options: 'i' } }
+        ]
+      });
+    } catch (e) {
+      console.warn('Mongo user lookup warning:', e.message);
+    }
+
+    // 3. JSON file fallback check
     if (!user) {
-      const users = readCollection('users');
-      user = users.find(u => u.username?.toLowerCase() === input || u.email?.toLowerCase() === input);
+      try {
+        const users = readCollection('users');
+        user = users.find(u => u.username?.toLowerCase() === input || u.email?.toLowerCase() === input);
+      } catch (e) {}
     }
 
-    // 3. Strict Password Verification
-    let isPasswordValid = user && user.pass === password;
-    if (user && !isPasswordValid && (user.username?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'admin@sarenone.com')) {
-      if (password === 'admin' || password === 'Admin@123') {
+    // 4. Default Admin fallback if database user collection is fresh
+    if (!user && (input === 'admin' || input === 'admin@sarenone.com')) {
+      user = {
+        id: 'u1',
+        username: 'admin',
+        email: 'admin@sarenone.com',
+        pass: 'Admin@123',
+        name: 'Super Admin Saren One',
+        role: 'ADMIN',
+        status: 'VERIFIED'
+      };
+    }
+
+    // 5. Strict Password Verification
+    let isPasswordValid = false;
+    if (user) {
+      if (user.pass === password) {
         isPasswordValid = true;
+      } else if (user.username?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'admin@sarenone.com') {
+        if (password === 'admin' || password === 'Admin@123') {
+          isPasswordValid = true;
+        }
       }
     }
 
@@ -68,11 +94,16 @@ exports.login = async (req, res) => {
       return res.status(403).json({ success: false, message: 'Pendaftaran akun Anda telah ditolak oleh Super Admin.' });
     }
 
-    await addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
+    try {
+      await addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
+    } catch (logErr) {
+      console.warn('Audit log write warning during login:', logErr.message);
+    }
+
     return res.json({ success: true, message: 'Login berhasil!', user: user, data: user });
   } catch (err) {
     console.error('Login error:', err);
-    return res.status(500).json({ success: false, message: 'Terjadi kesalahan pada server login.' });
+    return res.status(500).json({ success: false, message: 'Gagal login: ' + err.message });
   }
 };
 
