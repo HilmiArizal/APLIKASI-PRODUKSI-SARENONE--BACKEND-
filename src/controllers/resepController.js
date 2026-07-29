@@ -137,17 +137,112 @@ exports.removeItem = async (req, res) => {
     await addAuditLog(
       typeof user === 'string' ? user : (user?.name || 'Tim Bahan Baku'),
       'BAHAN_BAKU',
-      'Hapus Resep BOM',
-      `Menghapus takaran bahan dari resep produk ${produkId}.`
+      'Hapus Takaran Resep',
+      `Menghapus bahan ${bNama} dari formulasi resep ${pNama}.`
     );
 
     return res.json({
       success: true,
-      message: 'Takaran bahan berhasil dihapus dari database.',
-      data: resepJSON[produkId] || []
+      message: `Bahan ${bNama} berhasil dihapus dari resep.`,
+      data: resepJSON[produkId]
     });
   } catch (err) {
-    console.error('Remove resep error:', err);
-    return res.status(500).json({ success: false, message: 'Gagal menghapus resep: ' + err.message });
+    console.error('Remove resep item error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal menghapus resep item: ' + err.message });
+  }
+};
+
+// POST /api/resep/import-excel (Bulk Import Resep / BOM Formula dari Excel)
+exports.importExcel = async (req, res) => {
+  try {
+    const { items, user } = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: 'Data baris Excel Resep tidak boleh kosong.' });
+    }
+
+    const mongoose = require('mongoose');
+
+    let allProduk = [];
+    let allBahan = [];
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        allProduk = await Produk.find();
+        allBahan = await BahanBaku.find();
+      } catch (e) {}
+    }
+
+    if (allProduk.length === 0) allProduk = readCollection('produk');
+    if (allBahan.length === 0) allBahan = readCollection('bahanBaku');
+
+    let processedCount = 0;
+
+    for (let item of items) {
+      const produkSearch = (item.produkSku || item.produkNama || '').toString().trim().toLowerCase();
+      const bahanSearch = (item.bahanSku || item.bahanNama || '').toString().trim().toLowerCase();
+      const takaran = parseFloat(item.takaran) || 0;
+
+      if (!produkSearch || !bahanSearch || takaran <= 0) continue;
+
+      const targetProduk = allProduk.find(p =>
+        (p.sku && p.sku.toLowerCase() === produkSearch) ||
+        (p.nama && p.nama.toLowerCase() === produkSearch) ||
+        (p.id && p.id.toLowerCase() === produkSearch)
+      );
+
+      const targetBahan = allBahan.find(b =>
+        (b.sku && b.sku.toLowerCase() === bahanSearch) ||
+        (b.nama && b.nama.toLowerCase() === bahanSearch) ||
+        (b.id && b.id.toLowerCase() === bahanSearch)
+      );
+
+      if (!targetProduk || !targetBahan) continue;
+
+      const produkId = targetProduk.id;
+      const bahanId = targetBahan.id;
+
+      if (mongoose.connection.readyState === 1) {
+        try {
+          let doc = await Resep.findOne({ produkId });
+          if (!doc) doc = new Resep({ produkId, items: [] });
+
+          const idx = doc.items.findIndex(i => i.bahanId === bahanId);
+          if (idx !== -1) {
+            doc.items[idx].takaran = takaran;
+          } else {
+            doc.items.push({ bahanId, takaran });
+          }
+          await doc.save();
+        } catch (e) {}
+      }
+
+      const resepJSON = readCollection('resep');
+      if (!resepJSON[produkId]) resepJSON[produkId] = [];
+      const jsonIdx = resepJSON[produkId].findIndex(i => i.bahanId === bahanId);
+      if (jsonIdx !== -1) {
+        resepJSON[produkId][jsonIdx].takaran = takaran;
+      } else {
+        resepJSON[produkId].push({ bahanId, takaran });
+      }
+      writeCollection('resep', resepJSON);
+
+      processedCount++;
+    }
+
+    await addAuditLog(
+      user?.name || 'Tim Bahan Baku',
+      user?.role || 'BAHAN_BAKU',
+      'Import Excel Resep BOM',
+      `Berhasil memproses & mengimpor ${processedCount} takaran resep formulasi produk dari Excel.`
+    );
+
+    return res.json({
+      success: true,
+      message: `Berhasil memproses ${processedCount} baris formulasi resep (BOM) dari Excel ke MongoDB Atlas!`,
+      data: { processedCount }
+    });
+  } catch (err) {
+    console.error('Import Excel Resep error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal mengimpor Excel Resep: ' + err.message });
   }
 };

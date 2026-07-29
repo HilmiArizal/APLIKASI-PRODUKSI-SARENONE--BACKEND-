@@ -7,5 +7,6 @@ router.post('/', resepController.saveItem);
 router.post('/item', resepController.saveItem);
 router.delete('/:produkId/:bahanId', resepController.removeItem);
 router.delete('/item', resepController.removeItem);
+router.post('/import-excel', resepController.importExcel);
 
 module.exports = router;
