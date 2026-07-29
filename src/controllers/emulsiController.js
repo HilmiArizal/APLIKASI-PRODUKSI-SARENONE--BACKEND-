@@ -6,7 +6,6 @@ const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHel
 exports.processEmulsi = async (req, res) => {
   try {
     const { jenisEmulsi, jumlahBatch = 1, user } = req.body;
-    // jenisEmulsi: 'ISP' | 'TVP'
     if (!jenisEmulsi || !jumlahBatch || jumlahBatch <= 0) {
       return res.status(400).json({ success: false, message: 'Jenis emulsi (ISP/TVP) dan jumlah batch (>0) wajib diisi.' });
     }
@@ -50,7 +49,7 @@ exports.processEmulsi = async (req, res) => {
     const allBahanJson = readCollection('bahanBaku');
     const sourceBahanList = allBahanMongo.length > 0 ? allBahanMongo : allBahanJson;
 
-    // Find main raw material
+    // Find main raw material (Marksoy / ISP / TVP)
     let mainBahan = sourceBahanList.find(b =>
       b.nama.toLowerCase().includes(mainMaterialSearch) ||
       b.nama.toLowerCase().includes('isp') ||
@@ -59,16 +58,16 @@ exports.processEmulsi = async (req, res) => {
     let waterBahan = sourceBahanList.find(b => b.nama.toLowerCase().includes('air') || b.nama.toLowerCase().includes('es') || b.sku.toLowerCase().includes('air'));
     let oilBahan = jenisEmulsi === 'ISP' ? sourceBahanList.find(b => b.nama.toLowerCase().includes('minyak') || b.nama.toLowerCase().includes('lemak') || b.sku.toLowerCase().includes('minyak')) : null;
 
-    // Check stock
+    // Check stock sufficiency
     const missing = [];
     if (mainBahan && mainBahan.stok < mainQty) {
-      missing.push(`${mainBahan.nama} (Butuh: ${mainQty} kg, Stok: ${mainBahan.stok} ${mainBahan.satuan})`);
+      missing.push(`${mainBahan.nama} (Butuh: ${mainQty} kg, Stok Tersedia: ${mainBahan.stok} ${mainBahan.satuan})`);
     }
     if (waterBahan && waterBahan.stok < waterQty) {
-      missing.push(`${waterBahan.nama} (Butuh: ${waterQty} kg, Stok: ${waterBahan.stok} ${waterBahan.satuan})`);
+      missing.push(`${waterBahan.nama} (Butuh: ${waterQty} kg, Stok Tersedia: ${waterBahan.stok} ${waterBahan.satuan})`);
     }
     if (oilBahan && oilQty > 0 && oilBahan.stok < oilQty) {
-      missing.push(`${oilBahan.nama} (Butuh: ${oilQty} pouch/L, Stok: ${oilBahan.stok} ${oilBahan.satuan})`);
+      missing.push(`${oilBahan.nama} (Butuh: ${oilQty} pouch/L, Stok Tersedia: ${oilBahan.stok} ${oilBahan.satuan})`);
     }
 
     if (missing.length > 0) {
@@ -78,14 +77,16 @@ exports.processEmulsi = async (req, res) => {
       });
     }
 
-    // Deduct
+    // Deduct Materials (Update both MongoDB & JSON)
     const deductedDetails = [];
     const deductMaterial = async (target, qtyToDeduct, defaultName, unit) => {
-      const name = target ? target.nama : defaultName;
-      const u = target ? target.satuan : unit;
+      if (!target) return;
+      const name = target.nama || defaultName;
+      const u = target.satuan || unit;
       deductedDetails.push(`${name}: -${qtyToDeduct} ${u}`);
 
-      if (mongoose.connection.readyState === 1 && target) {
+      // 1. Update MongoDB Atlas
+      if (mongoose.connection.readyState === 1) {
         try {
           const doc = await BahanBaku.findOne({ id: target.id });
           if (doc) {
@@ -94,16 +95,24 @@ exports.processEmulsi = async (req, res) => {
           }
         } catch (e) {}
       }
+
+      // 2. Update local JSON collection
+      const jsonList = readCollection('bahanBaku');
+      const idx = jsonList.findIndex(b => b.id === target.id || b.sku === target.sku);
+      if (idx !== -1) {
+        jsonList[idx].stok = Math.max(0, Math.round((jsonList[idx].stok - qtyToDeduct) * 1000) / 1000);
+        writeCollection('bahanBaku', jsonList);
+      }
     };
 
     const mainName = jenisEmulsi === 'ISP' ? 'Marksoy / ISP' : 'TVP';
-    await deductMaterial(mainBahan, mainQty, mainName, 'kg');
-    await deductMaterial(waterBahan, waterQty, 'Air Es', 'kg');
-    if (jenisEmulsi === 'ISP' && oilQty > 0) {
+    if (mainBahan) await deductMaterial(mainBahan, mainQty, mainName, 'kg');
+    if (waterBahan) await deductMaterial(waterBahan, waterQty, 'Air Es', 'kg');
+    if (jenisEmulsi === 'ISP' && oilBahan && oilQty > 0) {
       await deductMaterial(oilBahan, oilQty, 'Minyak Goreng (2L)', oilBahan?.satuan || 'pouch');
     }
 
-    // Add or Update Emulsion Stock in BahanBaku
+    // Add / Increase Emulsion Stock (+yieldQty) in MongoDB & JSON
     if (mongoose.connection.readyState === 1) {
       try {
         let doc = await BahanBaku.findOne({ $or: [{ sku: emulsionSku }, { nama: emulsionName }] });
@@ -148,12 +157,12 @@ exports.processEmulsi = async (req, res) => {
       user?.name || 'Tim Bahan Baku',
       user?.role || 'BAHAN_BAKU',
       `Pengolahan ${emulsionName}`,
-      `Memproses ${batchNum} Batch ${emulsionName}. Menghasilkan +${yieldQty} kg ${emulsionName}.`
+      `Memproses ${batchNum} Batch ${emulsionName}. Pemotongan: ${deductedDetails.join(', ')}. Menghasilkan +${yieldQty} kg ${emulsionName}.`
     );
 
     return res.json({
       success: true,
-      message: `Pengolahan ${batchNum} Batch ${emulsionName} Berhasil! Hasil Emulsi +${yieldQty} kg ditambahkan ke persediaan.`,
+      message: `Pengolahan ${batchNum} Batch ${emulsionName} Berhasil! Stok mentah terpotong & Hasil Emulsi +${yieldQty} kg ditambahkan ke persediaan.`,
       data: {
         jenisEmulsi,
         batchNum,
