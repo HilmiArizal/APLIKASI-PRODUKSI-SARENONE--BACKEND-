@@ -212,3 +212,76 @@ exports.importExcel = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Gagal mengimpor Excel: ' + err.message });
   }
 };
+
+// POST /api/bahan-baku/pemakaian-kemasan
+exports.useKemasan = async (req, res) => {
+  try {
+    const { bahanId, jumlah, keterangan, user } = req.body;
+    if (!bahanId || !jumlah || jumlah <= 0) {
+      return res.status(400).json({ success: false, message: 'Bahan kemasan dan jumlah pemakaian (>0) wajib diisi.' });
+    }
+
+    const qtyToDeduct = parseFloat(jumlah);
+
+    let allBahanMongo = [];
+    if (mongoose.connection.readyState === 1) {
+      try { allBahanMongo = await BahanBaku.find(); } catch (e) {}
+    }
+    const allBahanJson = readCollection('bahanBaku');
+    const sourceList = allBahanMongo.length > 0 ? allBahanMongo : allBahanJson;
+
+    const targetBahan = sourceList.find(b => b.id === bahanId || b.sku === bahanId);
+    if (!targetBahan) {
+      return res.status(404).json({ success: false, message: 'Bahan kemasan tidak ditemukan di database.' });
+    }
+
+    if (targetBahan.stok < qtyToDeduct) {
+      return res.status(400).json({
+        success: false,
+        message: `Stok ${targetBahan.nama} tidak mencukupi. Butuh: ${qtyToDeduct} ${targetBahan.satuan}, Stok Tersedia: ${targetBahan.stok} ${targetBahan.satuan}.`
+      });
+    }
+
+    // 1. Update MongoDB Atlas
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const doc = await BahanBaku.findOne({ $or: [{ id: targetBahan.id }, { sku: targetBahan.sku }] });
+        if (doc) {
+          doc.stok = Math.max(0, Math.round((doc.stok - qtyToDeduct) * 1000) / 1000);
+          await doc.save();
+        }
+      } catch (e) {}
+    }
+
+    // 2. Update local JSON
+    const jsonList = readCollection('bahanBaku');
+    const idx = jsonList.findIndex(b => b.id === targetBahan.id || b.sku === targetBahan.sku);
+    if (idx !== -1) {
+      jsonList[idx].stok = Math.max(0, Math.round((jsonList[idx].stok - qtyToDeduct) * 1000) / 1000);
+      writeCollection('bahanBaku', jsonList);
+    }
+
+    // Audit log
+    await addAuditLog(
+      user?.name || 'Tim Bahan Baku',
+      user?.role || 'BAHAN_BAKU',
+      'Pemakaian Bahan Kemasan',
+      `Pemakaian ${qtyToDeduct} ${targetBahan.satuan} ${targetBahan.nama}. Keterangan: ${keterangan || 'Pengemasan Produksi'}.`
+    );
+
+    return res.json({
+      success: true,
+      message: `Pemakaian ${qtyToDeduct} ${targetBahan.satuan} ${targetBahan.nama} berhasil dicatat! Stok terpotong.`,
+      data: {
+        bahanId,
+        nama: targetBahan.nama,
+        jumlah: qtyToDeduct,
+        satuan: targetBahan.satuan,
+        sisaStok: Math.max(0, Math.round((targetBahan.stok - qtyToDeduct) * 1000) / 1000)
+      }
+    });
+  } catch (err) {
+    console.error('Use kemasan error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal mencatat pemakaian kemasan: ' + err.message });
+  }
+};
