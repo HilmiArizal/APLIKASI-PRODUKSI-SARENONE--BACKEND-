@@ -17,7 +17,6 @@ exports.processEmulsi = async (req, res) => {
     let oilQty = 0;
     let yieldQty = 0;
 
-    let mainMaterialSearch = '';
     let emulsionName = '';
     let emulsionSku = '';
 
@@ -27,7 +26,6 @@ exports.processEmulsi = async (req, res) => {
       waterQty = 4 * batchNum;
       oilQty = 4 * batchNum; // 4 pouch (kemasan 2L)
       yieldQty = 20 * batchNum;
-      mainMaterialSearch = 'marksoy';
       emulsionName = 'Emulsi ISP';
       emulsionSku = 'EML-ISP';
     } else {
@@ -36,7 +34,6 @@ exports.processEmulsi = async (req, res) => {
       waterQty = 3 * batchNum;
       oilQty = 0;
       yieldQty = 3.5 * batchNum;
-      mainMaterialSearch = 'tvp';
       emulsionName = 'Emulsi TVP';
       emulsionSku = 'EML-TVP';
     }
@@ -49,31 +46,62 @@ exports.processEmulsi = async (req, res) => {
     const allBahanJson = readCollection('bahanBaku');
     const sourceBahanList = allBahanMongo.length > 0 ? allBahanMongo : allBahanJson;
 
-    // Find main raw material (Marksoy / ISP / TVP)
-    let mainBahan = sourceBahanList.find(b =>
-      b.nama.toLowerCase().includes(mainMaterialSearch) ||
-      b.nama.toLowerCase().includes('isp') ||
-      b.sku.toLowerCase().includes(mainMaterialSearch)
-    );
-    let waterBahan = sourceBahanList.find(b => b.nama.toLowerCase().includes('air') || b.nama.toLowerCase().includes('es') || b.sku.toLowerCase().includes('air'));
-    let oilBahan = jenisEmulsi === 'ISP' ? sourceBahanList.find(b => b.nama.toLowerCase().includes('minyak') || b.nama.toLowerCase().includes('lemak') || b.sku.toLowerCase().includes('minyak')) : null;
+    // Strictly search for RAW materials (EXCLUDING Emulsi items!)
+    let mainBahan = null;
+    if (jenisEmulsi === 'ISP') {
+      mainBahan = sourceBahanList.find(b => {
+        const name = (b.nama || '').toLowerCase();
+        const sku = (b.sku || '').toLowerCase();
+        return !name.includes('emulsi') && (name.includes('marksoy') || name.includes('isp') || sku.includes('marksoy') || sku.includes('isp'));
+      });
+    } else {
+      mainBahan = sourceBahanList.find(b => {
+        const name = (b.nama || '').toLowerCase();
+        const sku = (b.sku || '').toLowerCase();
+        return !name.includes('emulsi') && (name.includes('tvp') || sku.includes('tvp'));
+      });
+    }
+
+    let waterBahan = sourceBahanList.find(b => {
+      const name = (b.nama || '').toLowerCase();
+      const sku = (b.sku || '').toLowerCase();
+      return !name.includes('emulsi') && (name.includes('air') || name.includes('es') || sku.includes('air'));
+    });
+
+    let oilBahan = jenisEmulsi === 'ISP' ? sourceBahanList.find(b => {
+      const name = (b.nama || '').toLowerCase();
+      const sku = (b.sku || '').toLowerCase();
+      return !name.includes('emulsi') && (name.includes('minyak') || name.includes('lemak') || sku.includes('minyak'));
+    }) : null;
 
     // Check stock sufficiency
     const missing = [];
-    if (mainBahan && mainBahan.stok < mainQty) {
+    const mainMaterialName = jenisEmulsi === 'ISP' ? 'Marksoy / ISP' : 'TVP Granules';
+
+    if (!mainBahan) {
+      missing.push(`Bahan Mentah ${mainMaterialName} belum terdaftar di Stok Bahan Baku`);
+    } else if (mainBahan.stok < mainQty) {
       missing.push(`${mainBahan.nama} (Butuh: ${mainQty} kg, Stok Tersedia: ${mainBahan.stok} ${mainBahan.satuan})`);
     }
-    if (waterBahan && waterBahan.stok < waterQty) {
+
+    if (!waterBahan) {
+      missing.push(`Bahan Mentah Air Es Batu belum terdaftar di Stok Bahan Baku`);
+    } else if (waterBahan.stok < waterQty) {
       missing.push(`${waterBahan.nama} (Butuh: ${waterQty} kg, Stok Tersedia: ${waterBahan.stok} ${waterBahan.satuan})`);
     }
-    if (oilBahan && oilQty > 0 && oilBahan.stok < oilQty) {
-      missing.push(`${oilBahan.nama} (Butuh: ${oilQty} pouch/L, Stok Tersedia: ${oilBahan.stok} ${oilBahan.satuan})`);
+
+    if (jenisEmulsi === 'ISP' && oilQty > 0) {
+      if (!oilBahan) {
+        missing.push(`Bahan Mentah Minyak Goreng belum terdaftar di Stok Bahan Baku`);
+      } else if (oilBahan.stok < oilQty) {
+        missing.push(`${oilBahan.nama} (Butuh: ${oilQty} pouch/L, Stok Tersedia: ${oilBahan.stok} ${oilBahan.satuan})`);
+      }
     }
 
     if (missing.length > 0) {
       return res.status(400).json({
         success: false,
-        message: `Stok bahan baku tidak mencukupi untuk ${batchNum} Batch ${emulsionName}: ${missing.join(', ')}.`
+        message: `Stok bahan mentah tidak mencukupi untuk ${batchNum} Batch ${emulsionName}: ${missing.join(', ')}.`
       });
     }
 
@@ -105,11 +133,10 @@ exports.processEmulsi = async (req, res) => {
       }
     };
 
-    const mainName = jenisEmulsi === 'ISP' ? 'Marksoy / ISP' : 'TVP';
-    if (mainBahan) await deductMaterial(mainBahan, mainQty, mainName, 'kg');
+    if (mainBahan) await deductMaterial(mainBahan, mainQty, mainMaterialName, 'kg');
     if (waterBahan) await deductMaterial(waterBahan, waterQty, 'Air Es', 'kg');
     if (jenisEmulsi === 'ISP' && oilBahan && oilQty > 0) {
-      await deductMaterial(oilBahan, oilQty, 'Minyak Goreng (2L)', oilBahan?.satuan || 'pouch');
+      await deductMaterial(oilBahan, oilQty, 'Minyak Goreng', oilBahan.satuan || 'pouch');
     }
 
     // Add / Increase Emulsion Stock (+yieldQty) in MongoDB & JSON
@@ -157,12 +184,12 @@ exports.processEmulsi = async (req, res) => {
       user?.name || 'Tim Bahan Baku',
       user?.role || 'BAHAN_BAKU',
       `Pengolahan ${emulsionName}`,
-      `Memproses ${batchNum} Batch ${emulsionName}. Pemotongan: ${deductedDetails.join(', ')}. Menghasilkan +${yieldQty} kg ${emulsionName}.`
+      `Memproses ${batchNum} Batch ${emulsionName}. Pemotongan mentah: ${deductedDetails.join(', ')}. Menghasilkan +${yieldQty} kg ${emulsionName}.`
     );
 
     return res.json({
       success: true,
-      message: `Pengolahan ${batchNum} Batch ${emulsionName} Berhasil! Stok mentah terpotong & Hasil Emulsi +${yieldQty} kg ditambahkan ke persediaan.`,
+      message: `Pengolahan ${batchNum} Batch ${emulsionName} Berhasil! Stok mentah terpotong & Hasil ${emulsionName} +${yieldQty} kg ditambahkan.`,
       data: {
         jenisEmulsi,
         batchNum,
