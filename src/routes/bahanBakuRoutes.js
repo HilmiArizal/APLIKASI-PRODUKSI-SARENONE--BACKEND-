@@ -7,5 +7,6 @@ router.post('/', bahanBakuController.create);
 router.put('/:id', bahanBakuController.update);
 router.delete('/:id', bahanBakuController.remove);
 router.post('/restock', bahanBakuController.restock);
+router.post('/import-excel', bahanBakuController.importExcel);
 
 module.exports = router;

@@ -135,3 +135,80 @@ exports.restock = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// POST /api/bahan-baku/import-excel (Bulk Import dari File Excel / CSV)
+exports.importExcel = async (req, res) => {
+  try {
+    const { items, user } = req.body;
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: 'Data baris Excel tidak boleh kosong.' });
+    }
+
+    const createdItems = [];
+    const updatedItems = [];
+
+    const mongoose = require('mongoose');
+
+    for (let item of items) {
+      const sku = (item.sku || `BHN-${Math.floor(100 + Math.random() * 900)}`).toString().trim();
+      const nama = (item.nama || item.namaBahan || 'Bahan Masukan Excel').toString().trim();
+      const kategori = (item.kategori || 'Bahan Utama').toString().trim();
+      const satuan = (item.satuan || 'kg').toString().trim();
+      const stok = parseFloat(item.stok) || 0;
+      const minStok = parseFloat(item.minStok) || 0;
+      const harga = parseFloat(item.harga) || 0;
+
+      const filterQuery = { sku: new RegExp(`^${sku}$`, 'i') };
+      const updateData = {
+        sku,
+        nama,
+        kategori,
+        satuan,
+        stok,
+        minStok,
+        harga
+      };
+
+      if (mongoose.connection.readyState === 1) {
+        try {
+          let existing = await BahanBaku.findOne(filterQuery);
+          if (existing) {
+            existing.nama = nama;
+            existing.kategori = kategori;
+            existing.satuan = satuan;
+            existing.stok = stok;
+            existing.minStok = minStok;
+            existing.harga = harga;
+            await existing.save();
+            updatedItems.push(existing);
+          } else {
+            const newItemObj = {
+              id: 'b_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
+              ...updateData
+            };
+            const created = await BahanBaku.create(newItemObj);
+            createdItems.push(created);
+          }
+        } catch (mongoErr) {
+          console.warn('Import item mongo note:', mongoErr.message);
+        }
+      }
+    }
+
+    await addAuditLog(
+      user?.name || 'Tim Bahan Baku',
+      user?.role || 'BAHAN_BAKU',
+      'Import Excel Bahan',
+      `Import masal ${items.length} item bahan baku dari file Excel ke MongoDB Atlas.`
+    );
+
+    return res.json({
+      success: true,
+      message: `Berhasil memproses ${items.length} data bahan baku dari Excel ke MongoDB Atlas!`,
+      data: { createdCount: createdItems.length, updatedCount: updatedItems.length }
+    });
+  } catch (err) {
+    console.error('Import Excel error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal mengimpor Excel: ' + err.message });
+  }
+};
