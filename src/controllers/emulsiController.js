@@ -12,11 +12,11 @@ exports.processEmulsi = async (req, res) => {
     }
 
     const primaryQty = parseFloat(qtyUtama);
-    const rAir = parseFloat(rasioAir) || (jenisEmulsi === 'ISP' ? 5 : 3);
-    const rMinyak = parseFloat(rasioMinyak) || (jenisEmulsi === 'ISP' ? 5 : 1);
+    const rAir = rasioAir !== undefined ? parseFloat(rasioAir) : (jenisEmulsi === 'ISP' ? 5 : 3);
+    const rMinyak = jenisEmulsi === 'TVP' ? 0 : (rasioMinyak !== undefined ? parseFloat(rasioMinyak) : 5);
 
     const waterQty = Math.round(primaryQty * rAir * 1000) / 1000;
-    const oilQty = Math.round(primaryQty * rMinyak * 1000) / 1000;
+    const oilQty = jenisEmulsi === 'TVP' ? 0 : Math.round(primaryQty * rMinyak * 1000) / 1000;
     const totalHasilEmulsi = Math.round((primaryQty + waterQty + oilQty) * 1000) / 1000;
 
     const mainMaterialSearch = jenisEmulsi === 'ISP' ? 'isp' : 'tvp';
@@ -36,8 +36,8 @@ exports.processEmulsi = async (req, res) => {
     let mainBahan = sourceBahanList.find(b => b.nama.toLowerCase().includes(mainMaterialSearch) || b.sku.toLowerCase().includes(mainMaterialSearch));
     // Find Water/Ice material
     let waterBahan = sourceBahanList.find(b => b.nama.toLowerCase().includes('air') || b.nama.toLowerCase().includes('es') || b.sku.toLowerCase().includes('air'));
-    // Find Oil/Fat material
-    let oilBahan = sourceBahanList.find(b => b.nama.toLowerCase().includes('minyak') || b.nama.toLowerCase().includes('lemak') || b.sku.toLowerCase().includes('minyak'));
+    // Find Oil/Fat material (Only for ISP)
+    let oilBahan = jenisEmulsi === 'ISP' ? sourceBahanList.find(b => b.nama.toLowerCase().includes('minyak') || b.nama.toLowerCase().includes('lemak') || b.sku.toLowerCase().includes('minyak')) : null;
 
     // Check stock sufficiency
     const missing = [];
@@ -47,7 +47,7 @@ exports.processEmulsi = async (req, res) => {
     if (waterBahan && waterBahan.stok < waterQty) {
       missing.push(`${waterBahan.nama} (Butuh: ${waterQty} kg, Stok: ${waterBahan.stok} kg)`);
     }
-    if (oilBahan && oilBahan.stok < oilQty) {
+    if (oilBahan && oilQty > 0 && oilBahan.stok < oilQty) {
       missing.push(`${oilBahan.nama} (Butuh: ${oilQty} kg, Stok: ${oilBahan.stok} kg)`);
     }
 
