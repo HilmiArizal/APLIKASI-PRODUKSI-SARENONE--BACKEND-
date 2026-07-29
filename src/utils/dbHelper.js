@@ -71,23 +71,25 @@ const INITIAL_DATA = {
 };
 
 function readCollection(collectionName) {
-  const filePath = path.join(DATA_DIR, `${collectionName}.json`);
-  if (!fs.existsSync(filePath)) {
-    const defaultContent = INITIAL_DATA[collectionName] || [];
-    fs.writeFileSync(filePath, JSON.stringify(defaultContent, null, 2));
-    return defaultContent;
-  }
   try {
-    const content = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(content);
+    const filePath = path.join(DATA_DIR, `${collectionName}.json`);
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(content);
+    }
   } catch (err) {
-    return INITIAL_DATA[collectionName] || [];
+    console.warn(`Read collection ${collectionName} warning:`, err.message);
   }
+  return INITIAL_DATA[collectionName] || [];
 }
 
 function writeCollection(collectionName, data) {
-  const filePath = path.join(DATA_DIR, `${collectionName}.json`);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  try {
+    const filePath = path.join(DATA_DIR, `${collectionName}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.warn(`Write collection ${collectionName} skipped on read-only env:`, err.message);
+  }
 }
 
 async function addAuditLog(user, role, aksi, detail) {
