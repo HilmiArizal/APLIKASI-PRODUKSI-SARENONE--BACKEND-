@@ -223,15 +223,23 @@ exports.useKemasan = async (req, res) => {
     }
 
     const qtyToDeduct = parseFloat(jumlah);
+    const searchIdStr = String(bahanId).trim().toLowerCase();
 
     let allBahanMongo = [];
     if (mongoose.connection.readyState === 1) {
       try { allBahanMongo = await BahanBaku.find(); } catch (e) {}
     }
     const allBahanJson = readCollection('bahanBaku');
-    const sourceList = allBahanMongo.length > 0 ? allBahanMongo : allBahanJson;
+    const combinedList = [...allBahanMongo, ...allBahanJson];
 
-    const targetBahan = sourceList.find(b => b.id === bahanId || b.sku === bahanId);
+    const targetBahan = combinedList.find(b => {
+      const bId = String(b.id || '').trim().toLowerCase();
+      const bSku = String(b.sku || '').trim().toLowerCase();
+      const bMongoId = String(b._id || '').trim().toLowerCase();
+      const bNama = String(b.nama || '').trim().toLowerCase();
+      return bId === searchIdStr || bSku === searchIdStr || bMongoId === searchIdStr || bNama === searchIdStr;
+    });
+
     if (!targetBahan) {
       return res.status(404).json({ success: false, message: 'Bahan kemasan tidak ditemukan di database.' });
     }
@@ -246,17 +254,32 @@ exports.useKemasan = async (req, res) => {
     // 1. Update MongoDB Atlas
     if (mongoose.connection.readyState === 1) {
       try {
-        const doc = await BahanBaku.findOne({ $or: [{ id: targetBahan.id }, { sku: targetBahan.sku }] });
-        if (doc) {
-          doc.stok = Math.max(0, Math.round((doc.stok - qtyToDeduct) * 1000) / 1000);
-          await doc.save();
+        const queryOr = [];
+        if (targetBahan.id) queryOr.push({ id: targetBahan.id });
+        if (targetBahan.sku) queryOr.push({ sku: targetBahan.sku });
+        if (targetBahan._id) queryOr.push({ _id: targetBahan._id });
+        if (mongoose.Types.ObjectId.isValid(bahanId)) queryOr.push({ _id: bahanId });
+
+        if (queryOr.length > 0) {
+          const doc = await BahanBaku.findOne({ $or: queryOr });
+          if (doc) {
+            doc.stok = Math.max(0, Math.round((doc.stok - qtyToDeduct) * 1000) / 1000);
+            await doc.save();
+          }
         }
       } catch (e) {}
     }
 
     // 2. Update local JSON
     const jsonList = readCollection('bahanBaku');
-    const idx = jsonList.findIndex(b => b.id === targetBahan.id || b.sku === targetBahan.sku);
+    const idx = jsonList.findIndex(b => {
+      const bId = String(b.id || '').trim().toLowerCase();
+      const bSku = String(b.sku || '').trim().toLowerCase();
+      const targetId = String(targetBahan.id || '').trim().toLowerCase();
+      const targetSku = String(targetBahan.sku || '').trim().toLowerCase();
+      return bId === searchIdStr || bSku === searchIdStr || bId === targetId || bSku === targetSku;
+    });
+
     if (idx !== -1) {
       jsonList[idx].stok = Math.max(0, Math.round((jsonList[idx].stok - qtyToDeduct) * 1000) / 1000);
       writeCollection('bahanBaku', jsonList);
