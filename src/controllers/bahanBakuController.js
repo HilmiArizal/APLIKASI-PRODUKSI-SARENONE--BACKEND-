@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const BahanBaku = require('../models/BahanBaku');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
