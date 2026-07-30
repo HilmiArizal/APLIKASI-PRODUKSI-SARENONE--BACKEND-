@@ -4,25 +4,43 @@ const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHel
 
 // Helper auto-seed Sticker Barcode & Sticker Produk if missing
 const ensureStickersExist = async (list) => {
+  // Purge any old "Sticker Produk Saren One"
+  if (mongoose.connection.readyState === 1) {
+    try {
+      await BahanBaku.deleteMany({
+        $or: [
+          { nama: /saren one/i }
+        ]
+      });
+    } catch (e) {}
+  }
+  let jsonList = readCollection('bahanBaku');
+  const filteredJson = jsonList.filter(b => !String(b.nama || '').toLowerCase().includes('saren one'));
+  if (filteredJson.length !== jsonList.length) {
+    writeCollection('bahanBaku', filteredJson);
+  }
+
+  list = list.filter(b => !String(b.nama || '').toLowerCase().includes('saren one'));
+
   const stickers = [
     { sku: 'BB60', nama: 'Sticker Barcode', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 200 },
-    { sku: 'BB61', nama: 'Sticker Produk Saren One', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 350 }
+    { sku: 'BB61', nama: 'Sticker Produk', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 350 }
   ];
 
   for (const stk of stickers) {
     const exists = list.some(b => 
       String(b.sku || '').toLowerCase() === stk.sku.toLowerCase() ||
-      String(b.nama || '').toLowerCase().includes(stk.nama.toLowerCase())
+      String(b.nama || '').toLowerCase() === stk.nama.toLowerCase()
     );
     if (!exists) {
       const newItem = { id: 'b_' + Date.now() + Math.floor(Math.random() * 1000), ...stk };
       if (mongoose.connection.readyState === 1) {
         try { await BahanBaku.create(newItem); } catch (e) {}
       }
-      const jsonList = readCollection('bahanBaku');
-      if (!jsonList.some(b => String(b.sku || '').toLowerCase() === stk.sku.toLowerCase())) {
-        jsonList.push(newItem);
-        writeCollection('bahanBaku', jsonList);
+      let currentJson = readCollection('bahanBaku');
+      if (!currentJson.some(b => String(b.sku || '').toLowerCase() === stk.sku.toLowerCase())) {
+        currentJson.push(newItem);
+        writeCollection('bahanBaku', currentJson);
       }
       list.push(newItem);
     }
