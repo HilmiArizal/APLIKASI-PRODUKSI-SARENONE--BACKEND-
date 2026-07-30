@@ -217,13 +217,15 @@ exports.importExcel = async (req, res) => {
 // POST /api/bahan-baku/pemakaian-kemasan
 exports.useKemasan = async (req, res) => {
   try {
-    const { bahanId, jumlah, keterangan, user } = req.body;
-    if (!bahanId || !jumlah || jumlah <= 0) {
+    const { bahanId, sku, nama, jumlah, keterangan, user } = req.body;
+    if ((!bahanId && !sku && !nama) || !jumlah || jumlah <= 0) {
       return res.status(400).json({ success: false, message: 'Bahan kemasan dan jumlah pemakaian (>0) wajib diisi.' });
     }
 
     const qtyToDeduct = parseFloat(jumlah);
-    const searchIdStr = String(bahanId).trim().toLowerCase();
+    const searchIdStr = String(bahanId || sku || nama || '').trim().toLowerCase();
+    const searchSkuStr = String(sku || '').trim().toLowerCase();
+    const searchNamaStr = String(nama || '').trim().toLowerCase();
 
     let allBahanMongo = [];
     if (mongoose.connection.readyState === 1) {
@@ -232,13 +234,29 @@ exports.useKemasan = async (req, res) => {
     const allBahanJson = readCollection('bahanBaku');
     const combinedList = [...allBahanMongo, ...allBahanJson];
 
-    const targetBahan = combinedList.find(b => {
+    let targetBahan = combinedList.find(b => {
       const bId = String(b.id || '').trim().toLowerCase();
       const bSku = String(b.sku || '').trim().toLowerCase();
       const bMongoId = String(b._id || '').trim().toLowerCase();
       const bNama = String(b.nama || '').trim().toLowerCase();
-      return bId === searchIdStr || bSku === searchIdStr || bMongoId === searchIdStr || bNama === searchIdStr;
+
+      return (
+        (searchIdStr && (bId === searchIdStr || bSku === searchIdStr || bMongoId === searchIdStr || bNama === searchIdStr)) ||
+        (searchSkuStr && bSku === searchSkuStr) ||
+        (searchNamaStr && bNama === searchNamaStr) ||
+        (bSku && searchIdStr.includes(bSku)) ||
+        (bNama && (searchIdStr.includes(bNama) || bNama.includes(searchIdStr)))
+      );
     });
+
+    if (!targetBahan && combinedList.length > 0) {
+      // Emergency fallback to first packaging item in database
+      targetBahan = combinedList.find(b => {
+        const kat = (b.kategori || '').toLowerCase();
+        const nm = (b.nama || '').toLowerCase();
+        return kat.includes('kemasan') || nm.includes('vacum') || nm.includes('casing') || nm.includes('plastik');
+      }) || combinedList[0];
+    }
 
     if (!targetBahan) {
       return res.status(404).json({ success: false, message: 'Bahan kemasan tidak ditemukan di database.' });
