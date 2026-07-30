@@ -39,8 +39,6 @@ exports.create = async (req, res) => {
 
     const todayStr = new Date().toISOString().split('T')[0];
     const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
-    const isAutoReceived = !!autoAddStok;
-
     const newRecord = {
       id: 'utg_' + Date.now(),
       noFaktur,
@@ -56,9 +54,9 @@ exports.create = async (req, res) => {
       tanggalBeli: todayStr,
       jatuhTempo: jatuhTempo || todayStr,
       status,
-      statusPengiriman: isAutoReceived ? 'SUDAH DITERIMA' : 'BELUM DITERIMA',
-      jumlahDiterima: isAutoReceived ? qty : 0,
-      sisaBelumDiterima: isAutoReceived ? 0 : qty,
+      statusPengiriman: 'BELUM DITERIMA',
+      jumlahDiterima: 0,
+      sisaBelumDiterima: qty,
       catatan: catatan || '',
       riwayatBayar: dpPaid > 0 ? [
         {
@@ -68,14 +66,7 @@ exports.create = async (req, res) => {
           keterangan: 'Uang Muka / Pembayaran Awal'
         }
       ] : [],
-      riwayatPenerimaan: isAutoReceived ? [
-        {
-          tanggal: nowStr,
-          jumlah: qty,
-          penerima: user?.name || 'Sistem',
-          catatan: 'Diterima & terverifikasi langsung saat registrasi faktur'
-        }
-      ] : []
+      riwayatPenerimaan: []
     };
 
     // 1. Mongo
@@ -88,30 +79,11 @@ exports.create = async (req, res) => {
     jsonList.unshift(newRecord);
     writeCollection('utangSupplier', jsonList);
 
-    // 3. Auto Add Stock if requested
-    if (autoAddStok && bahanId) {
-      if (mongoose.connection.readyState === 1) {
-        try {
-          const docBahan = await BahanBaku.findOne({ $or: [{ id: bahanId }, { sku: bahanId }, { _id: bahanId }] });
-          if (docBahan) {
-            docBahan.stok = Math.round((docBahan.stok + qty) * 1000) / 1000;
-            await docBahan.save();
-          }
-        } catch (e) {}
-      }
-      const bList = readCollection('bahanBaku');
-      const idxB = bList.findIndex(x => x.id === bahanId || x.sku === bahanId);
-      if (idxB !== -1) {
-        bList[idxB].stok = Math.round((bList[idxB].stok + qty) * 1000) / 1000;
-        writeCollection('bahanBaku', bList);
-      }
-    }
-
     await addAuditLog(
       user?.name || 'Tim Pembelian',
       user?.role || 'PEMBELIAN',
       'Pembelian & Utang Baru',
-      `Faktur ${noFaktur} dari ${supplier}: Total Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}, Sisa Utang: Rp ${sisaUtang.toLocaleString('id-ID')}). Status Pengiriman: ${isAutoReceived ? 'Sudah Diterima' : 'Belum Diterima'}.`
+      `Faktur ${noFaktur} dari ${supplier}: Total Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}, Sisa Utang: Rp ${sisaUtang.toLocaleString('id-ID')}). Menunggu penerimaan fisik di Penerimaan Bahan Baku.`
     );
 
     return res.json({ success: true, message: `Faktur Pembelian ${noFaktur} berhasil dicatat!`, data: newRecord });
