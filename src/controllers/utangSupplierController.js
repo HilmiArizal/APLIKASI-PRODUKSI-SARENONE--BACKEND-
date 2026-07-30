@@ -39,6 +39,7 @@ exports.create = async (req, res) => {
 
     const todayStr = new Date().toISOString().split('T')[0];
     const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+    const isAutoReceived = !!autoAddStok;
 
     const newRecord = {
       id: 'utg_' + Date.now(),
@@ -55,6 +56,9 @@ exports.create = async (req, res) => {
       tanggalBeli: todayStr,
       jatuhTempo: jatuhTempo || todayStr,
       status,
+      statusPengiriman: isAutoReceived ? 'SUDAH DITERIMA' : 'BELUM DITERIMA',
+      jumlahDiterima: isAutoReceived ? qty : 0,
+      sisaBelumDiterima: isAutoReceived ? 0 : qty,
       catatan: catatan || '',
       riwayatBayar: dpPaid > 0 ? [
         {
@@ -62,6 +66,14 @@ exports.create = async (req, res) => {
           jumlah: dpPaid,
           metode: 'Transfer / Cash (DP)',
           keterangan: 'Uang Muka / Pembayaran Awal'
+        }
+      ] : [],
+      riwayatPenerimaan: isAutoReceived ? [
+        {
+          tanggal: nowStr,
+          jumlah: qty,
+          penerima: user?.name || 'Sistem',
+          catatan: 'Diterima & terverifikasi langsung saat registrasi faktur'
         }
       ] : []
     };
@@ -99,10 +111,104 @@ exports.create = async (req, res) => {
       user?.name || 'Tim Pembelian',
       user?.role || 'PEMBELIAN',
       'Pembelian & Utang Baru',
-      `Faktur ${noFaktur} dari ${supplier}: Total Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}, Sisa Utang: Rp ${sisaUtang.toLocaleString('id-ID')}).`
+      `Faktur ${noFaktur} dari ${supplier}: Total Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}, Sisa Utang: Rp ${sisaUtang.toLocaleString('id-ID')}). Status Pengiriman: ${isAutoReceived ? 'Sudah Diterima' : 'Belum Diterima'}.`
     );
 
     return res.json({ success: true, message: `Faktur Pembelian ${noFaktur} berhasil dicatat!`, data: newRecord });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// POST /api/utang-supplier/:id/receive (Penerimaan Barang Fisik & Verifikasi Stok)
+exports.receive = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { jumlahTerima, penerima, catatan, user } = req.body;
+    const terimaQty = parseFloat(jumlahTerima) || 0;
+
+    if (terimaQty <= 0) {
+      return res.status(400).json({ success: false, message: 'Jumlah barang yang diterima harus lebih dari 0.' });
+    }
+
+    const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
+    let updatedRecord = null;
+
+    // Mongo update
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const doc = await UtangSupplier.findOne({ $or: [{ id }, { _id: id }] });
+        if (doc) {
+          doc.jumlahDiterima = (doc.jumlahDiterima || 0) + terimaQty;
+          doc.sisaBelumDiterima = Math.max(0, doc.jumlah - doc.jumlahDiterima);
+          doc.statusPengiriman = doc.sisaBelumDiterima === 0 ? 'SUDAH DITERIMA' : 'SEBAGIAN';
+          if (!doc.riwayatPenerimaan) doc.riwayatPenerimaan = [];
+          doc.riwayatPenerimaan.push({
+            tanggal: nowStr,
+            jumlah: terimaQty,
+            penerima: penerima || user?.name || 'Staf Gudang',
+            catatan: catatan || 'Penerimaan fisik barang baku'
+          });
+          await doc.save();
+          updatedRecord = doc;
+        }
+      } catch (e) {}
+    }
+
+    // JSON update
+    const jsonList = readCollection('utangSupplier');
+    const idx = jsonList.findIndex(x => x.id === id);
+    if (idx !== -1) {
+      jsonList[idx].jumlahDiterima = (jsonList[idx].jumlahDiterima || 0) + terimaQty;
+      jsonList[idx].sisaBelumDiterima = Math.max(0, jsonList[idx].jumlah - jsonList[idx].jumlahDiterima);
+      jsonList[idx].statusPengiriman = jsonList[idx].sisaBelumDiterima === 0 ? 'SUDAH DITERIMA' : 'SEBAGIAN';
+      if (!jsonList[idx].riwayatPenerimaan) jsonList[idx].riwayatPenerimaan = [];
+      jsonList[idx].riwayatPenerimaan.push({
+        tanggal: nowStr,
+        jumlah: terimaQty,
+        penerima: penerima || user?.name || 'Staf Gudang',
+        catatan: catatan || 'Penerimaan fisik barang baku'
+      });
+      writeCollection('utangSupplier', jsonList);
+      if (!updatedRecord) updatedRecord = jsonList[idx];
+    }
+
+    if (!updatedRecord) {
+      return res.status(404).json({ success: false, message: 'Faktur pembelian tidak ditemukan.' });
+    }
+
+    // ATOMICALLY INCREASE PHYSICAL STOCK IN BAHAN BAKU!
+    const targetBahanId = updatedRecord.bahanId;
+    if (targetBahanId) {
+      if (mongoose.connection.readyState === 1) {
+        try {
+          const docB = await BahanBaku.findOne({ $or: [{ id: targetBahanId }, { sku: targetBahanId }, { _id: targetBahanId }] });
+          if (docB) {
+            docB.stok = Math.round((docB.stok + terimaQty) * 1000) / 1000;
+            await docB.save();
+          }
+        } catch (e) {}
+      }
+      const bList = readCollection('bahanBaku');
+      const idxB = bList.findIndex(x => x.id === targetBahanId || x.sku === targetBahanId);
+      if (idxB !== -1) {
+        bList[idxB].stok = Math.round((bList[idxB].stok + terimaQty) * 1000) / 1000;
+        writeCollection('bahanBaku', bList);
+      }
+    }
+
+    await addAuditLog(
+      user?.name || penerima || 'Staf Gudang',
+      user?.role || 'BAHAN_BAKU',
+      'Penerimaan Bahan Baku',
+      `Penerimaan fisik +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} dari ${updatedRecord.supplier} (Faktur: ${updatedRecord.noFaktur}). Stok fisik gudang bertambah.`
+    );
+
+    return res.json({
+      success: true,
+      message: `Penerimaan +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} berhasil diverifikasi! Stok gudang bertambah!`,
+      data: updatedRecord
+    });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }

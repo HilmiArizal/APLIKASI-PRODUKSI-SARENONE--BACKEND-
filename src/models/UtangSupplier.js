@@ -15,6 +15,9 @@ const UtangSupplierSchema = new mongoose.Schema({
   tanggalBeli: { type: String },
   jatuhTempo: { type: String },
   status: { type: String, default: 'BELUM LUNAS' },
+  statusPengiriman: { type: String, default: 'BELUM DITERIMA' },
+  jumlahDiterima: { type: Number, default: 0 },
+  sisaBelumDiterima: { type: Number, default: 0 },
   catatan: { type: String },
   riwayatBayar: [
     {
@@ -22,6 +25,14 @@ const UtangSupplierSchema = new mongoose.Schema({
       jumlah: Number,
       metode: String,
       keterangan: String
+    }
+  ],
+  riwayatPenerimaan: [
+    {
+      tanggal: String,
+      jumlah: Number,
+      penerima: String,
+      catatan: String
     }
   ]
 }, { timestamps: true });
