@@ -15,6 +15,7 @@ const auditLogRoutes = require('./src/routes/auditLogRoutes');
 const kategoriProdukRoutes = require('./src/routes/kategoriProdukRoutes');
 const kategoriBahanBakuRoutes = require('./src/routes/kategoriBahanBakuRoutes');
 const emulsiRoutes = require('./src/routes/emulsiRoutes');
+const utangSupplierRoutes = require('./src/routes/utangSupplierRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -69,6 +70,7 @@ app.use('/api/audit-log', auditLogRoutes);
 app.use('/api/kategori-produk', kategoriProdukRoutes);
 app.use('/api/kategori-bahan-baku', kategoriBahanBakuRoutes);
 app.use('/api/emulsi', emulsiRoutes);
+app.use('/api/utang-supplier', utangSupplierRoutes);
 
 // Start Server
 if (process.env.NODE_ENV !== 'production') {
