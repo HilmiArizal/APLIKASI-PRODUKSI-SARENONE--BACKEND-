@@ -2,13 +2,43 @@ const mongoose = require('mongoose');
 const BahanBaku = require('../models/BahanBaku');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
+// Helper auto-seed Sticker Barcode & Sticker Produk if missing
+const ensureStickersExist = async (list) => {
+  const stickers = [
+    { sku: 'BB60', nama: 'Sticker Barcode', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 200 },
+    { sku: 'BB61', nama: 'Sticker Produk Saren One', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 350 }
+  ];
+
+  for (const stk of stickers) {
+    const exists = list.some(b => 
+      String(b.sku || '').toLowerCase() === stk.sku.toLowerCase() ||
+      String(b.nama || '').toLowerCase().includes(stk.nama.toLowerCase())
+    );
+    if (!exists) {
+      const newItem = { id: 'b_' + Date.now() + Math.floor(Math.random() * 1000), ...stk };
+      if (mongoose.connection.readyState === 1) {
+        try { await BahanBaku.create(newItem); } catch (e) {}
+      }
+      const jsonList = readCollection('bahanBaku');
+      if (!jsonList.some(b => String(b.sku || '').toLowerCase() === stk.sku.toLowerCase())) {
+        jsonList.push(newItem);
+        writeCollection('bahanBaku', jsonList);
+      }
+      list.push(newItem);
+    }
+  }
+  return list;
+};
+
 // GET /api/bahan-baku
 exports.getAll = async (req, res) => {
   try {
-    const list = await BahanBaku.find().sort({ createdAt: -1 });
+    let list = await BahanBaku.find().sort({ createdAt: -1 });
+    list = await ensureStickersExist(list);
     return res.json({ success: true, data: list });
   } catch (err) {
-    const fallback = readCollection('bahanBaku');
+    let fallback = readCollection('bahanBaku');
+    fallback = await ensureStickersExist(fallback);
     return res.json({ success: true, data: fallback });
   }
 };
