@@ -351,7 +351,7 @@ exports.useKemasan = async (req, res) => {
       writeCollection('bahanBaku', jsonList);
     }
 
-    // Audit log
+    // Audit log for primary item
     await addAuditLog(
       user?.name || 'Tim Bahan Baku',
       user?.role || 'BAHAN_BAKU',
@@ -359,9 +359,62 @@ exports.useKemasan = async (req, res) => {
       `Pemakaian ${qtyToDeduct} ${targetBahan.satuan} ${targetBahan.nama}. Keterangan: ${keterangan || 'Pengemasan Produksi'}.`
     );
 
+    // AUTO-DEDUCT STICKERS ONLY IF VACUMBAG WAS USED (RESTOCK / EDIT WILL NOT TRIGGER THIS)
+    const isVacumbag = (targetBahan.nama || '').toLowerCase().includes('vacum');
+    if (isVacumbag) {
+      try {
+        const stickersToDeduct = combinedList.filter(b => {
+          const nm = (b.nama || '').toLowerCase();
+          const isStk = nm.includes('sticker') || nm.includes('stiker') || nm.includes('barcode');
+          return isStk && (b.id !== targetBahan.id && b.sku !== targetBahan.sku);
+        });
+
+        for (const stk of stickersToDeduct) {
+          // 1. Update Mongo
+          if (mongoose.connection.readyState === 1) {
+            try {
+              const queryOr = [];
+              if (stk.id) queryOr.push({ id: stk.id });
+              if (stk.sku) queryOr.push({ sku: stk.sku });
+              if (stk._id) queryOr.push({ _id: stk._id });
+
+              if (queryOr.length > 0) {
+                const docStk = await BahanBaku.findOne({ $or: queryOr });
+                if (docStk) {
+                  docStk.stok = Math.max(0, Math.round((docStk.stok - qtyToDeduct) * 1000) / 1000);
+                  await docStk.save();
+                }
+              }
+            } catch (e) {}
+          }
+
+          // 2. Update JSON
+          const jsonListStk = readCollection('bahanBaku');
+          const idxStk = jsonListStk.findIndex(b =>
+            String(b.id || '').toLowerCase() === String(stk.id || '').toLowerCase() ||
+            String(b.sku || '').toLowerCase() === String(stk.sku || '').toLowerCase()
+          );
+          if (idxStk !== -1) {
+            jsonListStk[idxStk].stok = Math.max(0, Math.round((jsonListStk[idxStk].stok - qtyToDeduct) * 1000) / 1000);
+            writeCollection('bahanBaku', jsonListStk);
+          }
+
+          // Audit log for auto sticker deduction
+          await addAuditLog(
+            user?.name || 'Tim Bahan Baku',
+            user?.role || 'BAHAN_BAKU',
+            'Pemakaian Bahan Kemasan',
+            `Pemakaian ${qtyToDeduct} ${stk.satuan} ${stk.nama}. Keterangan: Otomatis Terpotong Seiring Pemakaian ${targetBahan.nama}.`
+          );
+        }
+      } catch (stkErr) {
+        console.warn('Auto deduct sticker note:', stkErr.message);
+      }
+    }
+
     return res.json({
       success: true,
-      message: `Pemakaian ${qtyToDeduct} ${targetBahan.satuan} ${targetBahan.nama} berhasil dicatat! Stok terpotong.`,
+      message: `Pemakaian ${qtyToDeduct} ${targetBahan.satuan} ${targetBahan.nama} berhasil dicatat! ${isVacumbag ? 'Stok Sticker Barcode & Sticker Produk otomatis ikut terpotong.' : ''}`,
       data: {
         bahanId,
         nama: targetBahan.nama,
