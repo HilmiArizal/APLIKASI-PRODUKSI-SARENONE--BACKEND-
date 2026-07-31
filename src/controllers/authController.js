@@ -289,35 +289,33 @@ exports.approveUser = async (req, res) => {
     const mongoose = require('mongoose');
 
     const assignedRole = role || 'BAHAN_BAKU';
-    let mongoUser = null;
-
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
-      mongoUser = await User.findOneAndUpdate(
+      await User.updateMany(
         query,
-        { role: assignedRole, status: 'VERIFIED' },
-        { returnDocument: 'after' }
+        { $set: { role: assignedRole, requestedRole: assignedRole, status: 'VERIFIED' } }
       );
     }
 
     const users = readCollection('users');
-    const userIndex = users.findIndex(u => u.id === id);
-    if (userIndex !== -1) {
-      users[userIndex].role = assignedRole;
-      users[userIndex].status = 'VERIFIED';
-      writeCollection('users', users);
-    }
+    users.forEach((u, idx) => {
+      if (u.id === id || u._id === id) {
+        users[idx].role = assignedRole;
+        users[idx].requestedRole = assignedRole;
+        users[idx].status = 'VERIFIED';
+      }
+    });
+    writeCollection('users', users);
 
-    const userName = mongoUser ? mongoUser.name : (users[userIndex] ? users[userIndex].name : id);
-    addAuditLog('Super Admin', 'ADMIN', 'ACC User', `Super Admin meng-ACC pendaftaran ${userName} dengan role ${assignedRole}.`);
+    addAuditLog('Super Admin', 'ADMIN', 'ACC User', `Super Admin meng-ACC pendaftaran user dengan role ${assignedRole}.`);
 
-    return res.json({ success: true, message: `Akun ${userName} berhasil di-ACC!`, data: mongoUser || users[userIndex] });
+    return res.json({ success: true, message: `Akun berhasil di-ACC ke role ${assignedRole}!` });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// PUT /api/auth/reject/:id (Tolak & Hapus Akun dari MongoDB Atlas)
+// PUT /api/auth/reject/:id (Tolak & Hapus Akun)
 exports.rejectUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -329,20 +327,16 @@ exports.rejectUser = async (req, res) => {
     }
 
     let users = readCollection('users');
-    const target = users.find(u => u.id === id);
-    users = users.filter(u => u.id !== id);
+    users = users.filter(u => u.id !== id && u._id !== id);
     writeCollection('users', users);
 
-    const userName = target ? target.name : id;
-    addAuditLog('Super Admin', 'ADMIN', 'Tolak & Hapus User', `Super Admin menolak & menghapus akun ${userName} dari MongoDB Atlas.`);
-
-    return res.json({ success: true, message: `Pendaftaran akun ${userName} telah ditolak dan akun berhasil dihapus dari MongoDB Atlas.` });
+    return res.json({ success: true, message: 'Permintaan pendaftaran ditolak dan akun dihapus.' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// DELETE /api/auth/users/:id (Hapus User dari MongoDB Atlas)
+// DELETE /api/auth/users/:id (Hapus User)
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -354,15 +348,73 @@ exports.deleteUser = async (req, res) => {
     }
 
     let users = readCollection('users');
-    const target = users.find(u => u.id === id);
-    users = users.filter(u => u.id !== id);
+    users = users.filter(u => u.id !== id && u._id !== id);
     writeCollection('users', users);
 
-    const userName = target ? target.name : id;
-    addAuditLog('Super Admin', 'ADMIN', 'Hapus User', `Super Admin menghapus pengguna ${userName} dari MongoDB Atlas.`);
+    addAuditLog('Super Admin', 'ADMIN', 'Hapus Akun Staf', `Akun staf ID ${id} telah dihapus oleh Super Admin.`);
 
-    return res.json({ success: true, message: `Akun ${userName} berhasil dihapus dari MongoDB Atlas.` });
+    return res.json({ success: true, message: 'Akun staf berhasil dihapus.' });
   } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// PUT /api/auth/users/:id (Update Profile & Role by Admin)
+exports.updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, username, email, role, status } = req.body;
+
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (username) updateData.username = username.trim().toLowerCase();
+    if (email) updateData.email = email.trim().toLowerCase();
+    if (role) {
+      updateData.role = role;
+      updateData.requestedRole = role;
+    }
+    if (status) updateData.status = status;
+
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      const orConditions = [];
+      if (id) {
+        orConditions.push({ id });
+        if (mongoose.Types.ObjectId.isValid(id)) {
+          orConditions.push({ _id: id });
+        }
+      }
+      if (username) {
+        orConditions.push({ username: username.trim().toLowerCase() });
+      }
+      if (email) {
+        orConditions.push({ email: email.trim().toLowerCase() });
+      }
+
+      await User.updateMany(
+        { $or: orConditions },
+        { $set: updateData }
+      );
+    }
+
+    const users = readCollection('users');
+    let targetName = id;
+    users.forEach((u, idx) => {
+      const isMatch = (id && (u.id === id || u._id === id)) ||
+                      (username && u.username === username.trim().toLowerCase()) ||
+                      (email && u.email === email.trim().toLowerCase());
+      if (isMatch) {
+        users[idx] = { ...users[idx], ...updateData };
+        targetName = users[idx].name;
+      }
+    });
+    writeCollection('users', users);
+
+    addAuditLog('Super Admin', 'ADMIN', 'Ubah Role Staf', `Super Admin mengubah role pengguna ${targetName} menjadi ${role}.`);
+
+    return res.json({ success: true, message: `Role pengguna ${targetName} berhasil diubah ke ${role}!`, data: { id, role } });
+  } catch (err) {
+    console.error('Update user error:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
