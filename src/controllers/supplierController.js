@@ -1,6 +1,6 @@
 const Supplier = require('../models/Supplier');
 const mongoose = require('mongoose');
-const { readCollection, writeCollection, addAuditLog } = require('../utils/jsonDb');
+const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
 const DEFAULT_SUPPLIERS = [
   { id: 'sup_1', kode: 'S1', nama: 'PT Marksoy Indonesia', kontak: '0812-3456-7890', alamat: 'Jakarta', catatan: 'Pemasok utama tepung Marksoy & ISP' },
