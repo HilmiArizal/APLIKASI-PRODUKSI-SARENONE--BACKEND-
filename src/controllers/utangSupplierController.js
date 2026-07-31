@@ -34,8 +34,10 @@ exports.create = async (req, res) => {
     const hg = parseFloat(hargaSatuan) || 0;
     const totalTagihan = qty * hg;
     const dpPaid = parseFloat(dp) || 0;
-    const sisaUtang = Math.max(0, totalTagihan - dpPaid);
-    const status = sisaUtang === 0 ? 'LUNAS' : (dpPaid > 0 ? 'SEBAGIAN' : 'BELUM LUNAS');
+    const initialDiterima = parseFloat(req.body.jumlahDiterima) || 0;
+    const tagihanFisik = initialDiterima * hg;
+    const sisaUtang = Math.max(0, tagihanFisik - dpPaid);
+    const status = initialDiterima === 0 ? 'MENUNGGU PENERIMAAN' : (sisaUtang === 0 ? 'LUNAS' : (dpPaid > 0 ? 'SEBAGIAN' : 'BELUM LUNAS'));
 
     const todayStr = new Date().toISOString().split('T')[0];
     const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
@@ -54,9 +56,9 @@ exports.create = async (req, res) => {
       tanggalBeli: todayStr,
       jatuhTempo: jatuhTempo || todayStr,
       status,
-      statusPengiriman: 'BELUM DITERIMA',
-      jumlahDiterima: 0,
-      sisaBelumDiterima: qty,
+      statusPengiriman: initialDiterima >= qty ? 'SUDAH DITERIMA' : (initialDiterima > 0 ? 'SEBAGIAN' : 'BELUM DITERIMA'),
+      jumlahDiterima: initialDiterima,
+      sisaBelumDiterima: Math.max(0, qty - initialDiterima),
       catatan: catatan || '',
       riwayatBayar: dpPaid > 0 ? [
         {
@@ -83,10 +85,10 @@ exports.create = async (req, res) => {
       user?.name || 'Tim Pembelian',
       user?.role || 'PEMBELIAN',
       'Pembelian & Utang Baru',
-      `Faktur ${noFaktur} dari ${supplier}: Total Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}, Sisa Utang: Rp ${sisaUtang.toLocaleString('id-ID')}). Menunggu penerimaan fisik di Penerimaan Bahan Baku.`
+      `Faktur ${noFaktur} dari ${supplier}: Total Rencana Rp ${totalTagihan.toLocaleString('id-ID')} (DP: Rp ${dpPaid.toLocaleString('id-ID')}). Utang akan bertambah otomatis saat fisik barang diterima di Penerimaan Bahan Baku.`
     );
 
-    return res.json({ success: true, message: `Faktur Pembelian ${noFaktur} berhasil dicatat!`, data: newRecord });
+    return res.json({ success: true, message: `Faktur Pembelian ${noFaktur} berhasil dicatat! Menunggu penerimaan fisik di gudang.`, data: newRecord });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -106,6 +108,33 @@ exports.receive = async (req, res) => {
     const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
     let updatedRecord = null;
 
+    // Helper calculate receive
+    const applyReceiveCalc = (rec) => {
+      const newDiterima = (rec.jumlahDiterima || 0) + terimaQty;
+      const hg = rec.hargaSatuan || 0;
+      const tagihanFisik = newDiterima * hg;
+      const dpPaid = rec.jumlahDibayar || 0;
+      const sisaUtang = Math.max(0, tagihanFisik - dpPaid);
+      const sisaBelumDiterima = Math.max(0, rec.jumlah - newDiterima);
+      const statusPengiriman = sisaBelumDiterima === 0 ? 'SUDAH DITERIMA' : 'SEBAGIAN';
+      const status = sisaUtang === 0 ? (dpPaid >= tagihanFisik && newDiterima > 0 ? 'LUNAS' : 'MENUNGGU PENERIMAAN') : (dpPaid > 0 ? 'SEBAGIAN' : 'BELUM LUNAS');
+
+      rec.jumlahDiterima = newDiterima;
+      rec.sisaBelumDiterima = sisaBelumDiterima;
+      rec.statusPengiriman = statusPengiriman;
+      rec.sisaUtang = sisaUtang;
+      rec.status = status;
+
+      if (!rec.riwayatPenerimaan) rec.riwayatPenerimaan = [];
+      rec.riwayatPenerimaan.push({
+        tanggal: nowStr,
+        jumlah: terimaQty,
+        penerima: penerima || user?.name || 'Staf Gudang',
+        catatan: catatan || 'Penerimaan fisik barang baku'
+      });
+      return rec;
+    };
+
     // Mongo update
     if (mongoose.connection.readyState === 1) {
       try {
@@ -113,18 +142,9 @@ exports.receive = async (req, res) => {
         if (mongoose.Types.ObjectId.isValid(id)) queryOr.push({ _id: id });
         const doc = await UtangSupplier.findOne({ $or: queryOr });
         if (doc) {
-          doc.jumlahDiterima = (doc.jumlahDiterima || 0) + terimaQty;
-          doc.sisaBelumDiterima = Math.max(0, doc.jumlah - doc.jumlahDiterima);
-          doc.statusPengiriman = doc.sisaBelumDiterima === 0 ? 'SUDAH DITERIMA' : 'SEBAGIAN';
-          if (!doc.riwayatPenerimaan) doc.riwayatPenerimaan = [];
-          doc.riwayatPenerimaan.push({
-            tanggal: nowStr,
-            jumlah: terimaQty,
-            penerima: penerima || user?.name || 'Staf Gudang',
-            catatan: catatan || 'Penerimaan fisik barang baku'
-          });
+          applyReceiveCalc(doc);
           await doc.save();
-          updatedRecord = doc;
+          updatedRecord = doc.toObject ? doc.toObject() : doc;
         }
       } catch (e) {}
     }
@@ -133,16 +153,7 @@ exports.receive = async (req, res) => {
     const jsonList = readCollection('utangSupplier');
     const idx = jsonList.findIndex(x => x.id === id || x._id === id || x.noFaktur === id);
     if (idx !== -1) {
-      jsonList[idx].jumlahDiterima = (jsonList[idx].jumlahDiterima || 0) + terimaQty;
-      jsonList[idx].sisaBelumDiterima = Math.max(0, jsonList[idx].jumlah - jsonList[idx].jumlahDiterima);
-      jsonList[idx].statusPengiriman = jsonList[idx].sisaBelumDiterima === 0 ? 'SUDAH DITERIMA' : 'SEBAGIAN';
-      if (!jsonList[idx].riwayatPenerimaan) jsonList[idx].riwayatPenerimaan = [];
-      jsonList[idx].riwayatPenerimaan.push({
-        tanggal: nowStr,
-        jumlah: terimaQty,
-        penerima: penerima || user?.name || 'Staf Gudang',
-        catatan: catatan || 'Penerimaan fisik barang baku'
-      });
+      applyReceiveCalc(jsonList[idx]);
       writeCollection('utangSupplier', jsonList);
       if (!updatedRecord) updatedRecord = jsonList[idx];
     }
@@ -180,16 +191,18 @@ exports.receive = async (req, res) => {
       }
     }
 
+    const penambahanUtangVal = terimaQty * (updatedRecord.hargaSatuan || 0);
+
     await addAuditLog(
       user?.name || penerima || 'Staf Gudang',
       user?.role || 'BAHAN_BAKU',
-      'Penerimaan Bahan Baku',
-      `Penerimaan fisik +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} dari ${updatedRecord.supplier} (Faktur: ${updatedRecord.noFaktur}). Stok fisik gudang bertambah.`
+      'Penerimaan Bahan Baku & Penambahan Utang',
+      `Penerimaan fisik +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} (Faktur: ${updatedRecord.noFaktur}). Stok gudang bertambah & Utang supplier bertambah +Rp ${penambahanUtangVal.toLocaleString('id-ID')}. Total Sisa Utang: Rp ${(updatedRecord.sisaUtang||0).toLocaleString('id-ID')}.`
     );
 
     return res.json({
       success: true,
-      message: `Penerimaan +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} berhasil diverifikasi! Stok gudang bertambah!`,
+      message: `Penerimaan +${terimaQty} ${updatedRecord.satuan} ${updatedRecord.bahanNama} berhasil! Stok bertambah & Utang bertambah +Rp ${penambahanUtangVal.toLocaleString('id-ID')}!`,
       data: updatedRecord
     });
   } catch (err) {
@@ -211,6 +224,26 @@ exports.pay = async (req, res) => {
     const nowStr = new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' });
     let updatedRecord = null;
 
+    const applyPayCalc = (rec) => {
+      const newDibayar = (rec.jumlahDibayar || 0) + bayarQty;
+      const hg = rec.hargaSatuan || 0;
+      const tagihanFisik = (rec.jumlahDiterima || 0) * hg;
+      const sisaUtang = Math.max(0, tagihanFisik - newDibayar);
+      const status = sisaUtang === 0 ? (newDibayar >= tagihanFisik && (rec.jumlahDiterima || 0) > 0 ? 'LUNAS' : (rec.jumlahDiterima === 0 ? 'MENUNGGU PENERIMAAN' : 'LUNAS')) : (newDibayar > 0 ? 'SEBAGIAN' : 'BELUM LUNAS');
+
+      rec.jumlahDibayar = newDibayar;
+      rec.sisaUtang = sisaUtang;
+      rec.status = status;
+      if (!rec.riwayatBayar) rec.riwayatBayar = [];
+      rec.riwayatBayar.push({
+        tanggal: nowStr,
+        jumlah: bayarQty,
+        metode: metode || 'Transfer Bank',
+        keterangan: keterangan || 'Pembayaran Utang Supplier'
+      });
+      return rec;
+    };
+
     // Mongo update
     if (mongoose.connection.readyState === 1) {
       try {
@@ -218,15 +251,7 @@ exports.pay = async (req, res) => {
         if (mongoose.Types.ObjectId.isValid(id)) orQuery.push({ _id: id });
         const doc = await UtangSupplier.findOne({ $or: orQuery });
         if (doc) {
-          doc.jumlahDibayar += bayarQty;
-          doc.sisaUtang = Math.max(0, doc.totalTagihan - doc.jumlahDibayar);
-          doc.status = doc.sisaUtang === 0 ? 'LUNAS' : 'SEBAGIAN';
-          doc.riwayatBayar.push({
-            tanggal: nowStr,
-            jumlah: bayarQty,
-            metode: metode || 'Transfer Bank',
-            keterangan: keterangan || 'Pembayaran Utang Supplier'
-          });
+          applyPayCalc(doc);
           await doc.save();
           updatedRecord = doc.toObject ? doc.toObject() : doc;
         }
@@ -237,16 +262,7 @@ exports.pay = async (req, res) => {
     const jsonList = readCollection('utangSupplier');
     const idx = jsonList.findIndex(x => x.id === id || x._id === id || x.noFaktur === id);
     if (idx !== -1) {
-      jsonList[idx].jumlahDibayar += bayarQty;
-      jsonList[idx].sisaUtang = Math.max(0, jsonList[idx].totalTagihan - jsonList[idx].jumlahDibayar);
-      jsonList[idx].status = jsonList[idx].sisaUtang === 0 ? 'LUNAS' : 'SEBAGIAN';
-      if (!jsonList[idx].riwayatBayar) jsonList[idx].riwayatBayar = [];
-      jsonList[idx].riwayatBayar.push({
-        tanggal: nowStr,
-        jumlah: bayarQty,
-        metode: metode || 'Transfer Bank',
-        keterangan: keterangan || 'Pembayaran Utang Supplier'
-      });
+      applyPayCalc(jsonList[idx]);
       writeCollection('utangSupplier', jsonList);
       if (!updatedRecord) updatedRecord = jsonList[idx];
     }
