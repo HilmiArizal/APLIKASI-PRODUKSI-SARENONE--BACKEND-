@@ -11,6 +11,17 @@
     "createdAt": "2026-07-20 08:00"
   },
   {
+    "id": "u_admin_produk",
+    "username": "admin_produk",
+    "email": "admin_produk@sarenone.com",
+    "pass": "Adminproduk@123",
+    "name": "Super Admin Produk",
+    "role": "ADMIN_PRODUK",
+    "status": "VERIFIED",
+    "provider": "local",
+    "createdAt": "2026-07-30 00:00"
+  },
+  {
     "id": "u_1785206730391",
     "username": "imam",
     "email": "imam@gmail.com",
@@ -22,5 +33,18 @@
     "provider": "local",
     "catatan": "Pendaftaran Pengguna Baru",
     "createdAt": "2026-07-28 09:45"
+  },
+  {
+    "id": "u_1785206730392",
+    "username": "sella",
+    "email": "sella@gmail.com",
+    "pass": "Sella@123",
+    "name": "sella",
+    "role": "BAHAN_BAKU",
+    "requestedRole": "BAHAN_BAKU",
+    "status": "VERIFIED",
+    "provider": "local",
+    "catatan": "Pendaftaran Pengguna Baru",
+    "createdAt": "2026-07-28 08:06"
   }
 ]

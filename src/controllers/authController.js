@@ -229,12 +229,52 @@ exports.register = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const mongoose = require('mongoose');
+    let usersList = [];
+
     if (mongoose.connection.readyState === 1) {
-      const mongoUsers = await User.find().sort({ createdAt: -1 });
-      return res.json({ success: true, data: mongoUsers });
+      usersList = await User.find().sort({ createdAt: -1 });
+
+      const hasAdminProduk = usersList.some(u => u.username === 'admin_produk');
+      if (!hasAdminProduk) {
+        try {
+          const newAdminProduk = await User.create({
+            id: 'u_admin_produk',
+            username: 'admin_produk',
+            email: 'admin_produk@sarenone.com',
+            pass: 'Adminproduk@123',
+            name: 'Super Admin Produk',
+            role: 'ADMIN_PRODUK',
+            requestedRole: 'ADMIN_PRODUK',
+            status: 'VERIFIED',
+            provider: 'local',
+            createdAt: '2026-07-30 00:00'
+          });
+          usersList.unshift(newAdminProduk);
+        } catch (e) { /* ignore duplicate error */ }
+      }
+      return res.json({ success: true, data: usersList });
     }
-    const users = readCollection('users');
-    return res.json({ success: true, data: users });
+
+    usersList = readCollection('users');
+    const hasAdminProduk = usersList.some(u => u.username === 'admin_produk');
+    if (!hasAdminProduk) {
+      const defaultAdminProduk = {
+        id: 'u_admin_produk',
+        username: 'admin_produk',
+        email: 'admin_produk@sarenone.com',
+        pass: 'Adminproduk@123',
+        name: 'Super Admin Produk',
+        role: 'ADMIN_PRODUK',
+        requestedRole: 'ADMIN_PRODUK',
+        status: 'VERIFIED',
+        provider: 'local',
+        createdAt: '2026-07-30 00:00'
+      };
+      usersList.unshift(defaultAdminProduk);
+      writeCollection('users', usersList);
+    }
+
+    return res.json({ success: true, data: usersList });
   } catch (err) {
     const users = readCollection('users');
     return res.json({ success: true, data: users });
