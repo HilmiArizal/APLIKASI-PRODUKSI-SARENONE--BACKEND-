@@ -11,14 +11,29 @@ const getWIBTimestamp = () => {
 exports.getAll = async (req, res) => {
   try {
     const mongoose = require('mongoose');
+    let data = [];
     if (mongoose.connection.readyState === 1) {
-      const data = await ProdukSales.find().sort({ createdAt: -1 });
+      data = await ProdukSales.find().sort({ createdAt: -1 });
+      data = data.map(d => {
+        const obj = d.toObject ? d.toObject() : d;
+        if (!obj.hargaPabrik || obj.hargaPabrik === 0) {
+          obj.hargaPabrik = obj.hargaJual || 0;
+        }
+        return obj;
+      });
       return res.json({ success: true, data });
     }
-    const data = readCollection('produkSales');
+
+    data = readCollection('produkSales').map(obj => ({
+      ...obj,
+      hargaPabrik: obj.hargaPabrik || obj.hargaJual || 0
+    }));
     return res.json({ success: true, data });
   } catch (err) {
-    const data = readCollection('produkSales');
+    const data = readCollection('produkSales').map(obj => ({
+      ...obj,
+      hargaPabrik: obj.hargaPabrik || obj.hargaJual || 0
+    }));
     return res.json({ success: true, data });
   }
 };
@@ -32,6 +47,9 @@ exports.create = async (req, res) => {
     const newId = 'PSL-' + Date.now();
     const sku = body.sku || ('SKU-' + String(Math.floor(100 + Math.random() * 900)));
 
+    const hargaPabrikVal = parseFloat(body.hargaPabrik) || parseFloat(body.hargaJual) || 0;
+    const hargaJualVal = parseFloat(body.hargaJual) || hargaPabrikVal;
+
     const newData = {
       id: newId,
       sku,
@@ -39,8 +57,9 @@ exports.create = async (req, res) => {
       varian: body.varian || '',
       gramasi: body.gramasi || '',
       kategori: body.kategori || 'Umum',
-      brand: body.brand || 'Saren One Original',
-      hargaJual: parseFloat(body.hargaJual) || 0,
+      brand: body.brand || 'SAREN ONE',
+      hargaPabrik: hargaPabrikVal,
+      hargaJual: hargaJualVal,
       stokReady: parseFloat(body.stokReady) || 0,
       deskripsi: body.deskripsi || '',
       status: body.status || 'Tersedia',
@@ -55,7 +74,7 @@ exports.create = async (req, res) => {
     list.unshift(newData);
     writeCollection('produkSales', list);
 
-    addAuditLog(user?.name || 'Super Admin Produk', user?.role || 'ADMIN_PRODUK', 'Tambah Katalog Produk Jual', `Produk: ${newData.namaProduk} (Varian: ${newData.varian}, Gramasi: ${newData.gramasi}) — Rp ${newData.hargaJual.toLocaleString('id-ID')}`);
+    addAuditLog(user?.name || 'Super Admin Produk', user?.role || 'ADMIN_PRODUK', 'Tambah Katalog Produk Jual', `Produk: ${newData.namaProduk} — Harga Pabrik: Rp ${newData.hargaPabrik.toLocaleString('id-ID')}`);
 
     return res.status(201).json({ success: true, message: 'Produk katalog berhasil ditambahkan!', data: newData });
   } catch (err) {
@@ -71,13 +90,18 @@ exports.update = async (req, res) => {
     const { id } = req.params;
     const { user, ...body } = req.body;
 
+    const updatePayload = { ...body };
+    if (body.hargaPabrik !== undefined) updatePayload.hargaPabrik = parseFloat(body.hargaPabrik) || 0;
+    if (body.hargaJual !== undefined) updatePayload.hargaJual = parseFloat(body.hargaJual) || 0;
+    if (body.stokReady !== undefined) updatePayload.stokReady = parseFloat(body.stokReady) || 0;
+
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
-      await ProdukSales.findOneAndUpdate(query, body);
+      await ProdukSales.findOneAndUpdate(query, updatePayload);
     }
     const list = readCollection('produkSales');
     const idx = list.findIndex(d => d.id === id);
-    if (idx !== -1) { list[idx] = { ...list[idx], ...body }; writeCollection('produkSales', list); }
+    if (idx !== -1) { list[idx] = { ...list[idx], ...updatePayload }; writeCollection('produkSales', list); }
 
     addAuditLog(user?.name || 'Super Admin Produk', user?.role || 'ADMIN_PRODUK', 'Update Katalog Produk Jual', `Update produk: ${body.namaProduk || id}`);
 
