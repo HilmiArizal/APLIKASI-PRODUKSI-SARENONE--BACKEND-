@@ -2,20 +2,11 @@ const Supplier = require('../models/Supplier');
 const mongoose = require('mongoose');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
-const DEFAULT_SUPPLIERS = [
-  { id: 'sup_1', kode: 'S1', nama: 'PT Marksoy Indonesia', kontak: '0812-3456-7890', alamat: 'Jakarta', catatan: 'Pemasok utama tepung Marksoy & ISP' },
-  { id: 'sup_2', kode: 'S2', nama: 'CV Daging Utama', kontak: '0813-9876-5432', alamat: 'Bandung', catatan: 'Pemasok karkas & daging giling MDM' },
-  { id: 'sup_3', kode: 'S3', nama: 'PT Plastik & Kemasan Nusantara', kontak: '0811-2233-4455', alamat: 'Surabaya', catatan: 'Supplier vacumbag & stiker kemasan' },
-  { id: 'sup_4', kode: 'S4', nama: 'Toko Rempah & Bumbu Berkah', kontak: '0815-6677-8899', alamat: 'Semarang', catatan: 'Pemasok bumbu racikan & minyak' },
-  { id: 'sup_5', kode: 'S5', nama: 'Pabrik Es Batu Kristal Saren', kontak: '0819-0011-2233', alamat: 'Garut', catatan: 'Pemasok air es kristal harian' }
-];
+const DEFAULT_SUPPLIERS = [];
 
 // Seed default suppliers if empty
 const seedDefaults = () => {
-  const current = readCollection('suppliers');
-  if (current.length === 0) {
-    writeCollection('suppliers', DEFAULT_SUPPLIERS);
-  }
+  // Manual input from 0
 };
 
 seedDefaults();
@@ -27,19 +18,11 @@ exports.getAll = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       try {
         list = await Supplier.find().sort({ kode: 1, nama: 1 });
-        if (list.length === 0) {
-          await Supplier.insertMany(DEFAULT_SUPPLIERS);
-          list = await Supplier.find().sort({ kode: 1, nama: 1 });
-        }
       } catch (e) {
         list = readCollection('suppliers');
       }
     } else {
       list = readCollection('suppliers');
-      if (list.length === 0) {
-        writeCollection('suppliers', DEFAULT_SUPPLIERS);
-        list = DEFAULT_SUPPLIERS;
-      }
     }
     return res.json({ success: true, data: list });
   } catch (err) {
