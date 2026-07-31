@@ -401,23 +401,28 @@ exports.updateUser = async (req, res) => {
     if (role) updateData.role = role;
     if (status) updateData.status = status;
 
-    const mongoUser = await User.findOneAndUpdate(
-      { id },
-      { $set: updateData },
-      { returnDocument: 'after' }
-    );
+    const mongoose = require('mongoose');
+    let mongoUser = null;
+    if (mongoose.connection.readyState === 1) {
+      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      mongoUser = await User.findOneAndUpdate(
+        query,
+        { $set: updateData },
+        { returnDocument: 'after' }
+      );
+    }
 
     const users = readCollection('users');
-    const index = users.findIndex(u => u.id === id);
+    const index = users.findIndex(u => u.id === id || u._id === id);
     if (index !== -1) {
       users[index] = { ...users[index], ...updateData };
       writeCollection('users', users);
     }
 
     const userName = mongoUser ? mongoUser.name : (users[index] ? users[index].name : id);
-    addAuditLog('Super Admin', 'ADMIN', 'Update Data User', `Super Admin memperbarui profil/role pengguna ${userName}.`);
+    addAuditLog('Super Admin', 'ADMIN', 'Ubah Role Staf', `Super Admin mengubah role pengguna ${userName} menjadi ${role}.`);
 
-    return res.json({ success: true, message: `Data pengguna ${userName} berhasil diperbarui!`, data: mongoUser || users[index] });
+    return res.json({ success: true, message: `Role pengguna ${userName} berhasil diubah ke ${role}!`, data: mongoUser || users[index] });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
