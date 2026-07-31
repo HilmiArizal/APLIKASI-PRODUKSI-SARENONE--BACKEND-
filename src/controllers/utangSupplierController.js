@@ -153,10 +153,19 @@ exports.receive = async (req, res) => {
 
     // ATOMICALLY INCREASE PHYSICAL STOCK IN BAHAN BAKU!
     const targetBahanId = updatedRecord.bahanId;
-    if (targetBahanId) {
+    const targetBahanNama = updatedRecord.bahanNama;
+    if (targetBahanId || targetBahanNama) {
       if (mongoose.connection.readyState === 1) {
         try {
-          const docB = await BahanBaku.findOne({ $or: [{ id: targetBahanId }, { sku: targetBahanId }, { _id: targetBahanId }] });
+          const queryOrB = [];
+          if (targetBahanId) {
+            queryOrB.push({ id: targetBahanId }, { sku: targetBahanId });
+            if (mongoose.Types.ObjectId.isValid(targetBahanId)) queryOrB.push({ _id: targetBahanId });
+          }
+          if (targetBahanNama) {
+            queryOrB.push({ nama: targetBahanNama });
+          }
+          const docB = await BahanBaku.findOne({ $or: queryOrB });
           if (docB) {
             docB.stok = Math.round((docB.stok + terimaQty) * 1000) / 1000;
             await docB.save();
@@ -164,7 +173,7 @@ exports.receive = async (req, res) => {
         } catch (e) {}
       }
       const bList = readCollection('bahanBaku');
-      const idxB = bList.findIndex(x => x.id === targetBahanId || x.sku === targetBahanId);
+      const idxB = bList.findIndex(x => x.id === targetBahanId || x.sku === targetBahanId || x.nama === targetBahanNama);
       if (idxB !== -1) {
         bList[idxB].stok = Math.round((bList[idxB].stok + terimaQty) * 1000) / 1000;
         writeCollection('bahanBaku', bList);
