@@ -14,19 +14,29 @@ seedDefaults();
 // GET /api/suppliers
 exports.getAll = async (req, res) => {
   try {
-    let list = [];
+    // Automatically wipe legacy sample records (sup_1 to sup_5) from MongoDB Atlas
     if (mongoose.connection.readyState === 1) {
       try {
-        list = await Supplier.find().sort({ kode: 1, nama: 1 });
-      } catch (e) {
-        list = readCollection('suppliers');
-      }
-    } else {
-      list = readCollection('suppliers');
+        await Supplier.deleteMany({ id: { $in: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] } });
+      } catch (e) {}
     }
+
+    let list = readCollection('suppliers');
+    const cleaned = list.filter(x => !['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'].includes(x.id));
+    if (cleaned.length !== list.length) {
+      writeCollection('suppliers', cleaned);
+      list = cleaned;
+    }
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        list = await Supplier.find({ id: { $nin: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] } }).sort({ kode: 1, nama: 1 });
+      } catch (e) {}
+    }
+
     return res.json({ success: true, data: list });
   } catch (err) {
-    const fallback = readCollection('suppliers');
+    const fallback = readCollection('suppliers').filter(x => !['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'].includes(x.id));
     return res.json({ success: true, data: fallback });
   }
 };
