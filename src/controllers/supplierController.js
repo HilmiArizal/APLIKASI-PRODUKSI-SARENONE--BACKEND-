@@ -14,15 +14,28 @@ seedDefaults();
 // GET /api/suppliers
 exports.getAll = async (req, res) => {
   try {
-    // Automatically wipe legacy sample records (sup_1 to sup_5) from MongoDB Atlas
+    // Purge sample data from MongoDB Atlas cloud DB
+    const sampleNames = [
+      'PT Marksoy Indonesia',
+      'CV Daging Utama',
+      'PT Plastik & Kemasan Nusantara',
+      'Toko Rempah & Bumbu Berkah',
+      'Pabrik Es Batu Kristal Saren'
+    ];
+
     if (mongoose.connection.readyState === 1) {
       try {
-        await Supplier.deleteMany({ id: { $in: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] } });
+        await Supplier.deleteMany({
+          $or: [
+            { id: { $in: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] } },
+            { nama: { $in: sampleNames } }
+          ]
+        });
       } catch (e) {}
     }
 
     let list = readCollection('suppliers');
-    const cleaned = list.filter(x => !['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'].includes(x.id));
+    const cleaned = list.filter(x => !['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'].includes(x.id) && !sampleNames.includes(x.nama));
     if (cleaned.length !== list.length) {
       writeCollection('suppliers', cleaned);
       list = cleaned;
@@ -30,13 +43,16 @@ exports.getAll = async (req, res) => {
 
     if (mongoose.connection.readyState === 1) {
       try {
-        list = await Supplier.find({ id: { $nin: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] } }).sort({ kode: 1, nama: 1 });
+        list = await Supplier.find({
+          id: { $nin: ['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'] },
+          nama: { $nin: sampleNames }
+        }).sort({ kode: 1, nama: 1 });
       } catch (e) {}
     }
 
     return res.json({ success: true, data: list });
   } catch (err) {
-    const fallback = readCollection('suppliers').filter(x => !['sup_1', 'sup_2', 'sup_3', 'sup_4', 'sup_5'].includes(x.id));
+    const fallback = readCollection('suppliers');
     return res.json({ success: true, data: fallback });
   }
 };
