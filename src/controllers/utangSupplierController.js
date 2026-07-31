@@ -273,22 +273,25 @@ exports.remove = async (req, res) => {
     const { user } = req.body;
 
     if (mongoose.connection.readyState === 1) {
-      try { await UtangSupplier.deleteMany({ $or: [{ id }, { _id: id }] }); } catch (e) {}
+      try {
+        const queryOrDel = [{ id }, { noFaktur: id }];
+        if (mongoose.Types.ObjectId.isValid(id)) queryOrDel.push({ _id: id });
+        await UtangSupplier.deleteMany({ $or: queryOrDel });
+      } catch (e) {}
     }
 
     let jsonList = readCollection('utangSupplier');
-    const target = jsonList.find(x => x.id === id);
-    jsonList = jsonList.filter(x => x.id !== id);
+    jsonList = jsonList.filter(x => x.id !== id && x._id !== id && x.noFaktur !== id);
     writeCollection('utangSupplier', jsonList);
 
     await addAuditLog(
-      user?.name || 'Tim Pembelian',
-      user?.role || 'PEMBELIAN',
-      'Hapus Utang Supplier',
-      `Menghapus catatan utang faktur ${target ? target.noFaktur : id}.`
+      user?.name || 'Admin',
+      user?.role || 'ADMIN',
+      'Hapus Faktur Utang',
+      `Menghapus catatan faktur utang ID/Faktur "${id}".`
     );
 
-    return res.json({ success: true, message: 'Data utang supplier berhasil dihapus.' });
+    return res.json({ success: true, message: `Catatan faktur utang berhasil dihapus!` });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
