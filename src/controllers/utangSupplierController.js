@@ -214,7 +214,9 @@ exports.pay = async (req, res) => {
     // Mongo update
     if (mongoose.connection.readyState === 1) {
       try {
-        const doc = await UtangSupplier.findOne({ $or: [{ id }, { _id: id }] });
+        const orQuery = [{ id }, { noFaktur: id }];
+        if (mongoose.Types.ObjectId.isValid(id)) orQuery.push({ _id: id });
+        const doc = await UtangSupplier.findOne({ $or: orQuery });
         if (doc) {
           doc.jumlahDibayar += bayarQty;
           doc.sisaUtang = Math.max(0, doc.totalTagihan - doc.jumlahDibayar);
@@ -226,14 +228,14 @@ exports.pay = async (req, res) => {
             keterangan: keterangan || 'Pembayaran Utang Supplier'
           });
           await doc.save();
-          updatedRecord = doc;
+          updatedRecord = doc.toObject ? doc.toObject() : doc;
         }
-      } catch (e) {}
+      } catch (e) { console.error('Mongo pay error:', e.message); }
     }
 
     // JSON update
     const jsonList = readCollection('utangSupplier');
-    const idx = jsonList.findIndex(x => x.id === id);
+    const idx = jsonList.findIndex(x => x.id === id || x._id === id || x.noFaktur === id);
     if (idx !== -1) {
       jsonList[idx].jumlahDibayar += bayarQty;
       jsonList[idx].sisaUtang = Math.max(0, jsonList[idx].totalTagihan - jsonList[idx].jumlahDibayar);
@@ -250,7 +252,7 @@ exports.pay = async (req, res) => {
     }
 
     if (!updatedRecord) {
-      return res.status(404).json({ success: false, message: 'Faktur utang supplier tidak ditemukan.' });
+      return res.status(404).json({ success: false, message: `Faktur utang supplier tidak ditemukan. (ID: ${id})` });
     }
 
     await addAuditLog(
