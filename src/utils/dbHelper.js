@@ -3,8 +3,12 @@ const path = require('path');
 
 const DATA_DIR = path.join(__dirname, '../../data');
 
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+} catch (e) {
+  // Read-only filesystem on Vercel serverless functions
 }
 
 // DEFAULT INITIAL DATASEST
