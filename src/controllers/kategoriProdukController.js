@@ -2,9 +2,9 @@ const KategoriProduk = require('../models/KategoriProduk');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
 const DEFAULT_KATEGORI_PRODUK = [
-  { id: 'kat_1', nama: 'SAREN ONE', deskripsi: 'Lini Brand Utama Saren One', createdAt: '2026-07-20 08:00' },
-  { id: 'kat_2', nama: 'EAT GOW', deskripsi: 'Lini Brand Produk Siap Saji Eat Gow', createdAt: '2026-07-20 08:00' },
-  { id: 'kat_3', nama: 'BEULEUM', deskripsi: 'Lini Brand Olahan Pemanggangan & Bakaran Beuleum', createdAt: '2026-07-20 08:00' }
+  { id: 'kat_1', nama: 'SAREN ONE', deskripsi: 'Daging olahan makanan beku', createdAt: '2026-07-20 08:00' },
+  { id: 'kat_2', nama: 'EAT GOW', deskripsi: 'Daging olahan makanan beku', createdAt: '2026-07-20 08:00' },
+  { id: 'kat_3', nama: 'BEULEUM', deskripsi: 'Daging olahan makanan beku', createdAt: '2026-07-20 08:00' }
 ];
 
 // GET /api/kategori-produk

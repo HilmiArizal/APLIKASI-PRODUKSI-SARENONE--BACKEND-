@@ -3,9 +3,9 @@ const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHel
 const connectDB = require('../config/db');
 
 const DEFAULT_BRANDS = [
-  { id: 'brand_1', nama: 'SAREN ONE', deskripsi: 'Lini Brand Utama Saren One', createdBy: 'System' },
-  { id: 'brand_2', nama: 'EAT GOW', deskripsi: 'Lini Brand Produk Siap Saji Eat Gow', createdBy: 'System' },
-  { id: 'brand_3', nama: 'BEULEUM', deskripsi: 'Lini Brand Olahan Pemanggangan & Bakaran Beuleum', createdBy: 'System' }
+  { id: 'brand_1', nama: 'SAREN ONE', deskripsi: 'Daging olahan makanan beku', createdBy: 'System' },
+  { id: 'brand_2', nama: 'EAT GOW', deskripsi: 'Daging olahan makanan beku', createdBy: 'System' },
+  { id: 'brand_3', nama: 'BEULEUM', deskripsi: 'Daging olahan makanan beku', createdBy: 'System' }
 ];
 
 // GET /api/brand-produk
