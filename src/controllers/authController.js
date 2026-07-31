@@ -391,9 +391,11 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const { name, username, email, role, status } = req.body;
 
+    const targetUsername = (username || id || '').trim().toLowerCase();
+
     const updateData = {};
     if (name) updateData.name = name;
-    if (username) updateData.username = username.trim().toLowerCase();
+    if (username) updateData.username = targetUsername;
     if (email) updateData.email = email.trim().toLowerCase();
     if (role) {
       updateData.role = role;
@@ -403,32 +405,30 @@ exports.updateUser = async (req, res) => {
 
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState === 1) {
-      const orConditions = [];
-      if (id) {
-        orConditions.push({ id });
-        if (mongoose.Types.ObjectId.isValid(id)) {
-          orConditions.push({ _id: id });
-        }
-      }
-      if (username) {
-        orConditions.push({ username: username.trim().toLowerCase() });
+      const conditions = [
+        { id },
+        { username: targetUsername },
+        { username: { $regex: `^${targetUsername}$`, $options: 'i' } }
+      ];
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        conditions.push({ _id: id });
       }
       if (email) {
-        orConditions.push({ email: email.trim().toLowerCase() });
+        conditions.push({ email: email.trim().toLowerCase() });
       }
 
       await User.updateMany(
-        { $or: orConditions },
+        { $or: conditions },
         { $set: updateData }
       );
     }
 
     const users = readCollection('users');
-    let targetName = id;
+    let targetName = targetUsername || id;
     users.forEach((u, idx) => {
       const isMatch = (id && (u.id === id || u._id === id)) ||
-                      (username && u.username === username.trim().toLowerCase()) ||
-                      (email && u.email === email.trim().toLowerCase());
+                      (targetUsername && u.username?.toLowerCase() === targetUsername) ||
+                      (email && u.email?.toLowerCase() === email.trim().toLowerCase());
       if (isMatch) {
         users[idx] = { ...users[idx], ...updateData };
         targetName = users[idx].name;
