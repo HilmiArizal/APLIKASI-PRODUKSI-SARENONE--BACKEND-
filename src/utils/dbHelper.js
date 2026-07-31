@@ -57,6 +57,11 @@ const INITIAL_DATA = {
   ],
   penjualan: [],
   marketing: [],
+  produkSales: [
+    { id: 'ps1', sku: 'SLS-001', namaProduk: 'Roti Keju Spesial', varian: 'Keju Cheddar Lumer', gramasi: '250 gram', kategori: 'Roti Manis', hargaJual: 18000, stokReady: 45, status: 'Tersedia', deskripsi: 'Roti lembut dengan isian keju cheddar lumer melimpah' },
+    { id: 'ps2', sku: 'SLS-002', namaProduk: 'Brownies Cokelat Lumer', varian: 'Dark Chocolate Premium', gramasi: '500 gram', kategori: 'Kue & Cake', hargaJual: 55000, stokReady: 20, status: 'Tersedia', deskripsi: 'Brownies panggang dengan topping cokelat lumer' },
+    { id: 'ps3', sku: 'SLS-003', namaProduk: 'Croissant Butter Original', varian: 'Butter Anchor 100%', gramasi: '120 gram', kategori: 'Pastry & Danish', hargaJual: 25000, stokReady: 30, status: 'Tersedia', deskripsi: 'Croissant renyah berlapis dengan mentega butter murni' }
+  ],
   riwayatProduksi: [
     {
       id: 'BATCH-2026-001',
