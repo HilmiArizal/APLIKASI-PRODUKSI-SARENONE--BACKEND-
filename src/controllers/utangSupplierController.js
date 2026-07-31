@@ -109,7 +109,9 @@ exports.receive = async (req, res) => {
     // Mongo update
     if (mongoose.connection.readyState === 1) {
       try {
-        const doc = await UtangSupplier.findOne({ $or: [{ id }, { _id: id }] });
+        const queryOr = [{ id }];
+        if (mongoose.Types.ObjectId.isValid(id)) queryOr.push({ _id: id });
+        const doc = await UtangSupplier.findOne({ $or: queryOr });
         if (doc) {
           doc.jumlahDiterima = (doc.jumlahDiterima || 0) + terimaQty;
           doc.sisaBelumDiterima = Math.max(0, doc.jumlah - doc.jumlahDiterima);
@@ -129,7 +131,7 @@ exports.receive = async (req, res) => {
 
     // JSON update
     const jsonList = readCollection('utangSupplier');
-    const idx = jsonList.findIndex(x => x.id === id);
+    const idx = jsonList.findIndex(x => x.id === id || x._id === id || x.noFaktur === id);
     if (idx !== -1) {
       jsonList[idx].jumlahDiterima = (jsonList[idx].jumlahDiterima || 0) + terimaQty;
       jsonList[idx].sisaBelumDiterima = Math.max(0, jsonList[idx].jumlah - jsonList[idx].jumlahDiterima);
