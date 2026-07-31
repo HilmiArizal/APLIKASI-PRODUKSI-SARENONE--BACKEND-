@@ -404,16 +404,26 @@ exports.updateUser = async (req, res) => {
     const mongoose = require('mongoose');
     let mongoUser = null;
     if (mongoose.connection.readyState === 1) {
-      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      const orConditions = [{ id }];
+      if (mongoose.Types.ObjectId.isValid(id)) {
+        orConditions.push({ _id: id });
+      }
+      if (username) {
+        orConditions.push({ username: username.trim().toLowerCase() });
+      }
+      if (email) {
+        orConditions.push({ email: email.trim().toLowerCase() });
+      }
+
       mongoUser = await User.findOneAndUpdate(
-        query,
+        { $or: orConditions },
         { $set: updateData },
-        { returnDocument: 'after' }
+        { returnDocument: 'after', new: true }
       );
     }
 
     const users = readCollection('users');
-    const index = users.findIndex(u => u.id === id || u._id === id);
+    const index = users.findIndex(u => u.id === id || u._id === id || (username && u.username === username.trim().toLowerCase()));
     if (index !== -1) {
       users[index] = { ...users[index], ...updateData };
       writeCollection('users', users);
@@ -424,6 +434,7 @@ exports.updateUser = async (req, res) => {
 
     return res.json({ success: true, message: `Role pengguna ${userName} berhasil diubah ke ${role}!`, data: mongoUser || users[index] });
   } catch (err) {
+    console.error('Update user error:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
