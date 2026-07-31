@@ -14,16 +14,20 @@ exports.getBrandProduk = async (req, res) => {
     await connectDB();
     const mongoose = require('mongoose');
     if (mongoose.connection.readyState === 1) {
-      let brands = await BrandProduk.find().sort({ createdAt: -1 });
+      // Purge old sample brands if present in DB
+      await BrandProduk.deleteMany({ nama: { $in: ['Saren Bakery', 'Saren Frozen', 'Dapur Saren', 'Saren One Original'] } });
+
+      let brands = await BrandProduk.find().sort({ createdAt: 1 });
       if (brands.length === 0) {
         try {
           await BrandProduk.insertMany(DEFAULT_BRANDS);
-          brands = await BrandProduk.find().sort({ createdAt: -1 });
+          brands = await BrandProduk.find().sort({ createdAt: 1 });
         } catch (e) {}
       }
       return res.json({ success: true, data: brands });
     }
     let brands = readCollection('brandProduk');
+    brands = (brands || []).filter(b => !['Saren Bakery', 'Saren Frozen', 'Dapur Saren', 'Saren One Original'].includes(b.nama));
     if (brands.length === 0) {
       brands = DEFAULT_BRANDS;
       writeCollection('brandProduk', brands);
@@ -31,6 +35,7 @@ exports.getBrandProduk = async (req, res) => {
     return res.json({ success: true, data: brands });
   } catch (err) {
     let brands = readCollection('brandProduk');
+    brands = (brands || []).filter(b => !['Saren Bakery', 'Saren Frozen', 'Dapur Saren', 'Saren One Original'].includes(b.nama));
     if (brands.length === 0) brands = DEFAULT_BRANDS;
     return res.json({ success: true, data: brands });
   }
