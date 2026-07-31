@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
+const connectDB = require('../config/db');
 
 // Helper Validasi Keamanan Password Ketat (Min 8 char, Uppercase, Lowercase, Number, Special Symbol)
 function validatePasswordSecurity(password) {
@@ -228,6 +229,7 @@ exports.register = async (req, res) => {
 // GET /api/auth/users (Admin View)
 exports.getAllUsers = async (req, res) => {
   try {
+    await connectDB();
     const mongoose = require('mongoose');
     let usersList = [];
 
@@ -306,6 +308,7 @@ exports.getAllUsers = async (req, res) => {
 // PUT /api/auth/approve/:id (Super Admin ACC User Role)
 exports.approveUser = async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     const { role } = req.body;
     const mongoose = require('mongoose');
@@ -384,6 +387,7 @@ exports.deleteUser = async (req, res) => {
 // PUT /api/auth/users/:id (Update Profile & Role by Admin)
 exports.updateUser = async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
     const { name, username, email, role, status } = req.body;
 
