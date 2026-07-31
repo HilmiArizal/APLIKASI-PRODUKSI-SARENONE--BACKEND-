@@ -1,0 +1,9 @@
+[
+  { "id": "kps_1", "nama": "Sosis", "deskripsi": "Kategori berbagai varian sosis", "createdBy": "System" },
+  { "id": "kps_2", "nama": "Nugget", "deskripsi": "Kategori berbagai produk nugget", "createdBy": "System" },
+  { "id": "kps_3", "nama": "Baso", "deskripsi": "Kategori baso sapi & olahan daging", "createdBy": "System" },
+  { "id": "kps_4", "nama": "Roti & Pastry", "deskripsi": "Kategori olahan roti dan kue", "createdBy": "System" },
+  { "id": "kps_5", "nama": "Daging Olahan", "deskripsi": "Kategori olahan daging lain", "createdBy": "System" },
+  { "id": "kps_6", "nama": "Bumbu & Rempah", "deskripsi": "Kategori bumbu siap pakai", "createdBy": "System" },
+  { "id": "kps_7", "nama": "Lainnya", "deskripsi": "Kategori produk umum", "createdBy": "System" }
+]
