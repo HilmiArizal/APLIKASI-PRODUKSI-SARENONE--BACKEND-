@@ -61,7 +61,7 @@ exports.login = async (req, res) => {
       } catch (e) {}
     }
 
-    // 4. Default Admin fallback if database user collection is fresh
+    // 4a. Default Admin Bahan Baku fallback
     if (!user && (input === 'admin' || input === 'admin@sarenone.com')) {
       user = {
         id: 'u1',
@@ -74,6 +74,19 @@ exports.login = async (req, res) => {
       };
     }
 
+    // 4b. Default Admin Produk fallback
+    if (!user && (input === 'admin_produk' || input === 'admin_produk@sarenone.com')) {
+      user = {
+        id: 'u_produk1',
+        username: 'admin_produk',
+        email: 'admin_produk@sarenone.com',
+        pass: 'Adminproduk@123',
+        name: 'Super Admin Produk',
+        role: 'ADMIN_PRODUK',
+        status: 'VERIFIED'
+      };
+    }
+
     // 5. Strict Password Verification
     let isPasswordValid = false;
     if (user) {
@@ -81,6 +94,10 @@ exports.login = async (req, res) => {
         isPasswordValid = true;
       } else if (user.username?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'admin@sarenone.com') {
         if (password === 'admin' || password === 'Admin@123') {
+          isPasswordValid = true;
+        }
+      } else if (user.username?.toLowerCase() === 'admin_produk') {
+        if (password === 'Adminproduk@123') {
           isPasswordValid = true;
         }
       }

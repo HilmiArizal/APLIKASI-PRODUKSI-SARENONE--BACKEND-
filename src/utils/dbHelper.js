@@ -55,6 +55,8 @@ const INITIAL_DATA = {
     { id: 'LOG-101', timestamp: '2026-07-24 07:30', user: 'Tim Bahan Baku', role: 'BAHAN_BAKU', aksi: 'Stok Masuk', detail: 'Restock Tepung Terigu +20.0 kg (Supplier PT Boga Utama)' },
     { id: 'LOG-102', timestamp: '2026-07-24 08:15', user: 'Tim Produk', role: 'PRODUK', aksi: 'Produksi Batch', detail: 'Produksi 25 Pcs Roti Keju Spesial (Batch #PRD-2026-01). Stok bahan baku otomatis dipotong.' }
   ],
+  penjualan: [],
+  marketing: [],
   riwayatProduksi: [
     {
       id: 'BATCH-2026-001',

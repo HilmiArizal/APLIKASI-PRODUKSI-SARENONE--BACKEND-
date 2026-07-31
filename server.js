@@ -17,6 +17,8 @@ const kategoriBahanBakuRoutes = require('./src/routes/kategoriBahanBakuRoutes');
 const emulsiRoutes = require('./src/routes/emulsiRoutes');
 const utangSupplierRoutes = require('./src/routes/utangSupplierRoutes');
 const supplierRoutes = require('./src/routes/supplierRoutes');
+const penjualanRoutes = require('./src/routes/penjualanRoutes');
+const marketingRoutes = require('./src/routes/marketingRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -73,6 +75,8 @@ app.use('/api/kategori-bahan-baku', kategoriBahanBakuRoutes);
 app.use('/api/emulsi', emulsiRoutes);
 app.use('/api/utang-supplier', utangSupplierRoutes);
 app.use('/api/suppliers', supplierRoutes);
+app.use('/api/penjualan', penjualanRoutes);
+app.use('/api/marketing', marketingRoutes);
 
 // Start Server
 if (process.env.NODE_ENV !== 'production') {
