@@ -99,7 +99,9 @@ function writeCollection(collectionName, data) {
 async function addAuditLog(user, role, aksi, detail) {
   const mongoose = require('mongoose');
   const now = new Date();
-  const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+  // Gunakan timezone WIB (Asia/Jakarta) agar jam sesuai realita
+  const wibDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
+  const timestamp = `${wibDate.getFullYear()}-${String(wibDate.getMonth()+1).padStart(2,'0')}-${String(wibDate.getDate()).padStart(2,'0')} ${String(wibDate.getHours()).padStart(2,'0')}:${String(wibDate.getMinutes()).padStart(2,'0')}`;
   
   const newLog = {
     id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),
