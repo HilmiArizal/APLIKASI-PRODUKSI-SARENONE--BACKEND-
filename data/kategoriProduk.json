@@ -1,1 +1,5 @@
-[]
+[
+  { "id": "kat_1", "nama": "SAREN ONE", "deskripsi": "Lini Brand Utama Saren One", "createdAt": "2026-07-20 08:00" },
+  { "id": "kat_2", "nama": "EAT GOW", "deskripsi": "Lini Brand Produk Siap Saji Eat Gow", "createdAt": "2026-07-20 08:00" },
+  { "id": "kat_3", "nama": "BEULEUM", "deskripsi": "Lini Brand Olahan Pemanggangan & Bakaran Beuleum", "createdAt": "2026-07-20 08:00" }
+]
