@@ -232,7 +232,29 @@ exports.getAllUsers = async (req, res) => {
     let usersList = [];
 
     if (mongoose.connection.readyState === 1) {
-      usersList = await User.find().sort({ createdAt: -1 });
+      const rawUsers = await User.find().sort({ updatedAt: -1, createdAt: -1 });
+
+      const seen = new Set();
+      const uniqueUsers = [];
+      const duplicateIds = [];
+
+      for (const u of rawUsers) {
+        const uKey = (u.username || u.id || u._id.toString()).toLowerCase();
+        if (!seen.has(uKey)) {
+          seen.add(uKey);
+          uniqueUsers.push(u);
+        } else {
+          duplicateIds.push(u._id);
+        }
+      }
+
+      if (duplicateIds.length > 0) {
+        try {
+          await User.deleteMany({ _id: { $in: duplicateIds } });
+        } catch (e) { /* ignore cleanup error */ }
+      }
+
+      usersList = uniqueUsers;
 
       const hasAdminProduk = usersList.some(u => u.username === 'admin_produk');
       if (!hasAdminProduk) {
