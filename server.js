@@ -20,6 +20,7 @@ const supplierRoutes = require('./src/routes/supplierRoutes');
 const penjualanRoutes = require('./src/routes/penjualanRoutes');
 const marketingRoutes = require('./src/routes/marketingRoutes');
 const produkSalesRoutes = require('./src/routes/produkSalesRoutes');
+const brandProdukRoutes = require('./src/routes/brandProdukRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -79,6 +80,7 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/penjualan', penjualanRoutes);
 app.use('/api/marketing', marketingRoutes);
 app.use('/api/produk-sales', produkSalesRoutes);
+app.use('/api/brand-produk', brandProdukRoutes);
 
 // Start Server
 if (process.env.NODE_ENV !== 'production') {

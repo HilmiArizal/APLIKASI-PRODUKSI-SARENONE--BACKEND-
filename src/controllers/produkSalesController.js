@@ -39,6 +39,7 @@ exports.create = async (req, res) => {
       varian: body.varian || '',
       gramasi: body.gramasi || '',
       kategori: body.kategori || 'Umum',
+      brand: body.brand || 'Saren One Original',
       hargaJual: parseFloat(body.hargaJual) || 0,
       stokReady: parseFloat(body.stokReady) || 0,
       deskripsi: body.deskripsi || '',

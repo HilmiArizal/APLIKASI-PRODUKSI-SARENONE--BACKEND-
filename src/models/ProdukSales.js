@@ -7,6 +7,7 @@ const ProdukSalesSchema = new mongoose.Schema({
   varian: { type: String, default: '' },      // Contoh: Rasa Cokelat, Original, Keju Lumer
   gramasi: { type: String, default: '' },     // Contoh: 250gr, 500gr, 1kg, 12 Pcs/Box
   kategori: { type: String, default: 'Umum' },
+  brand: { type: String, default: 'Saren One Original' },
   hargaJual: { type: Number, default: 0 },
   stokReady: { type: Number, default: 0 },
   deskripsi: { type: String, default: '' },

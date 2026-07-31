@@ -1,0 +1,6 @@
+[
+  { "id": "brand_1", "nama": "Saren One Original", "deskripsi": "Produk utama Saren One", "createdBy": "System" },
+  { "id": "brand_2", "nama": "Saren Bakery", "deskripsi": "Lini varian olahan roti & pastry", "createdBy": "System" },
+  { "id": "brand_3", "nama": "Saren Frozen", "deskripsi": "Produk beku siap masak", "createdBy": "System" },
+  { "id": "brand_4", "nama": "Dapur Saren", "deskripsi": "Produk bumbu & pelengkap dapur", "createdBy": "System" }
+]
