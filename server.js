@@ -20,6 +20,7 @@ const supplierRoutes = require('./src/routes/supplierRoutes');
 const penjualanRoutes = require('./src/routes/penjualanRoutes');
 const marketingRoutes = require('./src/routes/marketingRoutes');
 const produkSalesRoutes = require('./src/routes/produkSalesRoutes');
+const pelangganRoutes = require('./src/routes/pelangganRoutes');
 const brandProdukRoutes = require('./src/routes/brandProdukRoutes');
 const kategoriProdukSalesRoutes = require('./src/routes/kategoriProdukSalesRoutes');
 
@@ -81,6 +82,7 @@ app.use('/api/suppliers', supplierRoutes);
 app.use('/api/penjualan', penjualanRoutes);
 app.use('/api/marketing', marketingRoutes);
 app.use('/api/produk-sales', produkSalesRoutes);
+app.use('/api/pelanggan', pelangganRoutes);
 app.use('/api/brand-produk', brandProdukRoutes);
 app.use('/api/kategori-produk-sales', kategoriProdukSalesRoutes);
 
