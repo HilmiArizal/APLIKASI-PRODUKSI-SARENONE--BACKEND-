@@ -85,6 +85,46 @@ exports.createPelanggan = async (req, res) => {
   }
 };
 
+exports.bulkCreatePelanggan = async (req, res) => {
+  const { customers } = req.body;
+  if (!Array.isArray(customers) || customers.length === 0) {
+    return res.status(400).json({ success: false, message: 'Data pelanggan tidak valid.' });
+  }
+
+  try {
+    const count = await Pelanggan.countDocuments();
+    const createdDocs = [];
+
+    for (let i = 0; i < customers.length; i++) {
+      const item = customers[i];
+      if (!item.nama || !item.nama.trim()) continue;
+
+      const autoKode = item.kode?.trim() || `C${count + i + 1}`;
+      const doc = new Pelanggan({
+        kode: autoKode,
+        nama: item.nama.trim(),
+        noHp: item.noHp || '',
+        alamat: item.alamat || '',
+        tipe: item.tipe || 'Retail',
+        kategoriCustomer: item.kategoriCustomer || 'Umum',
+        sistemPembayaran: item.sistemPembayaran || 'COD',
+        totalPiutang: Number(item.totalPiutang) || 0,
+        catatan: item.catatan || ''
+      });
+      await doc.save();
+      createdDocs.push(doc.toObject());
+    }
+
+    const local = readLocalData();
+    const updatedLocal = [...createdDocs, ...local];
+    writeLocalData(updatedLocal);
+
+    return res.json({ success: true, count: createdDocs.length, data: createdDocs, message: `${createdDocs.length} pelanggan berhasil di-import!` });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 exports.updatePelanggan = async (req, res) => {
   const { id } = req.params;
   const { kode, nama, noHp, alamat, tipe, kategoriCustomer, sistemPembayaran, totalPiutang, catatan } = req.body;
