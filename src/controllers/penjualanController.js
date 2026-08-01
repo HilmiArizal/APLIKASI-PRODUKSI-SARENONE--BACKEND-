@@ -1,4 +1,5 @@
 const Penjualan = require('../models/Penjualan');
+const Pelanggan = require('../models/Pelanggan');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
 const getWIBTimestamp = () => {
@@ -36,7 +37,9 @@ exports.create = async (req, res) => {
       id: newId,
       noFaktur: body.noFaktur || noFaktur,
       tanggal: body.tanggal || now,
+      pelangganId: body.pelangganId || '',
       namaPelanggan: body.namaPelanggan,
+      kategoriCustomer: body.kategoriCustomer || 'Umum',
       teleponPelanggan: body.teleponPelanggan || '',
       alamatPelanggan: body.alamatPelanggan || '',
       items: body.items || [],
@@ -52,12 +55,18 @@ exports.create = async (req, res) => {
 
     if (mongoose.connection.readyState === 1) {
       await Penjualan.create(newData);
+
+      // If Tempo or credit sale, update Customer's active piutang in MongoDB
+      if (body.pelangganId && (body.statusPembayaran === 'Tempo' || body.metodePembayaran === 'Tempo')) {
+        const query = mongoose.Types.ObjectId.isValid(body.pelangganId) ? { $or: [{ _id: body.pelangganId }, { id: body.pelangganId }] } : { nama: body.namaPelanggan };
+        await Pelanggan.findOneAndUpdate(query, { $inc: { totalPiutang: body.totalBersih || 0 } });
+      }
     }
     const list = readCollection('penjualan');
     list.unshift(newData);
     writeCollection('penjualan', list);
 
-    addAuditLog(user?.name || 'Tim Penjualan', user?.role || 'TIM_PENJUALAN', 'Catat Penjualan', `Penjualan ${newData.noFaktur} ke ${newData.namaPelanggan}, Total Rp ${newData.totalBersih.toLocaleString('id-ID')}`);
+    addAuditLog(user?.name || 'Tim Penjualan', user?.role || 'TIM_PENJUALAN', 'Catat Penjualan', `Penjualan ${newData.noFaktur} ke ${newData.namaPelanggan} (${newData.kategoriCustomer}), Total Rp ${newData.totalBersih.toLocaleString('id-ID')}`);
 
     return res.status(201).json({ success: true, message: 'Penjualan berhasil dicatat!', data: newData });
   } catch (err) {
@@ -103,8 +112,8 @@ exports.delete = async (req, res) => {
     list = list.filter(d => d.id !== id);
     writeCollection('penjualan', list);
 
-    addAuditLog(user?.name || 'Admin', user?.role || 'ADMIN_PRODUK', 'Hapus Penjualan', `Hapus data penjualan ${target?.noFaktur || id}`);
-    return res.json({ success: true, message: 'Data penjualan berhasil dihapus!' });
+    addAuditLog(user?.name || 'Admin', user?.role || 'TIM_PENJUALAN', 'Hapus Penjualan', `Hapus penjualan: ${target?.noFaktur || id}`);
+    return res.json({ success: true, message: 'Penjualan berhasil dihapus!' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
