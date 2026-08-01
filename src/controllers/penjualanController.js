@@ -1,5 +1,6 @@
 const Penjualan = require('../models/Penjualan');
 const Pelanggan = require('../models/Pelanggan');
+const ProdukSales = require('../models/ProdukSales');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
 const getWIBTimestamp = () => {
@@ -74,6 +75,38 @@ exports.create = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       await Penjualan.create(newData);
 
+      // Reduce stock for each product item sold
+      for (const it of processedItems) {
+        if (!it.produkId && !it.namaProduk) continue;
+        const qty = Number(it.qty) || 1;
+
+        // Try match by produkId first, fallback by namaProduk
+        let produkQuery = null;
+        if (it.produkId) {
+          produkQuery = mongoose.Types.ObjectId.isValid(it.produkId)
+            ? { $or: [{ _id: it.produkId }, { id: it.produkId }] }
+            : { id: it.produkId };
+        } else {
+          produkQuery = { namaProduk: it.namaProduk };
+        }
+
+        await ProdukSales.findOneAndUpdate(
+          produkQuery,
+          { $inc: { stokReady: -qty } }
+        );
+
+        // Also reduce in local JSON fallback
+        const prodList = readCollection('produkSales');
+        const pIdx = prodList.findIndex(p =>
+          (it.produkId && (p.id === it.produkId || p._id === it.produkId)) ||
+          (it.namaProduk && p.namaProduk === it.namaProduk)
+        );
+        if (pIdx !== -1) {
+          prodList[pIdx].stokReady = Math.max(0, (Number(prodList[pIdx].stokReady) || 0) - qty);
+          writeCollection('produkSales', prodList);
+        }
+      }
+
       // If Tempo or credit sale, update Customer's active piutang in MongoDB
       if (body.pelangganId && (body.statusPembayaran === 'Tempo' || body.metodePembayaran === 'Tempo')) {
         const query = mongoose.Types.ObjectId.isValid(body.pelangganId) ? { $or: [{ _id: body.pelangganId }, { id: body.pelangganId }] } : { nama: body.namaPelanggan };
@@ -121,14 +154,43 @@ exports.delete = async (req, res) => {
     const { id } = req.params;
     const { user } = req.body;
 
+    // First, find the penjualan to restore stock
+    let targetPenjualan = null;
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+      targetPenjualan = await Penjualan.findOne(query);
       await Penjualan.deleteOne(query);
+
+      // Restore stock for each product item
+      if (targetPenjualan?.items?.length) {
+        for (const it of targetPenjualan.items) {
+          const qty = Number(it.qty) || 1;
+          let produkQuery = null;
+          if (it.produkId) {
+            produkQuery = mongoose.Types.ObjectId.isValid(it.produkId)
+              ? { $or: [{ _id: it.produkId }, { id: it.produkId }] }
+              : { id: it.produkId };
+          } else if (it.namaProduk) {
+            produkQuery = { namaProduk: it.namaProduk };
+          }
+          if (produkQuery) {
+            await ProdukSales.findOneAndUpdate(produkQuery, { $inc: { stokReady: qty } });
+          }
+        }
+      }
     }
+
     let list = readCollection('penjualan');
     const target = list.find(d => d.id === id);
     list = list.filter(d => d.id !== id);
     writeCollection('penjualan', list);
+
+    addAuditLog(user?.name || 'Admin', user?.role || 'TIM_PENJUALAN', 'Hapus Penjualan', `Hapus penjualan: ${target?.noFaktur || id}`);
+    return res.json({ success: true, message: 'Penjualan berhasil dihapus!' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
 
     addAuditLog(user?.name || 'Admin', user?.role || 'TIM_PENJUALAN', 'Hapus Penjualan', `Hapus penjualan: ${target?.noFaktur || id}`);
     return res.json({ success: true, message: 'Penjualan berhasil dihapus!' });
