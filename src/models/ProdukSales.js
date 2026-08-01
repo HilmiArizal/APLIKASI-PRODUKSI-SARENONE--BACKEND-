@@ -9,6 +9,8 @@ const ProdukSalesSchema = new mongoose.Schema({
   kategori: { type: String, default: 'Umum' },
   brand: { type: String, default: 'SAREN ONE' },
   hargaPabrik: { type: Number, default: 0 },
+  hargaTopMarket: { type: Number, default: 0 },
+  hargaUmum: { type: Number, default: 0 },
   hargaJual: { type: Number, default: 0 },
   stokReady: { type: Number, default: 0 },
   deskripsi: { type: String, default: '' },

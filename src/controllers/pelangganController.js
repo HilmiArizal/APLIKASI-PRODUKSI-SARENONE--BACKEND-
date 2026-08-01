@@ -27,7 +27,6 @@ function writeLocalData(data) {
 exports.getAllPelanggan = async (req, res) => {
   try {
     const list = await Pelanggan.find().sort({ createdAt: -1 });
-    // Write local backup mirror
     writeLocalData((list || []).map(doc => doc.toObject ? doc.toObject() : doc));
     return res.json({ success: true, data: list || [] });
   } catch (err) {
@@ -37,13 +36,26 @@ exports.getAllPelanggan = async (req, res) => {
 };
 
 exports.createPelanggan = async (req, res) => {
-  const { nama, noHp, alamat, tipe, catatan } = req.body;
+  const { kode, nama, noHp, alamat, tipe, kategoriCustomer, sistemPembayaran, totalPiutang, catatan } = req.body;
   if (!nama || !nama.trim()) {
     return res.status(400).json({ success: false, message: 'Nama pelanggan wajib diisi.' });
   }
 
   try {
-    const newPelanggan = new Pelanggan({ nama: nama.trim(), noHp, alamat, tipe: tipe || 'Retail', catatan });
+    const count = await Pelanggan.countDocuments();
+    const autoKode = kode?.trim() || `C${count + 1}`;
+
+    const newPelanggan = new Pelanggan({
+      kode: autoKode,
+      nama: nama.trim(),
+      noHp: noHp || '',
+      alamat: alamat || '',
+      tipe: tipe || 'Retail',
+      kategoriCustomer: kategoriCustomer || 'Umum',
+      sistemPembayaran: sistemPembayaran || 'COD',
+      totalPiutang: Number(totalPiutang) || 0,
+      catatan: catatan || ''
+    });
     await newPelanggan.save();
 
     const local = readLocalData();
@@ -53,12 +65,17 @@ exports.createPelanggan = async (req, res) => {
     return res.json({ success: true, data: newPelanggan, message: 'Pelanggan baru berhasil ditambahkan!' });
   } catch (err) {
     const local = readLocalData();
+    const autoKode = kode?.trim() || `C${local.length + 1}`;
     const newObj = {
       id: `cust_${Date.now()}`,
+      kode: autoKode,
       nama: nama.trim(),
       noHp: noHp || '',
       alamat: alamat || '',
       tipe: tipe || 'Retail',
+      kategoriCustomer: kategoriCustomer || 'Umum',
+      sistemPembayaran: sistemPembayaran || 'COD',
+      totalPiutang: Number(totalPiutang) || 0,
       catatan: catatan || '',
       createdAt: new Date().toISOString()
     };
@@ -70,12 +87,14 @@ exports.createPelanggan = async (req, res) => {
 
 exports.updatePelanggan = async (req, res) => {
   const { id } = req.params;
-  const { nama, noHp, alamat, tipe, catatan } = req.body;
+  const { kode, nama, noHp, alamat, tipe, kategoriCustomer, sistemPembayaran, totalPiutang, catatan } = req.body;
 
   try {
     let updated = null;
+    const payload = { kode, nama, noHp, alamat, tipe, kategoriCustomer, sistemPembayaran, totalPiutang: Number(totalPiutang) || 0, catatan };
+
     if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
-      updated = await Pelanggan.findByIdAndUpdate(id, { nama, noHp, alamat, tipe, catatan }, { new: true });
+      updated = await Pelanggan.findByIdAndUpdate(id, payload, { new: true });
     }
 
     if (updated) {
@@ -90,7 +109,7 @@ exports.updatePelanggan = async (req, res) => {
   const local = readLocalData();
   const idx = local.findIndex(item => item.id === id || (item._id && item._id.toString() === id));
   if (idx !== -1) {
-    local[idx] = { ...local[idx], nama, noHp, alamat, tipe, catatan };
+    local[idx] = { ...local[idx], kode, nama, noHp, alamat, tipe, kategoriCustomer, sistemPembayaran, totalPiutang: Number(totalPiutang) || 0, catatan };
     writeLocalData(local);
     return res.json({ success: true, data: local[idx], message: 'Data pelanggan berhasil diperbarui!' });
   }
