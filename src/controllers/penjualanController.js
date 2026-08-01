@@ -33,6 +33,23 @@ exports.create = async (req, res) => {
     const newId = 'PJL-' + Date.now();
     const noFaktur = 'INV-' + now.replace(/[-: ]/g, '').substring(0, 12);
 
+    const processedItems = (body.items || []).map(it => {
+      const qty = Number(it.qty) || 1;
+      const hJual = Number(it.hargaSatuan) || 0;
+      const hModal = Number(it.hargaModal) || 0;
+      const feeItem = Math.max(0, (hJual - hModal) * qty);
+      return {
+        ...it,
+        qty,
+        hargaSatuan: hJual,
+        hargaModal: hModal,
+        feeMarketingItem: feeItem,
+        subtotal: qty * hJual
+      };
+    });
+
+    const totalFeeMarketing = Number(body.totalFeeMarketing) || processedItems.reduce((sum, i) => sum + (i.feeMarketingItem || 0), 0);
+
     const newData = {
       id: newId,
       noFaktur: body.noFaktur || noFaktur,
@@ -42,10 +59,11 @@ exports.create = async (req, res) => {
       kategoriCustomer: body.kategoriCustomer || 'Umum',
       teleponPelanggan: body.teleponPelanggan || '',
       alamatPelanggan: body.alamatPelanggan || '',
-      items: body.items || [],
+      items: processedItems,
       totalHarga: body.totalHarga || 0,
       diskon: body.diskon || 0,
       totalBersih: body.totalBersih || 0,
+      totalFeeMarketing: totalFeeMarketing,
       metodePembayaran: body.metodePembayaran || 'Tunai',
       statusPembayaran: body.statusPembayaran || 'Lunas',
       catatan: body.catatan || '',
@@ -66,7 +84,7 @@ exports.create = async (req, res) => {
     list.unshift(newData);
     writeCollection('penjualan', list);
 
-    addAuditLog(user?.name || 'Tim Penjualan', user?.role || 'TIM_PENJUALAN', 'Catat Penjualan', `Penjualan ${newData.noFaktur} ke ${newData.namaPelanggan} (${newData.kategoriCustomer}), Total Rp ${newData.totalBersih.toLocaleString('id-ID')}`);
+    addAuditLog(user?.name || 'Tim Penjualan', user?.role || 'TIM_PENJUALAN', 'Catat Penjualan', `Penjualan ${newData.noFaktur} ke ${newData.namaPelanggan} (${newData.kategoriCustomer}), Total Rp ${newData.totalBersih.toLocaleString('id-ID')}, Fee Mkt Rp ${totalFeeMarketing.toLocaleString('id-ID')}`);
 
     return res.status(201).json({ success: true, message: 'Penjualan berhasil dicatat!', data: newData });
   } catch (err) {
