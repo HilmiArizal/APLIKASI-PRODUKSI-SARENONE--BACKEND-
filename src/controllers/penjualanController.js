@@ -191,10 +191,3 @@ exports.delete = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
-
-    addAuditLog(user?.name || 'Admin', user?.role || 'TIM_PENJUALAN', 'Hapus Penjualan', `Hapus penjualan: ${target?.noFaktur || id}`);
-    return res.json({ success: true, message: 'Penjualan berhasil dihapus!' });
-  } catch (err) {
-    return res.status(500).json({ success: false, message: err.message });
-  }
-};
