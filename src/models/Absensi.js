@@ -8,6 +8,7 @@ const AbsensiSchema = new mongoose.Schema({
   tanggal: { type: String, default: '' },
   latitude: { type: Number, default: null },
   longitude: { type: Number, default: null },
+  lokasiNama: { type: String, default: '' },
   photoUrl: { type: String, default: '' },
   timestampRaw: { type: Number, default: () => Date.now() },
   createdAt: { type: String, default: () => new Date().toISOString() }

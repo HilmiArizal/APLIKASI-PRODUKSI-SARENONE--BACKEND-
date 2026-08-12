@@ -29,6 +29,37 @@ exports.getAll = async (req, res) => {
   }
 };
 
+const reverseGeocode = async (lat, lng) => {
+  if (!lat || !lng) return '';
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 2500);
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=16`, {
+      headers: { 'User-Agent': 'SarenOneApp/1.0' },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return '';
+    const data = await res.json();
+    if (data && data.address) {
+      const a = data.address;
+      const parts = [
+        a.amenity || a.building || a.shop || a.road || a.pedestrian,
+        a.suburb || a.village || a.quarter || a.neighbourhood || a.city_district,
+        a.city || a.regency || a.town || a.county,
+        a.state
+      ].filter(Boolean);
+      if (parts.length > 0) return parts.join(', ');
+    }
+    if (data && data.display_name) {
+      return data.display_name.split(',').slice(0, 3).join(',').trim();
+    }
+  } catch (e) {
+    // ignore timeout / network error
+  }
+  return '';
+};
+
 // POST /api/absensi  — dikirim dari app mobile
 exports.create = async (req, res) => {
   try {
@@ -46,6 +77,11 @@ exports.create = async (req, res) => {
       finalPhotoUrl = `data:${mime};base64,${base64}`;
     }
 
+    let lokasiNama = req.body.lokasiNama || req.body.locationName || req.body.namaLokasi || '';
+    if (!lokasiNama && latitude && longitude) {
+      lokasiNama = await reverseGeocode(latitude, longitude);
+    }
+
     const tanggal = getWIBDate();
     const newId = 'ABS-' + Date.now();
 
@@ -57,6 +93,7 @@ exports.create = async (req, res) => {
       tanggal,
       latitude: latitude ? parseFloat(latitude) : null,
       longitude: longitude ? parseFloat(longitude) : null,
+      lokasiNama: lokasiNama || (latitude && longitude ? `${parseFloat(latitude).toFixed(4)}, ${parseFloat(longitude).toFixed(4)}` : ''),
       photoUrl: finalPhotoUrl,
       timestampRaw: Date.now(),
       createdAt: new Date().toISOString()
