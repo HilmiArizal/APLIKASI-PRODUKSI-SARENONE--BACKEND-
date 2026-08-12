@@ -111,6 +111,7 @@ exports.create = async (req, res) => {
       longitude: longitude ? parseFloat(longitude) : null,
       lokasiNama: lokasiNama || (latitude && longitude ? `${parseFloat(latitude).toFixed(4)}, ${parseFloat(longitude).toFixed(4)}` : ''),
       photoUrl: finalPhotoUrl,
+      keterangan: req.body.keterangan || req.body.catatan || req.body.notes || req.body.remark || '',
       timestampRaw: Date.now(),
       createdAt: new Date().toISOString()
     };
@@ -123,7 +124,7 @@ exports.create = async (req, res) => {
     list.unshift(newData);
     writeCollection('absensi', list);
 
-    addAuditLog(name, 'TIM_MARKETING', `Absensi ${type}`, `${name} melakukan ${type} pada ${time} | GPS: ${latitude || '-'}, ${longitude || '-'}`);
+    addAuditLog(name, 'TIM_MARKETING', `Absensi ${type}`, `${name} melakukan ${type} pada ${time} | Keterangan: ${newData.keterangan || '-'} | GPS: ${latitude || '-'}, ${longitude || '-'}`);
 
     return res.status(201).json({ success: true, message: `Absensi ${type} berhasil disimpan!`, data: newData });
   } catch (err) {

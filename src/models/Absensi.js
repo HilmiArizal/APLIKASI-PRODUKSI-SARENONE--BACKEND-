@@ -10,6 +10,7 @@ const AbsensiSchema = new mongoose.Schema({
   longitude: { type: Number, default: null },
   lokasiNama: { type: String, default: '' },
   photoUrl: { type: String, default: '' },
+  keterangan: { type: String, default: '' },
   timestampRaw: { type: Number, default: () => Date.now() },
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { timestamps: true });
