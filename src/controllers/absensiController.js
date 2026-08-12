@@ -33,10 +33,17 @@ exports.getAll = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const mongoose = require('mongoose');
-    const { name, type, time, latitude, longitude, photoUrl } = req.body;
+    const { name, type, time, latitude, longitude } = req.body;
 
     if (!name || !type || !time) {
-      return res.status(400).json({ success: false, message: 'name, type, dan time wajib diisi.' });
+      return res.status(400).json({ success: false, message: 'Data nama, tipe (Check-In/Out), dan waktu wajib diisi.' });
+    }
+
+    let finalPhotoUrl = req.body.photoUrl || req.body.photo || '';
+    if (req.file && req.file.buffer) {
+      const mime = req.file.mimetype || 'image/jpeg';
+      const base64 = req.file.buffer.toString('base64');
+      finalPhotoUrl = `data:${mime};base64,${base64}`;
     }
 
     const tanggal = getWIBDate();
@@ -50,7 +57,7 @@ exports.create = async (req, res) => {
       tanggal,
       latitude: latitude ? parseFloat(latitude) : null,
       longitude: longitude ? parseFloat(longitude) : null,
-      photoUrl: photoUrl || '',
+      photoUrl: finalPhotoUrl,
       timestampRaw: Date.now(),
       createdAt: new Date().toISOString()
     };
@@ -96,6 +103,20 @@ exports.getRekap = async (req, res) => {
     });
 
     return res.json({ success: true, data: Object.values(grouped) });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// DELETE /api/absensi/all — hapus seluruh riwayat absensi
+exports.clearAll = async (req, res) => {
+  try {
+    const mongoose = require('mongoose');
+    if (mongoose.connection.readyState === 1) {
+      await Absensi.deleteMany({});
+    }
+    writeCollection('absensi', []);
+    return res.json({ success: true, message: 'Semua riwayat absensi berhasil dihapus.' });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
