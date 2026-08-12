@@ -18,10 +18,26 @@ exports.getAll = async (req, res) => {
       if (tanggal) filter.tanggal = tanggal;
       if (name) filter.name = { $regex: name, $options: 'i' };
       if (type) filter.type = type;
-      const data = await Absensi.find(filter).sort({ timestampRaw: -1 });
+      let data = await Absensi.find(filter).sort({ timestampRaw: -1 }).lean();
+
+      // Auto-resolve lokasiNama for old existing records in DB
+      data = await Promise.all(data.map(async (item) => {
+        if (!item.lokasiNama && item.latitude && item.longitude) {
+          const locName = await reverseGeocode(item.latitude, item.longitude);
+          if (locName) {
+            item.lokasiNama = locName;
+            Absensi.updateOne({ _id: item._id }, { $set: { lokasiNama: locName } }).catch(() => {});
+          }
+        }
+        return item;
+      }));
+
       return res.json({ success: true, data });
     }
-    const data = readCollection('absensi');
+    let data = readCollection('absensi');
+    if (tanggal) data = data.filter(d => d.tanggal === tanggal);
+    if (name) data = data.filter(d => d.name?.toLowerCase().includes(name.toLowerCase()));
+    if (type) data = data.filter(d => d.type === type);
     return res.json({ success: true, data });
   } catch (err) {
     const data = readCollection('absensi');
