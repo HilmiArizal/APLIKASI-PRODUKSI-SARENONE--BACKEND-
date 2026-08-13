@@ -176,12 +176,16 @@ exports.executeBatch = async (req, res) => {
 
     // 6. Record Batch Entry
     const now = new Date();
-    const timestamp = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-    const batchId = `BATCH-${now.getFullYear()}-${Math.floor(100 + Math.random() * 900)}`;
+    const todayStr = req.body.tanggal || `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const timestamp = `${todayStr} ${timeStr}`;
+    const dateNum = todayStr.replace(/-/g, '');
+    const batchId = `BATCH-${dateNum}-${Math.floor(100 + Math.random() * 900)}`;
 
     const newBatch = {
       id: batchId,
       timestamp,
+      tanggal: todayStr,
       produkId,
       produkNama,
       jumlahPcs: Number(targetQty),
