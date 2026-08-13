@@ -3,6 +3,7 @@ const Resep = require('../models/Resep');
 const Produk = require('../models/Produk');
 const BahanBaku = require('../models/BahanBaku');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
+const { cleanFloat } = require('../utils/numberUtils');
 
 // GET /api/resep (Fetch all recipes with Mongo & JSON Sync)
 exports.getAll = async (req, res) => {
@@ -34,7 +35,7 @@ exports.saveItem = async (req, res) => {
       return res.status(400).json({ success: false, message: 'produkId, bahanId, dan takaran wajib diisi.' });
     }
 
-    const qty = Number(Math.round((parseFloat(takaran) || 0) + 'e6') + 'e-6');
+    const qty = cleanFloat(takaran);
 
     // 1. ALWAYS Update JSON Fallback File first to guarantee zero data loss
     const resepJSON = readCollection('resep');

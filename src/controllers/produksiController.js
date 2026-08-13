@@ -4,6 +4,7 @@ const Produk = require('../models/Produk');
 const BahanBaku = require('../models/BahanBaku');
 const Resep = require('../models/Resep');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
+const { cleanFloat } = require('../utils/numberUtils');
 
 // GET /api/produksi/history (Strict MongoDB Atlas priority)
 exports.getHistory = async (req, res) => {
@@ -113,7 +114,7 @@ exports.executeBatch = async (req, res) => {
       const bJson = jsonBahanList.find(b => b.id === item.bahanId);
       const bNama = bMongo ? bMongo.nama : (bJson ? bJson.nama : item.bahanId);
       const currentStok = bMongo ? bMongo.stok : (bJson ? bJson.stok : 0);
-      const needQty = Math.round(item.takaran * targetQty * 1000) / 1000;
+      const needQty = cleanFloat(item.takaran * targetQty);
 
       if (currentStok < needQty) {
         insufficientItems.push(`${bNama} (Butuh: ${needQty}, Stok: ${currentStok})`);
@@ -141,7 +142,7 @@ exports.executeBatch = async (req, res) => {
       }
       let bJsonIndex = jsonBahanList.findIndex(b => b.id === item.bahanId);
       
-      const usedQty = Math.round(item.takaran * targetQty * 1000) / 1000;
+      const usedQty = cleanFloat(item.takaran * targetQty);
       const bahanNama = bMongo ? bMongo.nama : (jsonBahanList[bJsonIndex] ? jsonBahanList[bJsonIndex].nama : 'Bahan Mentah');
       const satuan = bMongo ? bMongo.satuan : (jsonBahanList[bJsonIndex] ? jsonBahanList[bJsonIndex].satuan : 'kg');
 
