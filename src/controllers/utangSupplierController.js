@@ -52,8 +52,8 @@ exports.create = async (req, res) => {
       hargaSatuan: hg,
       totalTagihan,
       jumlahDibayar: dpPaid,
-      sisaUtang,
-      tanggalBeli: todayStr,
+      tanggalBeli: req.body.tanggalBeli || req.body.tanggal || todayStr,
+      tanggal: req.body.tanggal || req.body.tanggalBeli || todayStr,
       jatuhTempo: jatuhTempo || todayStr,
       status,
       statusPengiriman: initialDiterima >= qty ? 'SUDAH DITERIMA' : (initialDiterima > 0 ? 'SEBAGIAN' : 'BELUM DITERIMA'),
@@ -62,7 +62,7 @@ exports.create = async (req, res) => {
       catatan: catatan || '',
       riwayatBayar: dpPaid > 0 ? [
         {
-          tanggal: nowStr,
+          tanggal: req.body.tanggal || req.body.tanggalBeli || nowStr,
           jumlah: dpPaid,
           metode: 'Transfer / Cash (DP)',
           keterangan: 'Uang Muka / Pembayaran Awal'
@@ -127,7 +127,7 @@ exports.receive = async (req, res) => {
 
       if (!rec.riwayatPenerimaan) rec.riwayatPenerimaan = [];
       rec.riwayatPenerimaan.push({
-        tanggal: nowStr,
+        tanggal: req.body.tanggal || req.body.tanggalTerima || nowStr,
         jumlah: terimaQty,
         penerima: penerima || user?.name || 'Staf Gudang',
         catatan: catatan || 'Penerimaan fisik barang baku'
@@ -236,7 +236,7 @@ exports.pay = async (req, res) => {
       rec.status = status;
       if (!rec.riwayatBayar) rec.riwayatBayar = [];
       rec.riwayatBayar.push({
-        tanggal: nowStr,
+        tanggal: req.body.tanggal || req.body.tanggalBayar || nowStr,
         jumlah: bayarQty,
         metode: metode || 'Transfer Bank',
         keterangan: keterangan || 'Pembayaran Utang Supplier'
