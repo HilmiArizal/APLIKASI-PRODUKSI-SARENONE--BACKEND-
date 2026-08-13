@@ -104,6 +104,16 @@ exports.create = async (req, res) => {
   }
 };
 
+// Helper for safe Mongo query without CastError on _id
+const buildSupplierQuery = (id) => {
+  const targetId = String(id);
+  const queryOr = [{ id: targetId }];
+  if (mongoose.Types.ObjectId.isValid(targetId)) {
+    queryOr.push({ _id: targetId });
+  }
+  return { $or: queryOr };
+};
+
 // PUT /api/suppliers/:id
 exports.update = async (req, res) => {
   try {
@@ -114,7 +124,9 @@ exports.update = async (req, res) => {
     }
 
     const list = readCollection('suppliers');
-    const target = list.find(x => x.id === id);
+    const targetIdStr = String(id);
+    const targetIdx = list.findIndex(x => String(x.id) === targetIdStr || String(x._id) === targetIdStr);
+    const target = targetIdx !== -1 ? list[targetIdx] : null;
 
     let cleanKode = (kode || '').trim().toUpperCase();
     if (!cleanKode) {
@@ -127,21 +139,29 @@ exports.update = async (req, res) => {
     if (mongoose.connection.readyState === 1) {
       try {
         updated = await Supplier.findOneAndUpdate(
-          { $or: [{ id }, { _id: id }] },
-          { kode: cleanKode, nama: cleanNama, kontak, alamat, catatan },
+          buildSupplierQuery(id),
+          { kode: cleanKode, nama: cleanNama, kontak: kontak || '', alamat: alamat || '', catatan: catatan || '' },
           { new: true }
         );
-      } catch (e) {}
+      } catch (e) {
+        console.error('Mongo update supplier error:', e.message);
+      }
     }
 
-    const idx = list.findIndex(x => x.id === id);
-    if (idx !== -1) {
-      list[idx] = { ...list[idx], kode: cleanKode, nama: cleanNama, kontak: kontak || '', alamat: alamat || '', catatan: catatan || '' };
+    if (targetIdx !== -1) {
+      list[targetIdx] = {
+        ...list[targetIdx],
+        kode: cleanKode,
+        nama: cleanNama,
+        kontak: kontak || '',
+        alamat: alamat || '',
+        catatan: catatan || ''
+      };
       writeCollection('suppliers', list);
-      if (!updated) updated = list[idx];
+      if (!updated) updated = list[targetIdx];
     }
 
-    if (!updated) {
+    if (!updated && targetIdx === -1) {
       return res.status(404).json({ success: false, message: 'Supplier tidak ditemukan.' });
     }
 
@@ -152,7 +172,7 @@ exports.update = async (req, res) => {
       `Mengubah data supplier "${cleanNama}".`
     );
 
-    return res.json({ success: true, message: `Data supplier "${cleanNama}" berhasil diperbarui!`, data: updated });
+    return res.json({ success: true, message: `Data supplier "${cleanNama}" berhasil diperbarui!`, data: updated || (targetIdx !== -1 ? list[targetIdx] : null) });
   } catch (err) {
     return res.status(500).json({ success: false, message: err.message });
   }
@@ -163,14 +183,19 @@ exports.remove = async (req, res) => {
   try {
     const { id } = req.params;
     const { user } = req.body;
+    const targetIdStr = String(id);
 
     if (mongoose.connection.readyState === 1) {
-      try { await Supplier.deleteMany({ $or: [{ id }, { _id: id }] }); } catch (e) {}
+      try {
+        await Supplier.deleteMany(buildSupplierQuery(id));
+      } catch (e) {
+        console.error('Mongo delete supplier error:', e.message);
+      }
     }
 
     let list = readCollection('suppliers');
-    const target = list.find(x => x.id === id);
-    list = list.filter(x => x.id !== id);
+    const target = list.find(x => String(x.id) === targetIdStr || String(x._id) === targetIdStr);
+    list = list.filter(x => String(x.id) !== targetIdStr && String(x._id) !== targetIdStr);
     writeCollection('suppliers', list);
 
     await addAuditLog(
