@@ -175,13 +175,15 @@ exports.importExcel = async (req, res) => {
     if (allProduk.length === 0) allProduk = readCollection('produk');
     if (allBahan.length === 0) allBahan = readCollection('bahanBaku');
 
-    let processedCount = 0;
-
     const cleanFloat = (val) => {
       const num = parseFloat(val);
       if (isNaN(num)) return 0;
       return Number(Math.round(num + 'e6') + 'e-6');
     };
+
+    // 1. Group imported items by target produkId (Complete Overwrite per Product)
+    const newRecipesByProduct = {};
+    let processedCount = 0;
 
     for (let item of items) {
       const produkSearch = (item.produkSku || item.produkNama || '').toString().trim().toLowerCase();
@@ -207,33 +209,45 @@ exports.importExcel = async (req, res) => {
       const produkId = targetProduk.id;
       const bahanId = targetBahan.id;
 
-      if (mongoose.connection.readyState === 1) {
-        try {
-          let doc = await Resep.findOne({ produkId });
-          if (!doc) doc = new Resep({ produkId, items: [] });
-
-          const idx = doc.items.findIndex(i => i.bahanId === bahanId);
-          if (idx !== -1) {
-            doc.items[idx].takaran = takaran;
-          } else {
-            doc.items.push({ bahanId, takaran });
-          }
-          await doc.save();
-        } catch (e) {}
+      if (!newRecipesByProduct[produkId]) {
+        newRecipesByProduct[produkId] = [];
       }
 
-      const resepJSON = readCollection('resep');
-      if (!resepJSON[produkId]) resepJSON[produkId] = [];
-      const jsonIdx = resepJSON[produkId].findIndex(i => i.bahanId === bahanId);
-      if (jsonIdx !== -1) {
-        resepJSON[produkId][jsonIdx].takaran = takaran;
+      // Avoid duplicates within the same upload batch for the same product
+      const existingIdx = newRecipesByProduct[produkId].findIndex(x => x.bahanId === bahanId);
+      if (existingIdx !== -1) {
+        newRecipesByProduct[produkId][existingIdx].takaran = takaran;
       } else {
-        resepJSON[produkId].push({ bahanId, takaran });
+        newRecipesByProduct[produkId].push({ bahanId, takaran });
       }
-      writeCollection('resep', resepJSON);
 
       processedCount++;
     }
+
+    // 2. Apply Overwrite for products in this upload (MongoDB & JSON File)
+    const resepJSON = readCollection('resep');
+
+    for (const produkId of Object.keys(newRecipesByProduct)) {
+      const itemsList = newRecipesByProduct[produkId];
+
+      // Overwrite Mongo
+      if (mongoose.connection.readyState === 1) {
+        try {
+          await Resep.findOneAndUpdate(
+            { produkId },
+            { items: itemsList },
+            { upsert: true, new: true }
+          );
+        } catch (e) {
+          console.warn('Mongo resep overwrite note:', e.message);
+        }
+      }
+
+      // Overwrite JSON
+      resepJSON[produkId] = itemsList;
+    }
+
+    writeCollection('resep', resepJSON);
 
     await addAuditLog(
       user?.name || 'Tim Bahan Baku',
