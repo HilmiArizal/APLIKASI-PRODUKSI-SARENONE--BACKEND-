@@ -34,7 +34,7 @@ exports.saveItem = async (req, res) => {
       return res.status(400).json({ success: false, message: 'produkId, bahanId, dan takaran wajib diisi.' });
     }
 
-    const qty = parseFloat(takaran);
+    const qty = Number(Math.round((parseFloat(takaran) || 0) + 'e6') + 'e-6');
 
     // 1. ALWAYS Update JSON Fallback File first to guarantee zero data loss
     const resepJSON = readCollection('resep');
@@ -177,10 +177,16 @@ exports.importExcel = async (req, res) => {
 
     let processedCount = 0;
 
+    const cleanFloat = (val) => {
+      const num = parseFloat(val);
+      if (isNaN(num)) return 0;
+      return Number(Math.round(num + 'e6') + 'e-6');
+    };
+
     for (let item of items) {
       const produkSearch = (item.produkSku || item.produkNama || '').toString().trim().toLowerCase();
       const bahanSearch = (item.bahanSku || item.bahanNama || '').toString().trim().toLowerCase();
-      const takaran = parseFloat(item.takaran) || 0;
+      const takaran = cleanFloat(item.takaran);
 
       if (!produkSearch || !bahanSearch || takaran <= 0) continue;
 
