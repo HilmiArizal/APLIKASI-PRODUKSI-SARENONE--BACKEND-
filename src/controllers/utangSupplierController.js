@@ -1,8 +1,21 @@
+/**
+ * ============================================================================
+ * UTANG SUPPLIER & PEMBELIAN CONTROLLER
+ * Domain: Pembelian & Dapur Bahan Baku
+ * Features:
+ *  1. Registrasi Faktur Pembelian (Purchase Order)
+ *  2. Penerimaan & Verifikasi Fisik Barang Gudang (Stok Bertambah Otomatis)
+ *  3. Pembayaran / Pelunasan Utang (Transfer/Cash)
+ *  4. Dual Storage Priority: MongoDB Cloud + JSON File Backup
+ * ============================================================================
+ */
+
 const mongoose = require('mongoose');
 const UtangSupplier = require('../models/UtangSupplier');
 const BahanBaku = require('../models/BahanBaku');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
+// ==================== 1. FETCH ALL UTANG / FAKTUR ====================
 // GET /api/utang-supplier
 exports.getAll = async (req, res) => {
   try {
@@ -22,6 +35,7 @@ exports.getAll = async (req, res) => {
   }
 };
 
+// ==================== 2. CATAT FAKTUR / PEMBELIAN BARU ====================
 // POST /api/utang-supplier (Tambah Faktur Pembelian & Utang Baru)
 exports.create = async (req, res) => {
   try {
@@ -94,6 +108,7 @@ exports.create = async (req, res) => {
   }
 };
 
+// ==================== 3. VERIFIKASI PENERIMAAN BARANG GUDANG ====================
 // POST /api/utang-supplier/:id/receive (Penerimaan Barang Fisik & Verifikasi Stok)
 exports.receive = async (req, res) => {
   try {
@@ -210,6 +225,7 @@ exports.receive = async (req, res) => {
   }
 };
 
+// ==================== 4. PEMBAYARAN / PELUNASAN UTANG ====================
 // POST /api/utang-supplier/:id/pay (Bayar / Cicil Utang Supplier)
 exports.pay = async (req, res) => {
   try {
@@ -284,6 +300,7 @@ exports.pay = async (req, res) => {
   }
 };
 
+// ==================== 5. HAPUS FAKTUR UTANG ====================
 // DELETE /api/utang-supplier/:id
 exports.remove = async (req, res) => {
   try {
