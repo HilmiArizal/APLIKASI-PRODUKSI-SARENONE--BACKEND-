@@ -109,7 +109,8 @@ exports.login = async (req, res) => {
     }
 
     // Generate New Active Session ID (Auto Takeover Session)
-    const newSessionId = `sess_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    const now = new Date();
+    const newSessionId = `sess_${now.getTime()}_${Math.floor(Math.random() * 10000)}`;
     const sessionUser = {
       ...user._doc ? user._doc : user,
       isLoggedIn: true,
