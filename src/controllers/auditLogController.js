@@ -21,6 +21,9 @@ exports.getAll = async (req, res) => {
 exports.deleteLog = async (req, res) => {
   try {
     const { id } = req.params;
+    if (id === 'all' || id === 'clear') {
+      return exports.clearAllLogs(req, res);
+    }
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
       await AuditLog.deleteMany(query);
