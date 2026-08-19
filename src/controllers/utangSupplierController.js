@@ -35,6 +35,22 @@ exports.getAll = async (req, res) => {
   }
 };
 
+// ==================== 5. CLEAR ALL DATA UTANG / PEMBELIAN ====================
+// DELETE /api/utang-supplier/clear/all
+exports.clearAll = async (req, res) => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await UtangSupplier.deleteMany({});
+    }
+    writeCollection('utangSupplier', []);
+    await addAuditLog('SYSTEM', 'SUPER_ADMIN', 'Clear All Pembelian & Utang', 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan.');
+    return res.json({ success: true, message: 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan!' });
+  } catch (err) {
+    console.error('Clear all utang supplier error:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // ==================== 2. CATAT FAKTUR / PEMBELIAN BARU ====================
 // POST /api/utang-supplier (Tambah Faktur Pembelian & Utang Baru)
 exports.create = async (req, res) => {
@@ -328,6 +344,21 @@ exports.remove = async (req, res) => {
 
     return res.json({ success: true, message: `Catatan faktur utang berhasil dihapus!` });
   } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+// DELETE /api/utang-supplier/clear/all
+exports.clearAll = async (req, res) => {
+  try {
+    if (mongoose.connection.readyState === 1) {
+      await UtangSupplier.deleteMany({});
+    }
+    writeCollection('utangSupplier', []);
+    await addAuditLog('SYSTEM', 'SUPER_ADMIN', 'Clear All Pembelian & Utang', 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan.');
+    return res.json({ success: true, message: 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan!' });
+  } catch (err) {
+    console.error('Clear all utang supplier error:', err);
     return res.status(500).json({ success: false, message: err.message });
   }
 };
