@@ -2,48 +2,64 @@ const mongoose = require('mongoose');
 const BahanBaku = require('../models/BahanBaku');
 const { readCollection, writeCollection, addAuditLog } = require('../utils/dbHelper');
 
-// Helper auto-seed Sticker Barcode & Sticker Produk if missing
+// Helper auto-seed & DEDUPLICATE Sticker Barcode & Sticker Produk (Guarantees max 1 of each)
 const ensureStickersExist = async (list) => {
-  // Purge any old "Sticker Produk Saren One"
-  if (mongoose.connection.readyState === 1) {
-    try {
-      await BahanBaku.deleteMany({
-        $or: [
-          { nama: /saren one/i }
-        ]
-      });
-    } catch (e) {}
-  }
-  let jsonList = readCollection('bahanBaku');
-  const filteredJson = jsonList.filter(b => !String(b.nama || '').toLowerCase().includes('saren one'));
-  if (filteredJson.length !== jsonList.length) {
-    writeCollection('bahanBaku', filteredJson);
-  }
-
-  list = list.filter(b => !String(b.nama || '').toLowerCase().includes('saren one'));
-
-  const stickers = [
-    { sku: 'BB60', nama: 'Sticker Barcode', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 200 },
-    { sku: 'BB61', nama: 'Sticker Produk', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 350 }
-  ];
-
-  for (const stk of stickers) {
-    const exists = list.some(b => 
-      String(b.sku || '').toLowerCase() === stk.sku.toLowerCase() ||
-      String(b.nama || '').toLowerCase() === stk.nama.toLowerCase()
-    );
-    if (!exists) {
-      const newItem = { id: 'b_' + Date.now() + Math.floor(Math.random() * 1000), ...stk };
-      if (mongoose.connection.readyState === 1) {
-        try { await BahanBaku.create(newItem); } catch (e) {}
-      }
-      let currentJson = readCollection('bahanBaku');
-      if (!currentJson.some(b => String(b.sku || '').toLowerCase() === stk.sku.toLowerCase())) {
-        currentJson.push(newItem);
-        writeCollection('bahanBaku', currentJson);
-      }
-      list.push(newItem);
+  try {
+    // 1. Purge any legacy "Saren One" stickers
+    if (mongoose.connection.readyState === 1) {
+      try {
+        await BahanBaku.deleteMany({ nama: /saren one/i });
+      } catch (e) {}
     }
+
+    list = (list || []).filter(b => !String(b.nama || '').toLowerCase().includes('saren one'));
+
+    // 2. Strict Deduplication for Sticker Barcode & Sticker Produk
+    const targetStickers = [
+      { sku: 'BB60', nama: 'Sticker Barcode', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 200 },
+      { sku: 'BB61', nama: 'Sticker Produk', kategori: 'Bahan Kemasan', satuan: 'pcs', stok: 500, minStok: 100, harga: 350 }
+    ];
+
+    for (const target of targetStickers) {
+      const matchingItems = list.filter(b => 
+        String(b.nama || '').trim().toLowerCase() === target.nama.toLowerCase() ||
+        String(b.sku || '').trim().toLowerCase() === target.sku.toLowerCase()
+      );
+
+      if (matchingItems.length > 1) {
+        // Keep the 1st instance, purge all extra duplicate copies
+        const keepItem = matchingItems[0];
+        const deleteIds = matchingItems.slice(1).map(x => x._id || x.id).filter(Boolean);
+
+        if (mongoose.connection.readyState === 1 && deleteIds.length > 0) {
+          try {
+            await BahanBaku.deleteMany({ $or: [{ _id: { $in: deleteIds } }, { id: { $in: deleteIds } }] });
+          } catch (e) {}
+        }
+
+        // Clean JSON local storage
+        let jsonList = readCollection('bahanBaku');
+        jsonList = jsonList.filter(x => !deleteIds.includes(x.id) && !deleteIds.includes(x._id));
+        writeCollection('bahanBaku', jsonList);
+
+        // Remove duplicates from active array
+        list = list.filter(x => !deleteIds.includes(x._id) && !deleteIds.includes(x.id));
+      } else if (matchingItems.length === 0) {
+        // Create exactly 1 clean instance if completely missing
+        const newItem = { id: 'b_' + Date.now() + Math.floor(Math.random() * 1000), ...target };
+        if (mongoose.connection.readyState === 1) {
+          try { await BahanBaku.create(newItem); } catch (e) {}
+        }
+        let jsonList = readCollection('bahanBaku');
+        if (!jsonList.some(b => String(b.sku || '').toLowerCase() === target.sku.toLowerCase())) {
+          jsonList.push(newItem);
+          writeCollection('bahanBaku', jsonList);
+        }
+        list.push(newItem);
+      }
+    }
+  } catch (err) {
+    console.warn('Deduplicate stickers note:', err.message);
   }
   return list;
 };
