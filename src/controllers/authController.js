@@ -182,6 +182,29 @@ exports.logout = async (req, res) => {
   }
 };
 
+// POST /api/auth/logout-all-devices
+exports.logoutAllDevices = async (req, res) => {
+  try {
+    const { usernameOrId } = req.body || {};
+
+    if (usernameOrId) {
+      await User.updateMany(
+        { $or: [{ id: usernameOrId }, { username: usernameOrId }, { email: usernameOrId }] },
+        { $set: { isLoggedIn: false, activeSessionId: '', lastActiveAt: null } }
+      );
+      await addAuditLog(usernameOrId, 'SYSTEM', 'Logout All Devices', `Sesi pengguna ${usernameOrId} di semua perangkat di-reset.`);
+      return res.json({ success: true, message: `Seluruh sesi akun ${usernameOrId} di semua perangkat berhasil di-logout!` });
+    }
+
+    await User.updateMany({}, { $set: { isLoggedIn: false, activeSessionId: '', lastActiveAt: null } });
+    await addAuditLog('SYSTEM', 'SUPER_ADMIN', 'Reset Global Sesi', 'Semua sesi pengguna di seluruh perangkat berhasil di-reset.');
+    return res.json({ success: true, message: 'Seluruh akun di semua perangkat berhasil di-logout!' });
+  } catch (err) {
+    console.error('Logout all error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal logout semua perangkat: ' + err.message });
+  }
+};
+
 // POST /api/auth/register
 exports.register = async (req, res) => {
   try {

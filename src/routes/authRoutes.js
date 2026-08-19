@@ -4,6 +4,7 @@ const authController = require('../controllers/authController');
 
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
+router.post('/logout-all-devices', authController.logoutAllDevices);
 router.post('/register', authController.register);
 router.get('/users', authController.getAllUsers);
 router.put('/approve/:id', authController.approveUser);
