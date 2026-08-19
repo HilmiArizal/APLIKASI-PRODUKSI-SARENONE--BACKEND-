@@ -316,11 +316,20 @@ exports.pay = async (req, res) => {
   }
 };
 
-// ==================== 5. HAPUS FAKTUR UTANG ====================
+// ==================== 5. REMOVE FAKTUR / CLEAR ALL ====================
 // DELETE /api/utang-supplier/:id
 exports.remove = async (req, res) => {
   try {
     const { id } = req.params;
+
+    if (id === 'clear' || id === 'all' || id === 'clear-all') {
+      if (mongoose.connection.readyState === 1) {
+        await UtangSupplier.deleteMany({});
+      }
+      writeCollection('utangSupplier', []);
+      await addAuditLog('SYSTEM', 'SUPER_ADMIN', 'Clear All Pembelian & Utang', 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan.');
+      return res.json({ success: true, message: 'Seluruh data Pembelian, Penerimaan, dan Utang Supplier berhasil dibersihkan 100%!' });
+    }
     const { user } = req.body;
 
     if (mongoose.connection.readyState === 1) {
