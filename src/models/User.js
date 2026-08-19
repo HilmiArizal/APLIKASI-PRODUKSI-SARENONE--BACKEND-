@@ -11,6 +11,9 @@ const UserSchema = new mongoose.Schema({
   status: { type: String, default: 'PENDING' },
   provider: { type: String, default: 'local' },
   catatan: { type: String, default: '' },
+  isLoggedIn: { type: Boolean, default: false },
+  activeSessionId: { type: String, default: '' },
+  lastActiveAt: { type: Date, default: null },
   createdAt: { type: String, default: () => new Date().toISOString() }
 }, { timestamps: true });
 

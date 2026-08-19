@@ -108,9 +108,41 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Username/Email atau Password salah, atau belum terdaftar!' });
     }
 
-    if (user.status === 'REJECTED') {
-      return res.status(403).json({ success: false, message: 'Pendaftaran akun Anda telah ditolak oleh Super Admin.' });
+    // 6. Dual Device Concurrent Login Check (Prevent 2 devices logging into same account)
+    const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 Menit timeout
+    const now = new Date();
+
+    if (user.isLoggedIn && user.lastActiveAt) {
+      const timeSinceActive = now.getTime() - new Date(user.lastActiveAt).getTime();
+      if (timeSinceActive < SESSION_TIMEOUT_MS) {
+        return res.status(409).json({
+          success: false,
+          isAlreadyLoggedIn: true,
+          message: 'Akun Anda sedang aktif digunakan di perangkat lain! Silakan logout dari perangkat tersebut terlebih dahulu.'
+        });
+      }
     }
+
+    // Generate New Active Session ID
+    const newSessionId = `sess_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+    
+    try {
+      if (user.id || user._id) {
+        await User.updateOne(
+          { $or: [{ id: user.id }, { username: user.username }] },
+          { $set: { isLoggedIn: true, activeSessionId: newSessionId, lastActiveAt: now } }
+        );
+      }
+    } catch (e) {
+      console.warn('Could not update user session state:', e.message);
+    }
+
+    const sessionUser = {
+      ...user._doc ? user._doc : user,
+      isLoggedIn: true,
+      activeSessionId: newSessionId,
+      lastActiveAt: now
+    };
 
     try {
       await addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
@@ -118,7 +150,7 @@ exports.login = async (req, res) => {
       console.warn('Audit log write warning during login:', logErr.message);
     }
 
-    return res.json({ success: true, message: 'Login berhasil!', user: user, data: user });
+    return res.json({ success: true, message: 'Login berhasil!', user: sessionUser, data: sessionUser });
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ success: false, message: 'Gagal login: ' + err.message });
@@ -131,6 +163,16 @@ exports.logout = async (req, res) => {
     const { user } = req.body;
     const userName = typeof user === 'string' ? user : (user?.name || 'Pengguna');
     const userRole = user?.role || 'ADMIN';
+    const userId = user?.id || user?._id || user?.username;
+
+    if (userId) {
+      try {
+        await User.updateOne(
+          { $or: [{ id: userId }, { username: userId }, { email: userId }] },
+          { $set: { isLoggedIn: false, activeSessionId: '', lastActiveAt: null } }
+        );
+      } catch (e) {}
+    }
 
     await addAuditLog(userName, userRole, 'Logout System', `Pengguna ${userName} keluar dari sistem.`);
     return res.json({ success: true, message: 'Logout berhasil!' });
