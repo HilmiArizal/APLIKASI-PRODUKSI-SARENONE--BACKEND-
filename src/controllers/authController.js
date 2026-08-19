@@ -125,18 +125,6 @@ exports.login = async (req, res) => {
 
     // Generate New Active Session ID
     const newSessionId = `sess_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
-    
-    try {
-      if (user.id || user._id) {
-        await User.updateOne(
-          { $or: [{ id: user.id }, { username: user.username }] },
-          { $set: { isLoggedIn: true, activeSessionId: newSessionId, lastActiveAt: now } }
-        );
-      }
-    } catch (e) {
-      console.warn('Could not update user session state:', e.message);
-    }
-
     const sessionUser = {
       ...user._doc ? user._doc : user,
       isLoggedIn: true,
@@ -144,11 +132,14 @@ exports.login = async (req, res) => {
       lastActiveAt: now
     };
 
-    try {
-      await addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`);
-    } catch (logErr) {
-      console.warn('Audit log write warning during login:', logErr.message);
-    }
+    // Non-blocking async background writes for ultra-fast response (<150ms)
+    User.updateOne(
+      { $or: [{ id: user.id }, { username: user.username }] },
+      { $set: { isLoggedIn: true, activeSessionId: newSessionId, lastActiveAt: now } }
+    ).catch(e => console.warn('Could not update user session state:', e.message));
+
+    addAuditLog(user.name, user.role, 'Login System', `Pengguna ${user.name} (${user.username}) berhasil masuk.`)
+      .catch(logErr => console.warn('Audit log write warning during login:', logErr.message));
 
     return res.json({ success: true, message: 'Login berhasil!', user: sessionUser, data: sessionUser });
   } catch (err) {
