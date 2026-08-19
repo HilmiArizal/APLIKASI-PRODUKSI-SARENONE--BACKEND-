@@ -108,22 +108,7 @@ exports.login = async (req, res) => {
       return res.status(401).json({ success: false, message: 'Username/Email atau Password salah, atau belum terdaftar!' });
     }
 
-    // 6. Dual Device Concurrent Login Check (Prevent 2 devices logging into same account)
-    const SESSION_TIMEOUT_MS = 30 * 60 * 1000; // 30 Menit timeout
-    const now = new Date();
-
-    if (user.isLoggedIn && user.lastActiveAt) {
-      const timeSinceActive = now.getTime() - new Date(user.lastActiveAt).getTime();
-      if (timeSinceActive < SESSION_TIMEOUT_MS) {
-        return res.status(409).json({
-          success: false,
-          isAlreadyLoggedIn: true,
-          message: 'Akun Anda sedang aktif digunakan di perangkat lain! Silakan logout dari perangkat tersebut terlebih dahulu.'
-        });
-      }
-    }
-
-    // Generate New Active Session ID
+    // Generate New Active Session ID (Auto Takeover Session)
     const newSessionId = `sess_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
     const sessionUser = {
       ...user._doc ? user._doc : user,
