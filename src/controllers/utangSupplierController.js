@@ -198,7 +198,7 @@ const syncPriceHistoryToBahan = async (bahanNama, bahanId, hargaSatuan, tanggalB
 exports.receive = async (req, res) => {
   try {
     const { id } = req.params;
-    const { jumlahTerima, penerima, catatan, user } = req.body;
+    const { jumlahTerima, hargaSatuan, penerima, catatan, user } = req.body;
     const terimaQty = parseFloat(jumlahTerima) || 0;
 
     if (terimaQty <= 0) {
@@ -210,8 +210,12 @@ exports.receive = async (req, res) => {
 
     // Helper calculate receive
     const applyReceiveCalc = (rec) => {
-      const newDiterima = (rec.jumlahDiterima || 0) + terimaQty;
+      if (hargaSatuan && parseFloat(hargaSatuan) > 0) {
+        rec.hargaSatuan = parseFloat(hargaSatuan);
+      }
       const hg = rec.hargaSatuan || 0;
+      rec.totalTagihan = (rec.jumlah || 0) * hg;
+      const newDiterima = (rec.jumlahDiterima || 0) + terimaQty;
       const tagihanFisik = newDiterima * hg;
       const dpPaid = rec.jumlahDibayar || 0;
       const sisaUtang = Math.max(0, tagihanFisik - dpPaid);
@@ -229,6 +233,7 @@ exports.receive = async (req, res) => {
       rec.riwayatPenerimaan.push({
         tanggal: req.body.tanggal || req.body.tanggalTerima || nowStr,
         jumlah: terimaQty,
+        hargaSatuan: hg,
         penerima: penerima || user?.name || 'Staf Gudang',
         catatan: catatan || 'Penerimaan fisik barang baku'
       });
@@ -292,6 +297,16 @@ exports.receive = async (req, res) => {
     }
 
     const penambahanUtangVal = terimaQty * (updatedRecord.hargaSatuan || 0);
+
+    // Sync Price History on Bahan Baku
+    await syncPriceHistoryToBahan(
+      updatedRecord.bahanNama,
+      updatedRecord.bahanId,
+      updatedRecord.hargaSatuan,
+      req.body.tanggal || req.body.tanggalTerima,
+      updatedRecord.supplier,
+      updatedRecord.noFaktur
+    );
 
     await addAuditLog(
       user?.name || penerima || 'Staf Gudang',
