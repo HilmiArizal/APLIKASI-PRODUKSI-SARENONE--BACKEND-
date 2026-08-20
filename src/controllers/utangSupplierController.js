@@ -177,8 +177,10 @@ const syncPriceHistoryToBahan = async (bahanNama, bahanId, hargaSatuan, tanggalB
     jsonList.unshift(newRecord);
     writeCollection('utangSupplier', jsonList);
 
-    // Sync Price History to Bahan Baku
-    await syncPriceHistoryToBahan(bahanNama, bahanId, hg, newRecord.tanggalBeli, supplier, noFaktur);
+    // Sync Price History to Bahan Baku HANYA jika barang fisik sudah diterima
+    if (initialDiterima > 0) {
+      await syncPriceHistoryToBahan(bahanNama, bahanId, hg, newRecord.tanggal, supplier, noFaktur);
+    }
 
     await addAuditLog(
       user?.name || 'Tim Pembelian',
