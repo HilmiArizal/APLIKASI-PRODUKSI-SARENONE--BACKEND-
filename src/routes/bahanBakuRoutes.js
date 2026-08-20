@@ -3,6 +3,7 @@ const router = express.Router();
 const bahanBakuController = require('../controllers/bahanBakuController');
 
 router.get('/', bahanBakuController.getAll);
+router.get('/harga-historis', bahanBakuController.getHargaHistoris);
 router.post('/', bahanBakuController.create);
 router.put('/:id', bahanBakuController.update);
 router.delete('/:id', bahanBakuController.remove);

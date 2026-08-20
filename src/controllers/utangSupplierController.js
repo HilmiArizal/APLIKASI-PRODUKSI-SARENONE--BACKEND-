@@ -101,6 +101,72 @@ exports.create = async (req, res) => {
       riwayatPenerimaan: []
     };
 
+// Helper to sync Price History on BahanBaku
+const syncPriceHistoryToBahan = async (bahanNama, bahanId, hargaSatuan, tanggalBeli, supplier, noFaktur) => {
+  if (!hargaSatuan || hargaSatuan <= 0) return;
+  const tgl = (tanggalBeli || new Date().toISOString().substring(0, 10)).substring(0, 10);
+  const bNameLower = String(bahanNama || '').trim().toLowerCase();
+  const bIdStr = String(bahanId || '').trim().toLowerCase();
+
+  const priceEntry = {
+    tanggal: tgl,
+    harga: Number(hargaSatuan),
+    supplier: supplier || '-',
+    noFaktur: noFaktur || '-',
+    catatan: 'Pembelian Supplier'
+  };
+
+  // 1. Sync Mongo
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const doc = await BahanBaku.findOne({
+        $or: [
+          { nama: new RegExp(`^${bNameLower}$`, 'i') },
+          { id: bIdStr },
+          { sku: new RegExp(`^${bIdStr}$`, 'i') }
+        ]
+      });
+
+      if (doc) {
+        doc.harga = Number(hargaSatuan);
+        if (!doc.riwayatHarga) doc.riwayatHarga = [];
+        const existIdx = doc.riwayatHarga.findIndex(r => r.noFaktur === noFaktur || r.tanggal === tgl);
+        if (existIdx !== -1) {
+          doc.riwayatHarga[existIdx].harga = Number(hargaSatuan);
+        } else {
+          doc.riwayatHarga.push(priceEntry);
+        }
+        await doc.save();
+      }
+    } catch (e) {
+      console.warn('Sync price history mongo note:', e.message);
+    }
+  }
+
+  // 2. Sync Local JSON
+  try {
+    const list = readCollection('bahanBaku');
+    const idx = list.findIndex(b => {
+      const bNama = String(b.nama || '').trim().toLowerCase();
+      const bId = String(b.id || '').trim().toLowerCase();
+      const bSku = String(b.sku || '').trim().toLowerCase();
+      return bNama === bNameLower || bId === bIdStr || bSku === bIdStr;
+    });
+
+    if (idx !== -1) {
+      list[idx].harga = Number(hargaSatuan);
+      if (!list[idx].riwayatHarga) list[idx].riwayatHarga = [];
+      const existIdx = list[idx].riwayatHarga.findIndex(r => r.noFaktur === noFaktur || r.tanggal === tgl);
+      if (existIdx !== -1) {
+        list[idx].riwayatHarga[existIdx].harga = Number(hargaSatuan);
+      } else {
+        list[idx].riwayatHarga.push(priceEntry);
+      }
+      writeCollection('bahanBaku', list);
+    }
+  } catch (e) {}
+};
+
     // 1. Mongo
     if (mongoose.connection.readyState === 1) {
       try { await UtangSupplier.create(newRecord); } catch (e) {}
@@ -110,6 +176,9 @@ exports.create = async (req, res) => {
     const jsonList = readCollection('utangSupplier');
     jsonList.unshift(newRecord);
     writeCollection('utangSupplier', jsonList);
+
+    // Sync Price History to Bahan Baku
+    await syncPriceHistoryToBahan(bahanNama, bahanId, hg, newRecord.tanggalBeli, supplier, noFaktur);
 
     await addAuditLog(
       user?.name || 'Tim Pembelian',

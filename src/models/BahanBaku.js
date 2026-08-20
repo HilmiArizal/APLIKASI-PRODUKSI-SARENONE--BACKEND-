@@ -8,7 +8,16 @@ const BahanBakuSchema = new mongoose.Schema({
   stok: { type: Number, default: 0 },
   minStok: { type: Number, default: 0 },
   satuan: { type: String, default: 'kg' },
-  harga: { type: Number, default: 0 }
+  harga: { type: Number, default: 0 },
+  riwayatHarga: [
+    {
+      tanggal: { type: String },
+      harga: { type: Number, default: 0 },
+      supplier: { type: String, default: '-' },
+      noFaktur: { type: String, default: '-' },
+      catatan: { type: String, default: 'Pembelian' }
+    }
+  ]
 }, { timestamps: true });
 
 module.exports = mongoose.model('BahanBaku', BahanBakuSchema);

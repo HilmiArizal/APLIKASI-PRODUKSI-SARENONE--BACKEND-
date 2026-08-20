@@ -85,6 +85,16 @@ exports.create = async (req, res) => {
       return res.status(400).json({ success: false, message: 'SKU dan Nama Bahan Baku wajib diisi.' });
     }
 
+    const todayStr = new Date().toISOString().substring(0, 10);
+    const hargaVal = parseFloat(harga) || 0;
+    const initialPriceEntry = {
+      tanggal: todayStr,
+      harga: hargaVal,
+      supplier: 'Master Input',
+      noFaktur: 'INITIAL',
+      catatan: 'Pendaftaran Master Bahan'
+    };
+
     const newItem = {
       id: 'b_' + Date.now(),
       sku,
@@ -93,7 +103,8 @@ exports.create = async (req, res) => {
       satuan: satuan || 'kg',
       stok: parseFloat(stok) || 0,
       minStok: parseFloat(minStok) || 0,
-      harga: parseFloat(harga) || 0
+      harga: hargaVal,
+      riwayatHarga: [initialPriceEntry]
     };
 
     const mongoItem = await BahanBaku.create(newItem);
@@ -115,17 +126,37 @@ exports.update = async (req, res) => {
   try {
     const { id } = req.params;
     const { sku, nama, kategori, satuan, stok, minStok, harga, user } = req.body;
+    const todayStr = new Date().toISOString().substring(0, 10);
+    const hargaVal = parseFloat(harga) || 0;
+
+    let existingDoc = await BahanBaku.findOne({ id });
+    let priceHistory = existingDoc && Array.isArray(existingDoc.riwayatHarga) ? [...existingDoc.riwayatHarga] : [];
+
+    if (hargaVal > 0) {
+      const existIdx = priceHistory.findIndex(r => r.tanggal === todayStr);
+      if (existIdx !== -1) {
+        priceHistory[existIdx].harga = hargaVal;
+      } else {
+        priceHistory.push({
+          tanggal: todayStr,
+          harga: hargaVal,
+          supplier: 'Master Update',
+          noFaktur: 'UPDATE',
+          catatan: 'Pembaruan Master Harga'
+        });
+      }
+    }
 
     const mongoItem = await BahanBaku.findOneAndUpdate(
       { id },
-      { sku, nama, kategori, satuan, stok: parseFloat(stok), minStok: parseFloat(minStok), harga: parseFloat(harga) },
+      { sku, nama, kategori, satuan, stok: parseFloat(stok), minStok: parseFloat(minStok), harga: hargaVal, riwayatHarga: priceHistory },
       { returnDocument: 'after' }
     );
 
     const list = readCollection('bahanBaku');
     const index = list.findIndex(x => x.id === id);
     if (index !== -1) {
-      list[index] = { ...list[index], sku, nama, kategori, satuan, stok, minStok, harga };
+      list[index] = { ...list[index], sku, nama, kategori, satuan, stok, minStok, harga: hargaVal, riwayatHarga: priceHistory };
       writeCollection('bahanBaku', list);
     }
 
@@ -442,5 +473,77 @@ exports.useKemasan = async (req, res) => {
   } catch (err) {
     console.error('Use kemasan error:', err);
     return res.status(500).json({ success: false, message: 'Gagal mencatat pemakaian kemasan: ' + err.message });
+  }
+};
+
+// GET /api/bahan-baku/harga-historis?tanggal=YYYY-MM-DD (Penentuan Harga Historis Pertanggal untuk HPP & Stok)
+exports.getHargaHistoris = async (req, res) => {
+  try {
+    const { tanggal } = req.query;
+    const targetDate = (tanggal || new Date().toISOString().substring(0, 10)).substring(0, 10);
+
+    let allBahan = [];
+    if (mongoose.connection.readyState === 1) {
+      try { allBahan = await BahanBaku.find(); } catch (e) {}
+    }
+    if (!allBahan || allBahan.length === 0) {
+      allBahan = readCollection('bahanBaku');
+    }
+
+    const utangList = readCollection('utangSupplier');
+
+    const result = allBahan.map(b => {
+      let resolvedPrice = b.harga || 0;
+      let matchedSource = 'Master Price';
+
+      // 1. Check item's own riwayatHarga array
+      if (Array.isArray(b.riwayatHarga) && b.riwayatHarga.length > 0) {
+        const pastPrices = b.riwayatHarga
+          .filter(r => r.tanggal <= targetDate && Number(r.harga) > 0)
+          .sort((a, b) => (b.tanggal || '').localeCompare(a.tanggal || ''));
+
+        if (pastPrices.length > 0) {
+          resolvedPrice = Number(pastPrices[0].harga);
+          matchedSource = `Riwayat Harga (${pastPrices[0].tanggal})`;
+        }
+      }
+
+      // 2. Check Utang / Invoice Purchases on or before target date
+      const bNama = String(b.nama || '').trim().toLowerCase();
+      const bId = String(b.id || '').trim().toLowerCase();
+      const bSku = String(b.sku || '').trim().toLowerCase();
+
+      const matchingInvoices = utangList
+        .filter(u => {
+          const invDate = (u.tanggalBeli || u.tanggal || '').substring(0, 10);
+          const uNama = String(u.bahanNama || '').trim().toLowerCase();
+          const uId = String(u.bahanId || '').trim().toLowerCase();
+          const isMatch = (uNama && uNama === bNama) || (uId && (uId === bId || uId === bSku)) || (uNama && bNama.includes(uNama));
+          return isMatch && invDate <= targetDate && Number(u.hargaSatuan) > 0;
+        })
+        .sort((a, b) => (b.tanggalBeli || b.tanggal || '').localeCompare(a.tanggalBeli || a.tanggal || ''));
+
+      if (matchingInvoices.length > 0) {
+        resolvedPrice = Number(matchingInvoices[0].hargaSatuan);
+        matchedSource = `Faktur ${matchingInvoices[0].noFaktur} (${matchingInvoices[0].tanggalBeli || matchingInvoices[0].tanggal})`;
+      }
+
+      return {
+        id: b.id || b._id,
+        sku: b.sku,
+        nama: b.nama,
+        kategori: b.kategori,
+        satuan: b.satuan,
+        targetTanggal: targetDate,
+        hargaOnDate: resolvedPrice,
+        masterHarga: b.harga || 0,
+        sumber: matchedSource
+      };
+    });
+
+    return res.json({ success: true, targetDate, data: result });
+  } catch (err) {
+    console.error('Get harga historis error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal mengambil harga historis: ' + err.message });
   }
 };
