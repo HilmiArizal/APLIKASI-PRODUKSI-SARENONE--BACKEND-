@@ -57,7 +57,30 @@ exports.create = async (req, res) => {
   try {
     const { noFaktur, supplier, bahanId, bahanNama, jumlah, satuan, hargaSatuan, dp, jatuhTempo, catatan, autoAddStok, user } = req.body;
     if (!supplier || !noFaktur || !jumlah || jumlah <= 0) {
-      return res.status(400).json({ success: false, message: 'Supplier, No Faktur, dan Jumlah Wajib Diisi.' });
+      return res.status(400).json({ success: false, message: 'Supplier, No Faktur / No PO, dan Jumlah Wajib Diisi.' });
+    }
+
+    // STRICT DUPLICATE NO FAKTUR / NO PO CHECK (MUST NOT BE DUPLICATE!)
+    const cleanedNoFaktur = String(noFaktur || '').trim();
+    if (useMongo) {
+      const existingFaktur = await UtangSupplier.findOne({
+        noFaktur: new RegExp(`^${cleanedNoFaktur.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i')
+      });
+      if (existingFaktur) {
+        return res.status(400).json({
+          success: false,
+          message: `Nomor Faktur / No PO "${cleanedNoFaktur}" sudah terdaftar di database! Harap gunakan No PO yang unik.`
+        });
+      }
+    } else {
+      const jsonList = readData();
+      const existingFaktur = jsonList.find(x => String(x.noFaktur || '').trim().toLowerCase() === cleanedNoFaktur.toLowerCase());
+      if (existingFaktur) {
+        return res.status(400).json({
+          success: false,
+          message: `Nomor Faktur / No PO "${cleanedNoFaktur}" sudah terdaftar! Harap gunakan No PO yang unik.`
+        });
+      }
     }
 
     const qty = parseFloat(jumlah) || 0;

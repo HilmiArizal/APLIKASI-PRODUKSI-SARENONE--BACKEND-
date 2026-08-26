@@ -3,5 +3,6 @@ const router = express.Router();
 const emulsiController = require('../controllers/emulsiController');
 
 router.post('/process', emulsiController.processEmulsi);
+router.post('/rollback', emulsiController.rollbackEmulsi);
 
 module.exports = router;

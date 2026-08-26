@@ -578,7 +578,7 @@ exports.updateUser = async (req, res) => {
       mongoUser = await User.findOneAndUpdate(
         { $or: orConditions },
         { $set: updateData },
-        { returnDocument: 'after', new: true }
+        { returnDocument: 'after' }
       );
     }
 

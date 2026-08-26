@@ -237,7 +237,7 @@ exports.importExcel = async (req, res) => {
           await Resep.findOneAndUpdate(
             { produkId },
             { items: itemsList },
-            { upsert: true, new: true }
+            { returnDocument: 'after', upsert: true }
           );
         } catch (e) {
           console.warn('Mongo resep overwrite note:', e.message);

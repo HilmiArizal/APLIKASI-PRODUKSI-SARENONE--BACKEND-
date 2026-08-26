@@ -1,5 +1,565 @@
 [
   {
+    "id": "BATCH-20260803-793",
+    "timestamp": "2026-08-03 17:37",
+    "tanggal": "2026-08-03",
+    "produkId": "p_1786628167099",
+    "produkNama": "BS",
+    "jumlahPcs": 3,
+    "operator": "Hilmi Arizal",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "BLP",
+        "jumlah": 21.6,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "MDM",
+        "jumlah": 4.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi ISP",
+        "jumlah": 18,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Air Es",
+        "jumlah": 12.6,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Tepung Tapioka",
+        "jumlah": 7.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garam",
+        "jumlah": 0.63,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mononatrium L-Glutamat",
+        "jumlah": 0.405,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "White Pepper Powder",
+        "jumlah": 0.18,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garlic Powder",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fumaro",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Enzim Transglutaminase",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fiber",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "STPP",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Coatroll",
+        "jumlah": 0.135,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Pottasium Sorbat",
+        "jumlah": 0.045,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Caramel IV",
+        "jumlah": 0.135,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Devro 19 CLR",
+        "jumlah": 27,
+        "satuan": "roll"
+      },
+      {
+        "bahanNama": "Oregano",
+        "jumlah": 0.012,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Rosemary",
+        "jumlah": 0.018,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "DMM",
+        "jumlah": 0.9,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Frankfurter ( New )",
+        "jumlah": 0.45,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi TVP",
+        "jumlah": 4.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Beef Powder",
+        "jumlah": 0.36,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-20260803-605",
+    "timestamp": "2026-08-03 17:36",
+    "tanggal": "2026-08-03",
+    "produkId": "p_1786629040434",
+    "produkNama": "SCM",
+    "jumlahPcs": 6,
+    "operator": "Hilmi Arizal",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "BLP",
+        "jumlah": 25.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "MDM",
+        "jumlah": 10.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi ISP",
+        "jumlah": 39.6,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Air Es",
+        "jumlah": 25.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Tepung Tapioka",
+        "jumlah": 18,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garam",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mononatrium L-Glutamat",
+        "jumlah": 0.72,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "White Pepper Powder",
+        "jumlah": 0.36,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garlic Powder",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Enzim Transglutaminase",
+        "jumlah": 1.35,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fiber",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "STPP",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Coatroll",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Pottasium Sorbat",
+        "jumlah": 0.09,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Devro 19 FRD",
+        "jumlah": 54,
+        "satuan": "roll"
+      },
+      {
+        "bahanNama": "Frankfurter ( New )",
+        "jumlah": 1.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Dark Brown",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi TVP",
+        "jumlah": 18,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-20260803-362",
+    "timestamp": "2026-08-03 17:35",
+    "tanggal": "2026-08-03",
+    "produkId": "p_1785164089060",
+    "produkNama": "RCS",
+    "jumlahPcs": 6,
+    "operator": "Hilmi Arizal",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "BLP",
+        "jumlah": 43.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "MDM",
+        "jumlah": 9,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi ISP",
+        "jumlah": 36,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Air Es",
+        "jumlah": 25.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Tepung Tapioka",
+        "jumlah": 14.4,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garam",
+        "jumlah": 1.26,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mononatrium L-Glutamat",
+        "jumlah": 0.81,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "White Pepper Powder",
+        "jumlah": 0.36,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garlic Powder",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fumaro",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Enzim Transglutaminase",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fiber",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "STPP",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Coatroll",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Pottasium Sorbat",
+        "jumlah": 0.09,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Caramel IV",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Devro 19 FRD",
+        "jumlah": 54,
+        "satuan": "roll"
+      },
+      {
+        "bahanNama": "DMM",
+        "jumlah": 1.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Frankfurter ( New )",
+        "jumlah": 0.9,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi TVP",
+        "jumlah": 9,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Beef Powder",
+        "jumlah": 0.72,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-20260801-682",
+    "timestamp": "2026-08-01 17:27",
+    "tanggal": "2026-08-01",
+    "produkId": "p_1786629040434",
+    "produkNama": "SCM",
+    "jumlahPcs": 6,
+    "operator": "Hilmi Arizal",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "BLP",
+        "jumlah": 25.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "MDM",
+        "jumlah": 10.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi ISP",
+        "jumlah": 39.6,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Air Es",
+        "jumlah": 25.2,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Tepung Tapioka",
+        "jumlah": 18,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garam",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mononatrium L-Glutamat",
+        "jumlah": 0.72,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "White Pepper Powder",
+        "jumlah": 0.36,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garlic Powder",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Enzim Transglutaminase",
+        "jumlah": 1.35,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fiber",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "STPP",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Coatroll",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Pottasium Sorbat",
+        "jumlah": 0.09,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Devro 19 FRD",
+        "jumlah": 54,
+        "satuan": "roll"
+      },
+      {
+        "bahanNama": "Frankfurter ( New )",
+        "jumlah": 1.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Dark Brown",
+        "jumlah": 0.27,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi TVP",
+        "jumlah": 18,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
+    "id": "BATCH-20260801-212",
+    "timestamp": "2026-08-01 17:27",
+    "tanggal": "2026-08-01",
+    "produkId": "p_1785164089060",
+    "produkNama": "RCS",
+    "jumlahPcs": 9,
+    "operator": "Hilmi Arizal",
+    "pemotonganBahan": [
+      {
+        "bahanNama": "BLP",
+        "jumlah": 64.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "MDM",
+        "jumlah": 13.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi ISP",
+        "jumlah": 54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Air Es",
+        "jumlah": 37.8,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Tepung Tapioka",
+        "jumlah": 21.6,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garam",
+        "jumlah": 1.89,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Mononatrium L-Glutamat",
+        "jumlah": 1.215,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "White Pepper Powder",
+        "jumlah": 0.54,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Garlic Powder",
+        "jumlah": 0.81,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fumaro",
+        "jumlah": 0.81,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Enzim Transglutaminase",
+        "jumlah": 0.81,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Fiber",
+        "jumlah": 1.62,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "STPP",
+        "jumlah": 0.81,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Coatroll",
+        "jumlah": 0.405,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Pottasium Sorbat",
+        "jumlah": 0.135,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Caramel IV",
+        "jumlah": 0.405,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Devro 19 FRD",
+        "jumlah": 81,
+        "satuan": "roll"
+      },
+      {
+        "bahanNama": "DMM",
+        "jumlah": 2.7,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Frankfurter ( New )",
+        "jumlah": 1.35,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Emulsi TVP",
+        "jumlah": 13.5,
+        "satuan": "kg"
+      },
+      {
+        "bahanNama": "Beef Powder",
+        "jumlah": 1.08,
+        "satuan": "kg"
+      }
+    ]
+  },
+  {
     "id": "BATCH-2026-822",
     "timestamp": "2026-07-28 09:52",
     "produkId": "p_1785165548449",

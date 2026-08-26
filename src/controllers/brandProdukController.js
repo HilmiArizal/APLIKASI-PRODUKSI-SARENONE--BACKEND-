@@ -84,7 +84,7 @@ exports.updateBrandProduk = async (req, res) => {
     let updated = null;
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
-      updated = await BrandProduk.findOneAndUpdate(query, { $set: { nama, deskripsi } }, { returnDocument: 'after', new: true });
+      updated = await BrandProduk.findOneAndUpdate(query, { $set: { nama, deskripsi } }, { returnDocument: 'after' });
     }
 
     const brands = readCollection('brandProduk');

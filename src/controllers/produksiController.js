@@ -22,32 +22,113 @@ exports.getHistory = async (req, res) => {
   }
 };
 
-// DELETE /api/produksi/history/:id
+// DELETE /api/produksi/history/:id (Rollback Batch Produksi & Restore All Raw Material Stocks)
 exports.deleteHistory = async (req, res) => {
   try {
     const { id } = req.params;
     const { user } = req.body;
 
+    // 1. Find target production batch log
+    let targetBatch = null;
     if (mongoose.connection.readyState === 1) {
-      const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
-      await RiwayatProduksi.deleteMany(query);
+      try {
+        const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+        targetBatch = await RiwayatProduksi.findOne(query);
+      } catch (e) {}
     }
 
-    const jsonList = readCollection('riwayatProduksi');
-    const filtered = jsonList.filter(item => item.id !== id);
+    if (!targetBatch) {
+      const historyJson = readCollection('riwayatProduksi');
+      targetBatch = historyJson.find(item => item.id === id || item._id === id);
+    }
+
+    if (!targetBatch) {
+      return res.status(404).json({ success: false, message: 'Riwayat batch produksi tidak ditemukan.' });
+    }
+
+    // 2. Restore Raw Materials / Emulsion Stocks (+jumlah)
+    const jsonBahanList = readCollection('bahanBaku');
+    if (Array.isArray(targetBatch.pemotonganBahan)) {
+      for (let item of targetBatch.pemotonganBahan) {
+        const restoredQty = Number(item.jumlah) || 0;
+        if (restoredQty > 0) {
+          // Restore Mongo
+          if (mongoose.connection.readyState === 1) {
+            try {
+              const bDoc = await BahanBaku.findOne({
+                $or: [
+                  { nama: item.bahanNama },
+                  { nama: new RegExp(item.bahanNama.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i') }
+                ]
+              });
+              if (bDoc) {
+                bDoc.stok = Math.round((bDoc.stok + restoredQty) * 1000) / 1000;
+                await bDoc.save();
+              }
+            } catch (e) {}
+          }
+          // Restore JSON
+          const bIdx = jsonBahanList.findIndex(b => b.nama.toLowerCase().trim() === item.bahanNama.toLowerCase().trim());
+          if (bIdx !== -1) {
+            jsonBahanList[bIdx].stok = Math.round((jsonBahanList[bIdx].stok + restoredQty) * 1000) / 1000;
+          }
+        }
+      }
+      writeCollection('bahanBaku', jsonBahanList);
+    }
+
+    // 3. Deduct Finished Product Stock (-jumlahPcs)
+    const batchQty = Number(targetBatch.jumlahPcs) || 1;
+    const jsonProdukList = readCollection('produk');
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const pDoc = await Produk.findOne({
+          $or: [
+            { id: targetBatch.produkId },
+            { nama: targetBatch.produkNama },
+            { sku: targetBatch.produkNama }
+          ]
+        });
+        if (pDoc) {
+          pDoc.stok = Math.max(0, Math.round((pDoc.stok - batchQty) * 1000) / 1000);
+          await pDoc.save();
+        }
+      } catch (e) {}
+    }
+    const pIdx = jsonProdukList.findIndex(p => p.id === targetBatch.produkId || p.nama === targetBatch.produkNama || p.sku === targetBatch.produkNama);
+    if (pIdx !== -1) {
+      jsonProdukList[pIdx].stok = Math.max(0, Math.round((jsonProdukList[pIdx].stok - batchQty) * 1000) / 1000);
+      writeCollection('produk', jsonProdukList);
+    }
+
+    // 4. Delete Batch Log Entry
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
+        await RiwayatProduksi.deleteMany(query);
+      } catch (e) {}
+    }
+
+    const historyJson = readCollection('riwayatProduksi');
+    const filtered = historyJson.filter(item => item.id !== id && item._id !== id);
     writeCollection('riwayatProduksi', filtered);
 
-    addAuditLog(
+    // 5. Add Audit Log Entry
+    await addAuditLog(
       typeof user === 'string' ? user : (user?.name || 'Super Admin'),
       'ADMIN',
-      'Hapus Riwayat Produksi',
-      `Menghapus catatan batch produksi (${id}) dari riwayat.`
+      'Rollback Batch Produksi',
+      `Membatalkan & Rollback Batch Produksi ${targetBatch.produkNama} (${batchQty} Batch, ID: ${targetBatch.id}). Seluruh stok bahan mentah/emulsi dikembalikan, stok produk jadi dikurangi -${batchQty} Batch.`
     );
 
-    return res.json({ success: true, message: `Batch ${id} berhasil dihapus dari riwayat.` });
+    return res.json({
+      success: true,
+      message: `Rollback Batch Produksi ${targetBatch.id} Berhasil! Seluruh bahan baku/emulsi dikembalikan & stok produk jadi ${targetBatch.produkNama} dikurangi -${batchQty} Batch.`,
+      data: { id, produkNama: targetBatch.produkNama, batchQty }
+    });
   } catch (err) {
-    console.error('Delete production history error:', err);
-    return res.status(500).json({ success: false, message: 'Gagal menghapus riwayat: ' + err.message });
+    console.error('Delete/Rollback production history error:', err);
+    return res.status(500).json({ success: false, message: 'Gagal membatalkan batch produksi: ' + err.message });
   }
 };
 
@@ -210,7 +291,8 @@ exports.executeBatch = async (req, res) => {
       typeof user === 'string' ? user : (user?.name || 'Tim Bahan Baku'),
       'BAHAN_BAKU',
       'Produksi Batch',
-      `Eksekusi produksi ${targetQty} Batch ${produkNama} (${batchId}). Stok bahan baku terpotong otomatis.`
+      `Eksekusi produksi ${targetQty} Batch ${produkNama} (${batchId}). Stok bahan baku terpotong otomatis.`,
+      todayStr
     );
 
     return res.json({

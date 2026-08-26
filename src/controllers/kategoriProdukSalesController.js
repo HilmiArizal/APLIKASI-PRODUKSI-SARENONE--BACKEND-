@@ -83,7 +83,7 @@ exports.update = async (req, res) => {
     let updated = null;
     if (mongoose.connection.readyState === 1) {
       const query = mongoose.Types.ObjectId.isValid(id) ? { $or: [{ id }, { _id: id }] } : { id };
-      updated = await KategoriProdukSales.findOneAndUpdate(query, { $set: { nama, deskripsi } }, { returnDocument: 'after', new: true });
+      updated = await KategoriProdukSales.findOneAndUpdate(query, { $set: { nama, deskripsi } }, { returnDocument: 'after' });
     }
 
     const list = readCollection('kategoriProdukSales');

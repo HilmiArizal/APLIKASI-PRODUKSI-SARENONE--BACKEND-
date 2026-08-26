@@ -141,7 +141,7 @@ exports.update = async (req, res) => {
         updated = await Supplier.findOneAndUpdate(
           buildSupplierQuery(id),
           { kode: cleanKode, nama: cleanNama, kontak: kontak || '', alamat: alamat || '', catatan: catatan || '' },
-          { new: true }
+          { returnDocument: 'after' }
         );
       } catch (e) {
         console.error('Mongo update supplier error:', e.message);

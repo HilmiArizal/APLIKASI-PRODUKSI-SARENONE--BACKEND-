@@ -103,16 +103,24 @@ function writeCollection(collectionName, data) {
   }
 }
 
-async function addAuditLog(user, role, aksi, detail) {
+async function addAuditLog(user, role, aksi, detail, customDate) {
   const mongoose = require('mongoose');
   const now = new Date();
-  // Gunakan timezone WIB (Asia/Jakarta) agar jam sesuai realita
   const wibDate = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Jakarta' }));
-  const timestamp = `${wibDate.getFullYear()}-${String(wibDate.getMonth()+1).padStart(2,'0')}-${String(wibDate.getDate()).padStart(2,'0')} ${String(wibDate.getHours()).padStart(2,'0')}:${String(wibDate.getMinutes()).padStart(2,'0')}`;
-  
+  const timeStr = `${String(wibDate.getHours()).padStart(2,'0')}:${String(wibDate.getMinutes()).padStart(2,'0')}`;
+
+  let finalTimestamp = `${wibDate.getFullYear()}-${String(wibDate.getMonth()+1).padStart(2,'0')}-${String(wibDate.getDate()).padStart(2,'0')} ${timeStr}`;
+  if (customDate) {
+    if (customDate.includes(' ')) {
+      finalTimestamp = customDate;
+    } else {
+      finalTimestamp = `${customDate} ${timeStr}`;
+    }
+  }
+
   const newLog = {
     id: 'LOG-' + Math.floor(1000 + Math.random() * 9000),
-    timestamp,
+    timestamp: finalTimestamp,
     user: typeof user === 'string' ? user : (user?.name || 'System'),
     role: typeof role === 'string' ? role : (user?.role || 'ADMIN'),
     aksi,
@@ -131,11 +139,33 @@ async function addAuditLog(user, role, aksi, detail) {
   const logs = readCollection('auditLog');
   const updated = [newLog, ...logs].slice(0, 1000);
   writeCollection('auditLog', updated);
+  purgeOldDataOlderThan3Months();
   return newLog;
+}
+
+function purgeOldDataOlderThan3Months() {
+  try {
+    const cutoff = new Date();
+    cutoff.setMonth(cutoff.getMonth() - 3);
+    const cutoffStr = cutoff.toISOString().substring(0, 10);
+
+    const logs = readCollection('auditLog');
+    const filtered = logs.filter(log => {
+      const logDate = (log.timestamp || log.tanggal || log.createdAt || '').substring(0, 10);
+      return !logDate || logDate >= cutoffStr;
+    });
+
+    if (filtered.length < logs.length) {
+      writeCollection('auditLog', filtered);
+    }
+  } catch (e) {
+    console.warn('3-Month Auto Purge note:', e.message);
+  }
 }
 
 module.exports = {
   readCollection,
   writeCollection,
-  addAuditLog
+  addAuditLog,
+  purgeOldDataOlderThan3Months
 };

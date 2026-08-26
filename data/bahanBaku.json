@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "id": "b_eml_1787219947298",
+    "sku": "EML-ISP",
+    "nama": "Emulsi ISP",
+    "kategori": "Hasil Emulsi",
+    "stok": 180,
+    "minStok": 10,
+    "satuan": "kg",
+    "harga": 0
+  },
+  {
+    "id": "b_eml_1787220305946",
+    "sku": "EML-TVP",
+    "nama": "Emulsi TVP",
+    "kategori": "Hasil Emulsi",
+    "stok": 64,
+    "minStok": 10,
+    "satuan": "kg",
+    "harga": 0
+  },
+  {
+    "id": "b_1787636778463834",
+    "sku": "BB60",
+    "nama": "Sticker Barcode",
+    "kategori": "Bahan Kemasan",
+    "satuan": "pcs",
+    "stok": 500,
+    "minStok": 100,
+    "harga": 200
+  },
+  {
+    "id": "b_1787636778463747",
+    "sku": "BB61",
+    "nama": "Sticker Produk",
+    "kategori": "Bahan Kemasan",
+    "satuan": "pcs",
+    "stok": 500,
+    "minStok": 100,
+    "harga": 350
+  }
+]

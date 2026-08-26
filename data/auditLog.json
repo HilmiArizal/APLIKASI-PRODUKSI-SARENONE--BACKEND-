@@ -1,5 +1,509 @@
 [
   {
+    "id": "LOG-4031",
+    "timestamp": "2026-08-26 08:55",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-4471",
+    "timestamp": "2026-08-25 18:14",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-6648",
+    "timestamp": "2026-08-25 18:13",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-6435",
+    "timestamp": "2026-08-25 18:12",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-9245",
+    "timestamp": "2026-08-25 17:41",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-5375",
+    "timestamp": "2026-08-25 17:41",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-5791",
+    "timestamp": "2026-08-25 17:40",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-2883",
+    "timestamp": "2026-08-25 16:35",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-3700",
+    "timestamp": "2026-08-25 16:35",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-8062",
+    "timestamp": "2026-08-25 15:46",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-1380",
+    "timestamp": "2026-08-25 15:45",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-5604",
+    "timestamp": "2026-08-25 15:41",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-3600",
+    "timestamp": "2026-08-25 15:11",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-1100",
+    "timestamp": "2026-08-25 15:10",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-2809",
+    "timestamp": "2026-08-25 14:57",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-2185",
+    "timestamp": "2026-08-25 14:17",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-6339",
+    "timestamp": "2026-08-25 13:15",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-1966",
+    "timestamp": "2026-08-25 13:08",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Bahan",
+    "detail": "Import masal 56 item bahan baku dari file Excel ke MongoDB Atlas."
+  },
+  {
+    "id": "LOG-9548",
+    "timestamp": "2026-08-25 13:07",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-9119",
+    "timestamp": "2026-08-25 13:05",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-1384",
+    "timestamp": "2026-08-25 10:57",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-7328",
+    "timestamp": "2026-08-23 21:45",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-8119",
+    "timestamp": "2026-08-23 07:17",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-9667",
+    "timestamp": "2026-08-03 17:37",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 3 Batch BS (BATCH-20260803-793). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-9368",
+    "timestamp": "2026-08-21 17:37",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Resep BOM",
+    "detail": "Berhasil memproses & mengimpor 23 takaran resep formulasi produk dari Excel."
+  },
+  {
+    "id": "LOG-8634",
+    "timestamp": "2026-08-03 17:36",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 6 Batch SCM (BATCH-20260803-605). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-1589",
+    "timestamp": "2026-08-03 17:35",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 6 Batch RCS (BATCH-20260803-362). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-6753",
+    "timestamp": "2026-08-21 17:35",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Resep BOM",
+    "detail": "Berhasil memproses & mengimpor 23 takaran resep formulasi produk dari Excel."
+  },
+  {
+    "id": "LOG-5286",
+    "timestamp": "2026-08-03 17:33",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Pengolahan Emulsi TVP",
+    "detail": "Memproses 8 Batch Emulsi TVP. Pemotongan mentah: TVP: -8 kg. Menghasilkan +32 kg Emulsi TVP."
+  },
+  {
+    "id": "LOG-5572",
+    "timestamp": "2026-08-03 17:33",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Pengolahan Emulsi ISP",
+    "detail": "Memproses 5 Batch Emulsi ISP. Pemotongan mentah: Marksoy: -10 kg, Air Es: -20 kg, Minyak: -20 pouch. Menghasilkan +100 kg Emulsi ISP."
+  },
+  {
+    "id": "LOG-5340",
+    "timestamp": "2026-08-21 17:18",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-1275",
+    "timestamp": "2026-08-21 17:16",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-9079",
+    "timestamp": "2026-08-21 17:05",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-7521",
+    "timestamp": "2026-08-21 16:51",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-9685",
+    "timestamp": "2026-08-21 16:35",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-7318",
+    "timestamp": "2026-08-21 14:28",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-2109",
+    "timestamp": "2026-08-21 14:28",
+    "user": "Super Admin Produk",
+    "role": "ADMIN_PRODUK",
+    "aksi": "Logout System",
+    "detail": "Pengguna Super Admin Produk keluar dari sistem."
+  },
+  {
+    "id": "LOG-2101",
+    "timestamp": "2026-08-21 14:28",
+    "user": "Super Admin Produk",
+    "role": "ADMIN_PRODUK",
+    "aksi": "Login System",
+    "detail": "Pengguna Super Admin Produk (admin_produk) berhasil masuk."
+  },
+  {
+    "id": "LOG-9263",
+    "timestamp": "2026-08-21 14:27",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-5420",
+    "timestamp": "2026-08-21 14:22",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-5144",
+    "timestamp": "2026-08-20 20:26",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-5413",
+    "timestamp": "2026-08-01 18:54",
+    "user": "Super Admin BB",
+    "role": "ADMIN",
+    "aksi": "Simpan HPP Produksi SCM",
+    "detail": "Menyimpan HPP SCM tanggal 2026-08-01: Hasil 135.7 KG, Total Biaya Rp 5434703, HPP 1KG (Inc Waste 8%): Rp 44253."
+  },
+  {
+    "id": "LOG-2185",
+    "timestamp": "2026-08-01 18:30",
+    "user": "Super Admin BB",
+    "role": "ADMIN",
+    "aksi": "Simpan HPP Produksi RCS",
+    "detail": "Menyimpan HPP RCS tanggal 2026-08-01: Hasil 208 KG, Total Biaya Rp 9101975, HPP 1KG (Inc Waste 8%): Rp 48260."
+  },
+  {
+    "id": "LOG-3087",
+    "timestamp": "2026-08-01 17:27",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 6 Batch SCM (BATCH-20260801-682). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-1916",
+    "timestamp": "2026-08-01 17:27",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 9 Batch RCS (BATCH-20260801-212). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-1316",
+    "timestamp": "2026-08-01 17:26",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Pengolahan Emulsi TVP",
+    "detail": "Memproses 8 Batch Emulsi TVP. Pemotongan mentah: TVP: -8 kg. Menghasilkan +32 kg Emulsi TVP."
+  },
+  {
+    "id": "LOG-6375",
+    "timestamp": "2026-08-01 17:25",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Pengolahan Emulsi ISP",
+    "detail": "Memproses 4 Batch Emulsi ISP. Pemotongan mentah: Marksoy: -8 kg, Air Es: -16 kg, Minyak: -16 pouch. Menghasilkan +80 kg Emulsi ISP."
+  },
+  {
+    "id": "LOG-5360",
+    "timestamp": "2026-08-20 17:25",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi ISP",
+    "detail": "Membatalkan & Rollback 4 Batch Emulsi ISP (LOG-5458). Stok mentah dikembalikan, stok Emulsi ISP dikurangi -80 kg."
+  },
+  {
+    "id": "LOG-6326",
+    "timestamp": "2026-08-20 17:18",
+    "user": "Test Super Admin",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi TVP",
+    "detail": "Membatalkan & Rollback 5 Batch Emulsi TVP (LOG-6125). Stok mentah dikembalikan, stok Emulsi TVP dikurangi -20 kg."
+  },
+  {
+    "id": "LOG-7503",
+    "timestamp": "2026-08-20 17:18",
+    "user": "Test Super Admin",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi ISP",
+    "detail": "Membatalkan & Rollback 2 Batch Emulsi ISP (LOG-6416). Stok mentah dikembalikan, stok Emulsi ISP dikurangi -40 kg."
+  },
+  {
+    "id": "LOG-5633",
+    "timestamp": "2026-08-20 17:16",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi ISP",
+    "detail": "Membatalkan & Rollback 4 Batch Emulsi ISP (LOG-6406). Stok mentah dikembalikan, stok Emulsi ISP dikurangi -80 kg."
+  },
+  {
+    "id": "LOG-5902",
+    "timestamp": "2026-08-20 17:15",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi ISP",
+    "detail": "Membatalkan & Rollback 4 Batch Emulsi ISP (LOG-1283). Stok mentah dikembalikan, stok Emulsi ISP dikurangi -80 kg."
+  },
+  {
+    "id": "LOG-2569",
+    "timestamp": "2026-08-20 17:12",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi TVP",
+    "detail": "Membatalkan & Rollback 8 Batch Emulsi TVP (LOG-8881). Stok mentah dikembalikan, stok Emulsi TVP dikurangi -28 kg."
+  },
+  {
+    "id": "LOG-3706",
+    "timestamp": "2026-08-20 17:05",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi TVP",
+    "detail": "Membatalkan & Rollback 9 Batch Emulsi TVP (LOG-9673). Stok mentah dikembalikan, stok Emulsi TVP dikurangi -31.5 kg."
+  },
+  {
+    "id": "LOG-5917",
+    "timestamp": "2026-08-20 16:42",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Hapus Riwayat Produksi",
+    "detail": "Menghapus catatan batch produksi (BATCH-20260801-670) dari riwayat."
+  },
+  {
+    "id": "LOG-7389",
+    "timestamp": "2026-08-20 16:37",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi ISP",
+    "detail": "Membatalkan & Rollback 4 Batch Emulsi ISP (LOG-9159). Stok mentah dikembalikan, stok Emulsi ISP dikurangi -80 kg."
+  },
+  {
+    "id": "LOG-4750",
+    "timestamp": "2026-08-20 16:36",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Rollback Emulsi TVP",
+    "detail": "Membatalkan & Rollback 9 Batch Emulsi TVP (LOG-3800). Stok mentah dikembalikan, stok Emulsi TVP dikurangi -31.5 kg."
+  },
+  {
+    "id": "LOG-7689",
+    "timestamp": "2026-08-20 16:33",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-4397",
+    "timestamp": "2026-08-20 16:32",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-3111",
+    "timestamp": "2026-08-20 16:32",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-1174",
+    "timestamp": "2026-08-20 16:16",
+    "user": "Hilmi Arizal",
+    "role": "BAHAN_BAKU",
+    "aksi": "Produksi Batch",
+    "detail": "Eksekusi produksi 9 Batch RCS (BATCH-20260801-670). Stok bahan baku terpotong otomatis."
+  },
+  {
+    "id": "LOG-4924",
+    "timestamp": "2026-08-20 16:15",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Resep BOM",
+    "detail": "Berhasil memproses & mengimpor 18 takaran resep formulasi produk dari Excel."
+  },
+  {
+    "id": "LOG-5911",
+    "timestamp": "2026-08-20 16:14",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Import Excel Resep BOM",
+    "detail": "Berhasil memproses & mengimpor 21 takaran resep formulasi produk dari Excel."
+  },
+  {
     "id": "LOG-7396",
     "timestamp": "2026-07-28 09:53",
     "user": "fauzi imam",

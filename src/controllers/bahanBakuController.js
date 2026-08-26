@@ -260,10 +260,19 @@ exports.importExcel = async (req, res) => {
         nama,
         kategori,
         satuan,
-        stok,
         minStok,
         harga
       };
+
+      if (item.stok !== undefined && item.stok !== null && !isNaN(parseFloat(item.stok))) {
+        updateData.stok = stok;
+      }
+      if (item.stokAwal !== undefined && item.stokAwal !== null && !isNaN(parseFloat(item.stokAwal))) {
+        updateData.stokAwal = parseFloat(item.stokAwal);
+      }
+      if (item.hargaAwal !== undefined && item.hargaAwal !== null && !isNaN(parseFloat(item.hargaAwal))) {
+        updateData.hargaAwal = parseFloat(item.hargaAwal);
+      }
 
       if (mongoose.connection.readyState === 1) {
         try {
@@ -272,7 +281,9 @@ exports.importExcel = async (req, res) => {
             existing.nama = nama;
             existing.kategori = kategori;
             existing.satuan = satuan;
-            existing.stok = stok;
+            if (updateData.stok !== undefined) existing.stok = updateData.stok;
+            if (updateData.stokAwal !== undefined) existing.stokAwal = updateData.stokAwal;
+            if (updateData.hargaAwal !== undefined) existing.hargaAwal = updateData.hargaAwal;
             existing.minStok = minStok;
             existing.harga = harga;
             await existing.save();
@@ -288,6 +299,17 @@ exports.importExcel = async (req, res) => {
         } catch (mongoErr) {
           console.warn('Import item mongo note:', mongoErr.message);
         }
+      }
+
+      // Also update local JSON storage
+      const jsonList = readCollection('bahanBaku');
+      const idx = jsonList.findIndex(b => String(b.sku || '').toLowerCase() === sku.toLowerCase() || String(b.nama || '').toLowerCase() === nama.toLowerCase());
+      if (idx !== -1) {
+        if (satuan) jsonList[idx].satuan = satuan;
+        if (updateData.stokAwal !== undefined) jsonList[idx].stokAwal = updateData.stokAwal;
+        if (updateData.hargaAwal !== undefined) jsonList[idx].hargaAwal = updateData.hargaAwal;
+        if (updateData.stok !== undefined) jsonList[idx].stok = updateData.stok;
+        writeCollection('bahanBaku', jsonList);
       }
     }
 
