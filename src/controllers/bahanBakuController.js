@@ -278,20 +278,32 @@ exports.importExcel = async (req, res) => {
         try {
           let existing = await BahanBaku.findOne(filterQuery);
           if (existing) {
-            existing.nama = nama;
-            existing.kategori = kategori;
-            existing.satuan = satuan;
+            if (nama) existing.nama = nama;
+            if (kategori) existing.kategori = kategori;
+            if (satuan) existing.satuan = satuan;
             if (updateData.stok !== undefined) existing.stok = updateData.stok;
             if (updateData.stokAwal !== undefined) existing.stokAwal = updateData.stokAwal;
             if (updateData.hargaAwal !== undefined) existing.hargaAwal = updateData.hargaAwal;
-            existing.minStok = minStok;
-            existing.harga = harga;
+            if (item.minStok !== undefined && item.minStok !== null && !isNaN(parseFloat(item.minStok))) {
+              existing.minStok = minStok;
+            }
+            if (item.harga !== undefined && item.harga !== null && !isNaN(parseFloat(item.harga))) {
+              existing.harga = harga;
+            }
             await existing.save();
             updatedItems.push(existing);
           } else {
             const newItemObj = {
               id: 'b_' + Date.now() + '_' + Math.floor(Math.random() * 1000),
-              ...updateData
+              sku,
+              nama,
+              kategori,
+              satuan,
+              stok: updateData.stok !== undefined ? updateData.stok : 0,
+              stokAwal: updateData.stokAwal !== undefined ? updateData.stokAwal : 0,
+              hargaAwal: updateData.hargaAwal !== undefined ? updateData.hargaAwal : 0,
+              minStok: item.minStok !== undefined ? minStok : 0,
+              harga: item.harga !== undefined ? harga : 0
             };
             const created = await BahanBaku.create(newItemObj);
             createdItems.push(created);
@@ -305,7 +317,10 @@ exports.importExcel = async (req, res) => {
       const jsonList = readCollection('bahanBaku');
       const idx = jsonList.findIndex(b => String(b.sku || '').toLowerCase() === sku.toLowerCase() || String(b.nama || '').toLowerCase() === nama.toLowerCase());
       if (idx !== -1) {
+        if (nama) jsonList[idx].nama = nama;
+        if (kategori) jsonList[idx].kategori = kategori;
         if (satuan) jsonList[idx].satuan = satuan;
+        if (updateData.stok !== undefined) jsonList[idx].stok = updateData.stok;
         if (updateData.stokAwal !== undefined) jsonList[idx].stokAwal = updateData.stokAwal;
         if (updateData.hargaAwal !== undefined) jsonList[idx].hargaAwal = updateData.hargaAwal;
         if (updateData.stok !== undefined) jsonList[idx].stok = updateData.stok;

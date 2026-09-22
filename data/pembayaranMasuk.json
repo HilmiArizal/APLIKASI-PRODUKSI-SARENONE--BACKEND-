@@ -1,0 +1,32 @@
+[
+  {
+    "id": "PAY-1788254618598",
+    "noBukti": "PAY-202609012323",
+    "pelangganId": "6a9550d0ead7c35520af509c",
+    "kodePelanggan": "C1",
+    "namaPelanggan": "RSB Pusat",
+    "noFaktur": "",
+    "tanggal": "2026-09-01",
+    "jumlahBayar": 280615,
+    "metodePembayaran": "Tunai",
+    "noReferensi": "",
+    "catatan": "",
+    "createdBy": "Super Admin Produk",
+    "createdAt": "2026-09-01 23:23"
+  },
+  {
+    "id": "PAY-1788253311867",
+    "noBukti": "PAY-202609012301",
+    "pelangganId": "6a9550d0ead7c35520af509c",
+    "kodePelanggan": "",
+    "namaPelanggan": "RSB Pusat",
+    "noFaktur": "INV-202608001",
+    "tanggal": "2026-09-01",
+    "jumlahBayar": 126912,
+    "metodePembayaran": "Tunai",
+    "noReferensi": "AUTO-LUNAS-INV-202608001",
+    "catatan": "Pelunasan otomatis dari Penjualan Cash (INV-202608001)",
+    "createdBy": "Super Admin Produk",
+    "createdAt": "2026-09-01 23:01"
+  }
+]

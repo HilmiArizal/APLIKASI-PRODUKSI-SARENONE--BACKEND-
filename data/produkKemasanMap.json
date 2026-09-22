@@ -1,0 +1,642 @@
+{
+  "P1": {
+    "vacumbagSku": "BB30",
+    "vacumbagNama": "Vacumbag 15*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCS 250": {
+    "vacumbagSku": "BB30",
+    "vacumbagNama": "Vacumbag 15*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P2": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P3": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCS 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P4": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P5": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "FS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P6": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "FS 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P7": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "FS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P8": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P9": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BS 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P10": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "CCS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P11": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "CBS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P12": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BWOS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P13": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BWRS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P14": {
+    "vacumbagSku": "BB50",
+    "vacumbagNama": "Vacumbag 23*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCM 500": {
+    "vacumbagSku": "BB50",
+    "vacumbagNama": "Vacumbag 23*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P15": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCM 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P16": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCC 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P17": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCC 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P18": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SJ 1000": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P19": {
+    "vacumbagSku": "BB30",
+    "vacumbagNama": "Vacumbag 15*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SK 300": {
+    "vacumbagSku": "BB30",
+    "vacumbagNama": "Vacumbag 15*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P20": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SBJ 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P21": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SBM 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P22": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "OCS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P23": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "OCS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P24": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BCS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P25": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BCS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P26": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "OBS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P27": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "OBS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P28": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BMB 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P29": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BMB 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P30": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCS 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P31": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "SCS 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P32": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BW 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P33": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BWC 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P34": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "GW 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P35": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BP 1000": {
+    "vacumbagSku": "BB34",
+    "vacumbagNama": "Vacumbag 23*34",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P44": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "CN 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P45": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BWHM 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P46": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "BWHM 1000": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P47": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCH 500": {
+    "vacumbagSku": "BB32",
+    "vacumbagNama": "Vacumbag 20*25",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "P48": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  },
+  "RCH 900": {
+    "vacumbagSku": "BB31",
+    "vacumbagNama": "Vacumbag 25*30",
+    "stickerBarcodeSku": "BB60",
+    "stickerBarcodeNama": "Sticker Barcode",
+    "stickerProdukSku": "BB61",
+    "stickerProdukNama": "Sticker Produk"
+  }
+}

@@ -105,3 +105,27 @@ exports.remove = async (req, res) => {
     return res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// GET /api/produk/kemasan-map
+exports.getKemasanMap = async (req, res) => {
+  try {
+    const list = readCollection('produkKemasanMap') || {};
+    return res.json({ success: true, data: list });
+  } catch (err) {
+    return res.json({ success: true, data: {} });
+  }
+};
+
+// POST /api/produk/kemasan-map
+exports.saveKemasanMap = async (req, res) => {
+  try {
+    const { mapping, user } = req.body;
+    writeCollection('produkKemasanMap', mapping || {});
+
+    await addAuditLog(user?.name || 'Super Admin', user?.role || 'ADMIN', 'Update Pemetaan Kemasan', 'Pembaruan pemetaan jenis kemasan vacumbag & stiker per produk.');
+
+    return res.json({ success: true, message: 'Pemetaan kemasan produk berhasil disimpan di server.', data: mapping });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};

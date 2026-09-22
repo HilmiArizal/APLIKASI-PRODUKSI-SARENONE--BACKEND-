@@ -1,17 +1,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
-const dns = require('dns');
 
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1', '8.8.4.4']);
-  if (dns.setDefaultResultOrder) {
-    dns.setDefaultResultOrder('ipv4first');
-  }
-} catch (e) {
-  console.warn('DNS config warning:', e.message);
-}
-
-// Global cached connection for Vercel Serverless Functions
+// Connection caching for Serverless & Node Express
 let cached = global.mongoose;
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };

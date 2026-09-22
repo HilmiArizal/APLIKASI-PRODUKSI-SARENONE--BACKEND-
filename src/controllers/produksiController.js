@@ -305,3 +305,46 @@ exports.executeBatch = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Gagal mengeksekusi produksi: ' + err.message });
   }
 };
+
+// 4. HASIL PRODUKSI (FINISHED GOODS YIELD RECORDING) ENDPOINTS
+exports.getHasilProduksi = async (req, res) => {
+  try {
+    const list = readCollection('hasilProduksi');
+    return res.json({ success: true, data: list });
+  } catch (err) {
+    return res.json({ success: true, data: [] });
+  }
+};
+
+exports.saveHasilProduksi = async (req, res) => {
+  try {
+    const newEntry = req.body;
+    if (!newEntry.id) {
+      newEntry.id = 'YIELD-' + Date.now() + Math.floor(Math.random() * 1000);
+    }
+    const list = readCollection('hasilProduksi');
+    const exists = list.some(x => String(x.id) === String(newEntry.id));
+    let updated;
+    if (exists) {
+      updated = list.map(x => String(x.id) === String(newEntry.id) ? { ...x, ...newEntry } : x);
+    } else {
+      updated = [newEntry, ...list];
+    }
+    writeCollection('hasilProduksi', updated);
+    return res.json({ success: true, message: 'Hasil produksi berhasil disimpan!', data: newEntry });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+exports.deleteHasilProduksi = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const list = readCollection('hasilProduksi');
+    const updated = list.filter(x => String(x.id) !== String(id));
+    writeCollection('hasilProduksi', updated);
+    return res.json({ success: true, message: 'Hasil produksi berhasil dihapus!' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};

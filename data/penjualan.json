@@ -1,0 +1,121 @@
+[
+  {
+    "id": "PJL-1788254189281",
+    "noFaktur": "INV-202608003",
+    "tanggal": "2026-09-01",
+    "pelangganId": "6a9550d0ead7c35520af509c",
+    "namaPelanggan": "RSB Pusat",
+    "kategoriCustomer": "TM",
+    "teleponPelanggan": "081234567890",
+    "alamatPelanggan": "JL. Rajawali",
+    "items": [
+      {
+        "produkId": "PSL-1788162641939",
+        "namaProduk": "Red Cocktail Sausage 900g",
+        "sku": "P3",
+        "brand": "SAREN ONE",
+        "hargaPabrik": 0,
+        "qty": 5,
+        "hargaSatuan": 58123,
+        "subtotal": 290615,
+        "hargaTopMarket": 54000,
+        "hargaUmum": 54000,
+        "hargaModal": 54000,
+        "feeMarketingItem": 20615
+      }
+    ],
+    "totalHarga": 290615,
+    "diskon": "10000",
+    "totalBersih": 280615,
+    "totalFeeMarketing": 20615,
+    "metodePembayaran": "Tempo",
+    "statusPembayaran": "Tempo",
+    "catatan": "",
+    "createdBy": "Super Admin Produk",
+    "createdAt": "2026-09-01 23:16"
+  },
+  {
+    "id": "PJL-1788254046323",
+    "noFaktur": "INV-202608002",
+    "tanggal": "2026-09-01",
+    "pelangganId": "6a9550d0ead7c35520af509d",
+    "namaPelanggan": "RSB Sawo",
+    "kategoriCustomer": "TM",
+    "teleponPelanggan": "089876543210",
+    "alamatPelanggan": "JL. Andir No.124",
+    "items": [
+      {
+        "produkId": "PSL-1788162641713",
+        "namaProduk": "Red Cocktail Sausage 500g",
+        "sku": "P2",
+        "brand": "SAREN ONE",
+        "hargaPabrik": 0,
+        "qty": 5,
+        "hargaSatuan": 31000,
+        "subtotal": 155000,
+        "hargaTopMarket": 31000,
+        "hargaUmum": 31000,
+        "hargaModal": 31000,
+        "feeMarketingItem": 0
+      }
+    ],
+    "totalHarga": 155000,
+    "diskon": 0,
+    "totalBersih": 155000,
+    "totalFeeMarketing": 0,
+    "metodePembayaran": "Tempo",
+    "statusPembayaran": "Tempo",
+    "catatan": "",
+    "createdBy": "Super Admin Produk",
+    "createdAt": "2026-09-01 23:14"
+  },
+  {
+    "id": "PJL-1788253311517",
+    "noFaktur": "INV-202608001",
+    "tanggal": "2026-09-01",
+    "pelangganId": "6a9550d0ead7c35520af509c",
+    "namaPelanggan": "RSB Pusat",
+    "kategoriCustomer": "TM",
+    "teleponPelanggan": "081234567890",
+    "alamatPelanggan": "JL. Rajawali",
+    "items": [
+      {
+        "produkId": "PSL-1788162641507",
+        "namaProduk": "Red Cocktail Sausage 250g",
+        "sku": "P1",
+        "brand": "SAREN ONE",
+        "hargaPabrik": 0,
+        "qty": 8,
+        "hargaSatuan": 20000,
+        "subtotal": 160000,
+        "hargaTopMarket": 16500,
+        "hargaUmum": 16500,
+        "hargaModal": 16500,
+        "feeMarketingItem": 28000
+      },
+      {
+        "produkId": "PSL-1788162641713",
+        "namaProduk": "Red Cocktail Sausage 500g",
+        "sku": "P2",
+        "brand": "SAREN ONE",
+        "hargaPabrik": 0,
+        "qty": 2,
+        "hargaSatuan": 33456,
+        "subtotal": 66912,
+        "hargaTopMarket": 31000,
+        "hargaUmum": 31000,
+        "hargaModal": 31000,
+        "feeMarketingItem": 4912
+      }
+    ],
+    "totalHarga": 226912,
+    "diskon": "100000",
+    "totalBersih": 126912,
+    "totalFeeMarketing": 32912,
+    "metodePembayaran": "Tunai",
+    "statusPembayaran": "Lunas",
+    "catatan": "",
+    "createdBy": "Super Admin Produk",
+    "createdAt": "2026-09-01 23:01"
+  }
+]

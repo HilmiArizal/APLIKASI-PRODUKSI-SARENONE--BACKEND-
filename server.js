@@ -33,12 +33,8 @@ const auditStokRoutes = require('./src/routes/auditStokRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect MongoDB & Seed Initial Database Tables
-connectDB().then(async (isConnected) => {
-  if (isConnected) {
-    await seedMongoDB();
-  }
-});
+// Connect MongoDB ONCE at application startup
+connectDB();
 
 // Middleware
 app.use(cors());
@@ -47,22 +43,12 @@ app.set('etag', 'strong');
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// ETag & Cache-Control Middleware (0 KB transfer when data hasn't changed)
+// ETag & Cache-Control Middleware (Fast response with browser caching)
 app.use((req, res, next) => {
   if (req.method === 'GET') {
     res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
   } else {
     res.setHeader('Cache-Control', 'no-store');
-  }
-  next();
-});
-
-// Ensure MongoDB Atlas Connection on Serverless Executions
-app.use(async (req, res, next) => {
-  try {
-    await connectDB();
-  } catch (e) {
-    console.warn('DB middleware note:', e.message);
   }
   next();
 });

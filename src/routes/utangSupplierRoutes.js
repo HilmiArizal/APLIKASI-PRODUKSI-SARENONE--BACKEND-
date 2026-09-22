@@ -9,6 +9,7 @@ router.post('/clear-all', controller.clearAll);
 
 router.get('/', controller.getAll);
 router.post('/', controller.create);
+router.put('/:id', controller.update);
 router.post('/:id/pay', controller.pay);
 router.post('/:id/receive', controller.receive);
 router.delete('/:id', controller.remove);

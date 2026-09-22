@@ -78,6 +78,38 @@ const INITIAL_DATA = {
         { bahanNama: 'Dus Box Roti Saren One', jumlah: 25, satuan: 'pcs' }
       ]
     }
+  ],
+  hasilProduksi: [
+    {
+      id: 'YIELD-INIT-1',
+      tanggal: '2026-08-01',
+      produkId: 'P14',
+      kode: 'SCM 500',
+      alias: 'SCM 500',
+      produkNama: 'Sosis Cocktail Merah 500g',
+      brand: 'EATGOW',
+      jumlahPcs: 120,
+      satuan: 'pack',
+      harga: 33000,
+      hppPerPack: 22627,
+      catatan: 'Hasil Produksi Harian',
+      timestamp: '2026-08-01 08:30'
+    },
+    {
+      id: 'YIELD-INIT-2',
+      tanggal: '2026-08-01',
+      produkId: 'P15',
+      kode: 'SCM 900',
+      alias: 'SCM 900',
+      produkNama: 'Sosis Cocktail Merah 900g',
+      brand: 'EATGOW',
+      jumlahPcs: 80,
+      satuan: 'pack',
+      harga: 62500,
+      hppPerPack: 43534,
+      catatan: 'Hasil Produksi Harian',
+      timestamp: '2026-08-01 08:30'
+    }
   ]
 };
 

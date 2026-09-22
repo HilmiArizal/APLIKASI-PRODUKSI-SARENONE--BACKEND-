@@ -466,6 +466,30 @@ exports.remove = async (req, res) => {
   }
 };
 
+// PUT /api/utang-supplier/:id
+exports.update = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    let jsonList = readCollection('utangSupplier');
+    jsonList = jsonList.map(x => (x.id === id || x._id === id || x.noFaktur === id) ? { ...x, ...updateData } : x);
+    writeCollection('utangSupplier', jsonList);
+
+    if (mongoose.connection.readyState === 1) {
+      try {
+        const queryOrDel = [{ id }, { noFaktur: id }];
+        if (mongoose.Types.ObjectId.isValid(id)) queryOrDel.push({ _id: id });
+        await UtangSupplier.updateMany({ $or: queryOrDel }, { $set: updateData });
+      } catch (e) {}
+    }
+
+    return res.json({ success: true, message: 'Faktur pembelian berhasil diperbarui!' });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 // DELETE /api/utang-supplier/clear/all
 exports.clearAll = async (req, res) => {
   try {
