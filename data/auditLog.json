@@ -1,5 +1,69 @@
 [
   {
+    "id": "LOG-6492",
+    "timestamp": "2026-10-09 08:56",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-1848",
+    "timestamp": "2026-10-09 08:56",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-1027",
+    "timestamp": "2026-10-09 08:55",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-6111",
+    "timestamp": "2026-10-09 08:55",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-7199",
+    "timestamp": "2026-10-09 08:55",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-5371",
+    "timestamp": "2026-09-22 17:14",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
+    "id": "LOG-4140",
+    "timestamp": "2026-09-22 14:26",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Logout System",
+    "detail": "Pengguna Hilmi Arizal keluar dari sistem."
+  },
+  {
+    "id": "LOG-8638",
+    "timestamp": "2026-09-22 13:55",
+    "user": "Hilmi Arizal",
+    "role": "ADMIN",
+    "aksi": "Login System",
+    "detail": "Pengguna Hilmi Arizal (admin) berhasil masuk."
+  },
+  {
     "id": "LOG-5318",
     "timestamp": "2026-09-07 16:08",
     "user": "Super Admin Produk",
