@@ -96,13 +96,12 @@ app.use('/api/hpp', hppRoutes);
 app.use('/api/audit-stok', auditStokRoutes);
 
 // Start Server
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`=======================================================`);
-    console.log(`🚀 SAREN ONE Backend REST API Server Is Running!`);
-    console.log(`📡 URL: http://localhost:${PORT}`);
-    console.log(`=======================================================`);
-  });
-}
+const serverPort = process.env.PORT || 5005;
+app.listen(serverPort, '0.0.0.0', () => {
+  console.log(`=======================================================`);
+  console.log(`🚀 SAREN ONE Backend REST API Server Is Running!`);
+  console.log(`📡 PORT: ${serverPort}`);
+  console.log(`=======================================================`);
+});
 
 module.exports = app;
