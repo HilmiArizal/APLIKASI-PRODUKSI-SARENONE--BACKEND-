@@ -54,58 +54,15 @@ exports.login = async (req, res) => {
       console.warn('Mongo user lookup warning:', e.message);
     }
 
-    // 3. JSON file fallback check
+    // 3. Strict Database Verification (No Hardcoded Fallbacks)
     if (!user) {
-      try {
-        const users = readCollection('users');
-        user = users.find(u => u.username?.toLowerCase() === input || u.email?.toLowerCase() === input);
-      } catch (e) {}
+      return res.status(401).json({ success: false, message: 'Username / Email tidak ditemukan atau belum terdaftar!' });
     }
 
-    // 4a. Default Admin Bahan Baku fallback
-    if (!user && (input === 'admin' || input === 'admin@sarenone.com')) {
-      user = {
-        id: 'u1',
-        username: 'admin',
-        email: 'admin@sarenone.com',
-        pass: 'Admin@123',
-        name: 'Super Admin Saren One',
-        role: 'ADMIN',
-        status: 'VERIFIED'
-      };
-    }
-
-    // 4b. Default Admin Produk fallback
-    if (!user && (input === 'admin_produk' || input === 'admin_produk@sarenone.com')) {
-      user = {
-        id: 'u_produk1',
-        username: 'admin_produk',
-        email: 'admin_produk@sarenone.com',
-        pass: 'Adminproduk@123',
-        name: 'Super Admin Produk',
-        role: 'ADMIN_PRODUK',
-        status: 'VERIFIED'
-      };
-    }
-
-    // 5. Strict Password Verification
-    let isPasswordValid = false;
-    if (user) {
-      if (user.pass === password) {
-        isPasswordValid = true;
-      } else if (user.username?.toLowerCase() === 'admin' || user.email?.toLowerCase() === 'admin@sarenone.com') {
-        if (password === 'admin' || password === 'Admin@123') {
-          isPasswordValid = true;
-        }
-      } else if (user.username?.toLowerCase() === 'admin_produk') {
-        if (password === 'Adminproduk@123') {
-          isPasswordValid = true;
-        }
-      }
-    }
-
-    if (!user || !isPasswordValid) {
-      return res.status(401).json({ success: false, message: 'Username/Email atau Password salah, atau belum terdaftar!' });
+    // 4. Strict Password Matching from Database
+    const isPasswordValid = user.pass === password;
+    if (!isPasswordValid) {
+      return res.status(401).json({ success: false, message: 'Kata sandi / Password salah!' });
     }
 
     // Generate New Active Session ID (Auto Takeover Session)
