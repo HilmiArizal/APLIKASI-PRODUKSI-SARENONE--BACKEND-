@@ -95,8 +95,13 @@ app.use('/api/estimasi-po', estimasiPORoutes);
 app.use('/api/hpp', hppRoutes);
 app.use('/api/audit-stok', auditStokRoutes);
 
+// Health Check Route for Railway Cloud
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // Start Server
-const serverPort = process.env.PORT || 5005;
+const serverPort = process.env.PORT ? parseInt(process.env.PORT, 10) : 5005;
 app.listen(serverPort, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`🚀 SAREN ONE Backend REST API Server Is Running!`);
